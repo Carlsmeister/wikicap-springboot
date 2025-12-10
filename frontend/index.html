@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <link rel="stylesheet" href="../backend/static/output.css" />
+  </head>
+  <body class="min-h-screen bg-slate-950 bg-[radial-gradient(circle_at_top,#1f2937_0,#020617_45%,#000_100%)] text-slate-50 flex items-center justify-center px-4">
+    <main class="w-full max-w-xl text-center space-y-8">
+      <header class="space-y-2">
+        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
+        <p class="text-slate-300 text-sm md:text-base">Detta är ett test bara för att se att tailwind fungerar :P</p>
+      </header>
+
+      <form class="flex flex-col sm:flex-row gap-3 justify-center">
+        <input
+          type="text"
+          name="year"
+          placeholder="Till exempel 1997"
+          class="w-full sm:w-48 bg-slate-900/80 border border-slate-700/80 rounded-full px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-slate-500"
+        />
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium bg-indigo-500 hover:bg-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-950"
+        >
+          Hämta år
+        </button>
+      </form>
+    </main>
+  </body>
+</html>
