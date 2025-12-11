@@ -59,6 +59,7 @@ The results are presented in an artsy, interactive timeline.
 
 ### MacOS / Linux
 
+
 ```bash
 python -m venv .venv
 .venv\bin\activate
@@ -92,6 +93,12 @@ Create your .env in the root of the project
 Example input = API_KEY_1=YOUR_KEY API_KEY_2=YOUR_KEY2
 
 5.**Start Tailwind in development mode**
+-Please note that .venv needs to be deactivated.
+-This is done by running
+
+```bash
+deactivate
+```
 
 ```bash
 npm run dev
