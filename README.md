@@ -24,6 +24,7 @@ The results are presented in an artsy, interactive timeline.
 **Backend**
 
 - Python – FastAPI (API layer / data aggregation)
+- Node.js - For tailwind
 
 **Frontend**
 
