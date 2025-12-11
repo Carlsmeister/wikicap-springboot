@@ -61,7 +61,7 @@ The results are presented in an artsy, interactive timeline.
 
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 .venv\bin\activate
 
 ```
@@ -69,7 +69,7 @@ python -m venv .venv
 ### **Windows**
 
 ```bash
-python -m venv .venv .venv\Scripts\activate
+python3 -m venv .venv .venv\Scripts\activate
 ```
 
 2. ### **Install backend dependencies**
