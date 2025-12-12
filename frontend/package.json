@@ -2,8 +2,8 @@
   "name": "frontend",
   "version": "1.0.0",
   "scripts": {
-    "dev": "tailwindcss -i ./src/input.css -o ../backend/static/output.css --watch",
-    "build": "tailwindcss -i ./src/input.css -o ../backend/static/output.css --minify"
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ../backend/static/output.css --watch",
+    "build": "npx @tailwindcss/cli -i ./src/input.css -o ../backend/static/output.css --minify"
   },
   "devDependencies": {
     "tailwindcss": "4.1.17"

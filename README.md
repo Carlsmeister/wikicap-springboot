@@ -61,8 +61,8 @@ The results are presented in an artsy, interactive timeline.
 
 
 ```bash
-python -m venv .venv
-.venv\bin\activate
+python3 -m venv .venv
+source.venv\bin\activate
 
 ```
 
