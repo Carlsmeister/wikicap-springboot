@@ -396,4 +396,7 @@ pyrightconfig.json
 .history
 .ionide
 
+### Generated CSS
+**/output.css
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij+all,intellij,python,macos
