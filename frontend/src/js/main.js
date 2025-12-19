@@ -1,3 +1,14 @@
+document.body.classList.add(
+  "min-h-screen",
+  "bg-slate-950",
+  "bg-[radial-gradient(circle_at_top,#1f2937_0,#020617_45%,#000_100%)]",
+  "text-slate-50",
+  "flex",
+  "items-center",
+  "justify-center",
+  "px-4"
+);
+
 const app = document.getElementById("app")
 
 app.innerHTML = `
