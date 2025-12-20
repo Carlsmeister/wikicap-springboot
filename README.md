@@ -59,17 +59,18 @@ The results are presented in an artsy, interactive timeline.
 
 ### MacOS / Linux
 
-
 ```bash
+cd backend
 python3 -m venv .venv
-source.venv\bin\activate
-
+source .venv/bin/activate
 ```
 
 ### **Windows**
 
 ```bash
-python3 -m venv .venv .venv\Scripts\activate
+cd backend
+python -m venv .venv
+.\.venv\Scripts\activate
 ```
 
 2. ### **Install backend dependencies**
@@ -78,27 +79,24 @@ python3 -m venv .venv .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3.**Install frontend dependencies**
-Its important to note that npm install needs to be run inside of "frontend"
+3. **Create your .env file in the backend folder**
 
-```bash
-   cd frontend
-   npm install
+Create `backend/.env` and add your API keys.
+
+Example:
+```
+API_KEY_1=YOUR_KEY
+API_KEY_2=YOUR_KEY2
 ```
 
-4. **Create your .env file in the projects root**
-
-Create your .env in the root of the project
-
-Example input = API_KEY_1=YOUR_KEY API_KEY_2=YOUR_KEY2
-
-5.**Start Tailwind in development mode**
--Please note that .venv needs to be deactivated.
--This is done by running
+4. **Install frontend dependencies**
 
 ```bash
-deactivate
+cd frontend
+npm install
 ```
+
+5. **Start Tailwind in development mode**
 
 ```bash
 npm run dev
@@ -107,7 +105,8 @@ npm run dev
 6. **Start the FastAPI server**
 
 ```bash
-uvicorn backend.app:app --reload
+cd backend
+uvicorn app.main:app --reload
 ```
 
 ---
