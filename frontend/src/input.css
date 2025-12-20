@@ -1,7 +1,8 @@
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@import "tailwindcss";
 
-
+@source "../index.html";
+@source "../**/*.html";
+@source "../**/*.js";
 
 @layer utilities {
 
@@ -38,9 +39,44 @@
             opacity: 1;
         }
     }
-.slide-in-right-normal {
-  animation: slide-in-right 0.6s cubic-bezier(0.230, 1, 0.320, 1) both;
+  .slide-in-blurred-left-normal {
+    animation: slide-in-blurred-left 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+
+  .slide-in-blurred-right-normal {
+    animation: slide-in-blurred-right 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
 }
 
 
+@layer components {
+  .section-label {
+    @apply text-xs tracking-widest uppercase text-slate-400;
+  }
+
+  .component-card {
+    @apply rounded-2xl border border-indigo-400/15 bg-slate-950/35 backdrop-blur-xl p-6;
+    box-shadow:
+      0 0 0 1px rgba(99,102,241,.10),
+      0 14px 50px rgba(0,0,0,.45),
+      0 0 60px rgba(99,102,241,.12);
+  }
+
+  .recap-card {
+    @apply rounded-2xl border border-indigo-400/20 bg-slate-950/40 backdrop-blur-xl p-6;
+    box-shadow:
+      0 0 0 1px rgba(99,102,241,.12),
+      0 16px 60px rgba(0,0,0,.50),
+      0 0 70px rgba(34,211,238,.10);
+  }
+
+  .timeline-node {
+    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold;
+    @apply border border-indigo-300/25 bg-indigo-950/55 text-indigo-50;
+  }
+
+  .stat-chip {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs;
+    @apply border border-cyan-300/20 bg-cyan-950/25 text-cyan-100;
+  }
 }
