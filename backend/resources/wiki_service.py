@@ -1,9 +1,11 @@
 import requests
 import re
+from .wiki_cleaner import CLEANER
 
 MONTHS = re.compile(
-    r"==\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*==",
+    r"\n=+\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*=+\s*\n",
 )
+
 
 HEADERS = {
     "User-Agent": "WikiCap/1.0 (https://github.com/WikiCap/year-overview)"
@@ -68,11 +70,16 @@ def extract_year_events(month_text: str, limit: int = 3) -> list:
 
     for line in month_text.splitlines():
         if line.startswith("*"):
-            clean = line.lstrip("* ").strip()
-            events.append(clean)
+            continue
 
-            if len(events) >= limit:
-                break
+        clean = CLEANER.clean_event_line(line, max_len=200, keep_date_prefix=True)
+        if not clean:
+            continue
+
+        events.append(clean)
+        if len(events) >= limit:
+            break
+
     return events
 
 def fetch_year_events(year: int) -> dict:
