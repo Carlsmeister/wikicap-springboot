@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.year import router as year_router
 from app.api.v1.movies import router as movies_router
 
+from backend.resources.wiki_service import fetch_year_events
+
 app = FastAPI()
 
 app.add_middleware(
@@ -24,5 +26,12 @@ app.include_router(movies_router, prefix="/api/v1")
 def read_root():
     return {
         "message": "WikiCap API is running!",
+    }
+
+@app.get("/api/year/{year}")
+def get_year(year: int):
+    return {
+        "year": year,
+        "events_by_month": fetch_year_events(year)
     }
 
