@@ -22,18 +22,19 @@ class WikiCleaner():
         Factory method to create a WikiCleaner instance with predefined regex patterns.
         """
 
-        months_pattern = r"==\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*=="
+        months_pattern = r"==\s*(January|February|March|April|May|June|July|August|September|October|November|December)"
         return WikiCleaner(
             ref_tag=re.compile(r"<ref[^>]*>.*?<\/ref>", re.DOTALL | re.IGNORECASE),
-            ref_self=re.compile(r"<ref[^\/>]*/>", re.DOTALL | re.IGNORECASE),
+            ref_self=re.compile(r"<ref[^\/>]*/>", re.IGNORECASE),
             html_tag=re.compile(r"<[^>]+>", re.DOTALL),
             comments=re.compile(r"<!--.*?-->", re.DOTALL),
             templates=re.compile(r"\{\{[^}]+\}\}", re.DOTALL),
-            files=re.compile(r"\[\[File:[^\]]+\]\]", re.IGNORECASE),
-            wiki_link=re.compile(r"\[\[([^|\]]+\|)?([^\]]+)\]\]"),
+            files=re.compile(r"\[\[(File|Image):[^\]]+\]\]", re.IGNORECASE),
+            wiki_link=re.compile(r"\[\[([^\]]+)\]\]"),
             quotes=re.compile(r"''+"),
             date_prefix=re.compile(
-                rf"({months_pattern}\s*)?\*?\s*\d{{1,2}}\s*[-–—]?\s*", re.IGNORECASE
+                rf"^(?:\[\[)?({months_pattern})\s+(\d{{1,2}})(?:\]\])?\s*[–—-]\s*",
+                re.IGNORECASE,
             ),
         )
 
@@ -43,7 +44,10 @@ class WikiCleaner():
         args:
             match (re.Match): The regex match object.
         """
-        inner = match.group(1).strip()
+        inner = (match.group(1) or "").strip()
+        if not inner:
+            return ""
+
         lowered = inner.lower()
 
         if lowered.startswith(("category:", "help:", "portal:", "special:")):
@@ -65,7 +69,7 @@ class WikiCleaner():
         """
 
         stripped = line.strip()
-        if not stripped.startswith("*"):
+        if not stripped.lstrip().startswith("*"):
             return ""
 
         stripped = stripped.lstrip("*").strip()
@@ -77,7 +81,7 @@ class WikiCleaner():
                 month = date_match.group(1).capitalize()
                 day = date_match.group(2)
                 prefix = f"{month[:3]} {day} - "
-                stripped = self.date_prefix.sub("", stripped).strip()
+            stripped = self.date_prefix.sub("", stripped).strip()
         # Refs / HTML / Comments
         stripped = self.ref_tag.sub("", stripped)
         stripped = self.ref_self.sub("", stripped)

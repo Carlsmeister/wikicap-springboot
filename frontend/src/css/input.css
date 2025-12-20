@@ -49,7 +49,7 @@
 }
 
 
-@layer components {
+@layer components {x1
   .section-label {
     @apply text-xs tracking-widest uppercase text-slate-400;
   }

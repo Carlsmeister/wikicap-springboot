@@ -69,7 +69,7 @@ def extract_year_events(month_text: str, limit: int = 3) -> list:
     events = []
 
     for line in month_text.splitlines():
-        if line.startswith("*"):
+        if not line.startswith("*"):
             continue
 
         clean = CLEANER.clean_event_line(line, max_len=200, keep_date_prefix=True)
@@ -97,7 +97,7 @@ def fetch_year_events(year: int) -> dict:
     months = split_by_months(text)
 
     return {
-        month: extract_year_events(content, limit=3)
+        month: extract_year_events(content, limit=6)
         for month, content in months.items()
         if content
     }
