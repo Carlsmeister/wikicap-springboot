@@ -599,6 +599,18 @@
     }
     color: var(--color-cyan-100);
   }
+  .year-h1 {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    font-size: clamp(2.25rem, 5vw, 3.75rem);
+    background: linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(59,130,246,1) 40%, rgba(34,211,238,1) 100% );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 18px rgba(34,211,238,.22), 0 0 34px rgba(99,102,241,.18);
+    filter: saturate(1.15);
+  }
 }
 @property --tw-space-y-reverse {
   syntax: "*";
