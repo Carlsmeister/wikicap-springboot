@@ -5,21 +5,38 @@ const input = document.querySelector("#yearInput");
 const statusEl = document.querySelector("#status");
 const resultsEl = document.querySelector("#results");
 const tpl = document.querySelector("#monthCardTpl");
+const heroText = document.querySelector("#heroText");
 
 const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
 const submitBtn = document.querySelector("#submitBtn");
 
 function setStatus(text, kind = "info") {
-  // kind: info | error | success | loading
-  statusEl.textContent = text;
+  statusEl.className = "text-center";
+  statusEl.innerHTML = "";
 
-  statusEl.className = "text-center text-sm";
-  if (kind === "error") statusEl.classList.add("text-red-300");
-  else if (kind === "success") statusEl.classList.add("text-emerald-200");
-  else if (kind === "loading") statusEl.classList.add("text-cyan-200");
-  else statusEl.classList.add("text-slate-300");
+  if (kind === "loading") {
+    statusEl.innerHTML = `
+      <div class="status-row">
+        <div class="loader" aria-label="Loading"></div>
+        <span class="status-text">${text}</span>
+      </div>
+    `;
+    return;
+  }
+
+
+  const span = document.createElement("span");
+  span.className = "text-sm";
+
+  if (kind === "error") span.classList.add("text-red-300");
+  else if (kind === "success") span.classList.add("text-emerald-200");
+  else span.classList.add("text-slate-300");
+
+  span.textContent = text;
+  statusEl.appendChild(span);
 }
+
 
 function clearResults() {
   resultsEl.innerHTML = "";
@@ -99,6 +116,8 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
+    heroText.textContent = String(year);
+
     // Show header badge
     recapHeader.classList.remove("hidden");
     recapHeader.classList.add("flex");
@@ -109,7 +128,7 @@ form.addEventListener("submit", async (e) => {
       renderMonthCard({ month, year, events, index: i });
     });
 
-    setStatus(`Klart! Visar ${entries.length} månader.`, "success");
+    setStatus("");
   } catch (err) {
     console.error(err);
     setStatus("Kunde inte hämta data. Är backend igång på 127.0.0.1:8000?", "error");
