@@ -8,9 +8,11 @@
   </head>
   <body class="min-h-screen bg-slate-950 bg-[radial-gradient(circle_at_top,#1f2937_0,#020617_45%,#000_100%)] text-slate-50 flex items-center justify-center px-4">
     <main class="w-full max-w-xl text-center space-y-8">
-      <header class="space-y-2">
-        <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
-        <p class="text-slate-300 text-sm md:text-base">Detta är ett test bara för att se att tailwind fungerar :P</p>
+      <header class="space-y-2 pt-3 ml-5">
+        <div class="flex items-center justify-center gap-2 pr-3">
+          <img src="https://img.icons8.com/?size=100&id=48164&format=png&color=000000" class="w-8 h-8 md:w-20 md:h-20 translate-y-[1px] opacity-80 hover:opacity-100 hover:drop-shadow-[0_0_6px_rgba(99,102,241,0.8)] transition" />
+          <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
+        </div>
       </header>
 
       <form id="yearForm" class="flex flex-col sm:flex-row gap-3 justify-center">
@@ -30,7 +32,7 @@
         </button>
       </form>
       <div id="status" class="text-center text-sm text-slate-300"></div>
-      <h1 class="year-h1"><span>Året </span><span id="heroText">1997</span></h1>
+      <h1 class="year-h1"><span> </span><span id="heroText"></span></h1>
 
       <section class="space-y-4">
         <div id="recapHeader" class="hidden items-center justify-between">
@@ -57,6 +59,7 @@
         </div>
       </template>
     </main>
-    <script src="./main.js"></script>
+    <script src="./src/js/mainAlex.js"></script>
   </body>
 </html>
+

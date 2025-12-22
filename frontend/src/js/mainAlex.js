@@ -116,7 +116,7 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    heroText.textContent = String(year);
+    heroText.textContent = String(`Året var ${year}`);
 
     // Show header badge
     recapHeader.classList.remove("hidden");
