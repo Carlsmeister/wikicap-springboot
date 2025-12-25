@@ -60,11 +60,19 @@
       </template>
 
       <template class="nobelCardTpl">
-        
+        <div class="component-card flex gap-4 items-start">
+          <img class="w-16 h-16 rounded-full object-cover border border-indigo-400/30" />
+
+          <div class="text-left space-y-1">
+            <p class="font-semibold text-indigo-200 name"></p>
+            <p class="text-xs text-slate-400 category"></p>
+            <p class="text-sm text-slate-300 motivation"></p>
+          </div>
+        </div>
       </template>
+
       <!-- Note 2 self , här lägger jag nobelpris sektionen -->
       <section class="hidden space-y-6 pt-10" id="nobelSection">
-
         <div class="flex items-center justify-between">
           <p class="section-label">Nobel Price Winners Of The Year</p>
           <span id="stats">Nobel Prize</span>

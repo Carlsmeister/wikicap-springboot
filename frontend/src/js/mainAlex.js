@@ -136,4 +136,14 @@ form.addEventListener("submit", async (e) => {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
   }
+
+  // Start of nobel prize winners fetch
+  async function fetchNobel(year) {
+    const res = await fetch(`${API_BASE}/API/year/${year}/nobel`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results ?? [];
+  }
+  
 });
+
