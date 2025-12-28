@@ -108,6 +108,8 @@ npm run dev
 
 ```bash
 uvicorn backend.app:app --reload
+
+py -3.13 -m uvicorn app:app --reload
 ```
 
 ---

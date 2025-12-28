@@ -1,7 +1,6 @@
 import json
 from app.core import config
 import httpx
-from requests import get
 
 BASE_URL = "https://billboard-api2.p.rapidapi.com"
 SPOTIFY_BASE_URL = "https://api.spotify.com/v1/search"
@@ -23,15 +22,17 @@ def get_top_artists_by_year(year: int): #  Ska tas bort sen
 
 
 def get_songs_by_year(year: int, token):
-    headers = token
-    query = f"?q={year}&type=artist&limit=10"  #Limit = 1, så endast en artist returneras
+    
+    query = f"?q={year}&type=track,artist&limit=1"  #Limit = 1, så endast en artist returneras
     query_url = SPOTIFY_BASE_URL + query
 
-    result = get(query_url, headers=headers)
-    json_result = json.loads(result.content)["artists"]["items"]
-    if(len(json_result) == 0):                  # Om ingen artist hittas
-        print("No artist found for the year:", year)
+    response = httpx.get(query_url, headers=token)
+    response.raise_for_status()
+
+    artists = response.json()["artists"]["items"]
+    if not artists:
+        print("No artists found for the given year.")
         return None
     
-    return json_result[0]  # Returna första resultatet
+    return artists  # Returna första resultatet
     
