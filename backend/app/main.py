@@ -1,7 +1,6 @@
 import base64
 from dotenv import load_dotenv
 import os
-from requests import post
 
 load_dotenv()
 

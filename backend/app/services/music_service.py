@@ -1,59 +1,50 @@
-from app.clients.music_client import get_top_artists_by_year, get_songs_by_year
-import os
+from app.clients.music_client import get_spotify_token, get_auth_header, get_songs_by_year, get_artists_by_year
 import base64
 import httpx
 
-spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
-spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-def get_spotify_token(): # Getter för att få en token från Spotify, den varar i 1 timme
-    auth_string = f"{spotify_client_id}:{spotify_client_secret}"
-    auth_base64 = base64.b64encode(auth_string.encode()).decode()
+def fetch_songs_for_year(year: int):
+    print("Spotify fetch songs)")
+    token = get_spotify_token()
+    auth_header = get_auth_header(token)
+    raw = get_songs_by_year(year, auth_header)
 
-    url = "https://accounts.spotify.com/api/token"
-    headers = {
-        "Authorization": f"Basic {auth_base64}",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {"grant_type": "client_credentials"}
-    
-    response = httpx.post(url, headers=headers, data=data)
-    response.raise_for_status()
-
-    return response.json()["access_token"]
-
-def get_auth_header(token):
-    spotify_token = token
-    return {"Authorization": f"Bearer {spotify_token}"}
-
-spotify_token = get_spotify_token()
-
-
-auth_header = get_auth_header(spotify_token)
-result = get_songs_by_year(2000, auth_header)
-print(result)
-
-
-
-
-
-
-
-
-def fetch_artists_for_year(year: int): # billboard top artists, använd ej , ska tas bort
-    raw = get_top_artists_by_year(year)
-
-    artists = []
-
-    for item in list(raw.get("content", {}).values())[:10]:
-        artists.append({
-            "rank": item["rank"],
-            "artist": item["artist"],
-            "image": item["image"]
+    songs = []
+    for item in raw.get("tracks", {}).get("items", [])[:10]:
+        songs.append({
+            "title": item["name"],
+            "artist": item["artists"][0]["name"],
+            "album": item["album"]["name"],
+            "releaseDate": item["album"]["release_date"],
+            "previewUrl": item["preview_url"]
         })
+    print(songs[0])
 
     return {
         "year": year,
+        "topSongs": songs,
+        "source": "Spotify"
+    }
+
+def fetch_artists_for_year(year: int):
+    print("Spotify fetch artists)")
+    token = get_spotify_token()
+    auth_header = get_auth_header(token)
+    raw = get_artists_by_year(year, auth_header)
+
+    artists = []
+    for item in raw:
+        artists.append({
+            "name": item["name"],
+            "genres": item["genres"],
+            "popularity": item["popularity"],
+            "followers": item["followers"]["total"],
+            "spotifyUrl": item["external_urls"]["spotify"]
+        })
+
+    print(artists[0])
+    return {
+        "year": year,
         "topArtists": artists,
-        "source": "RapidAPI Billboard"
+        "source": "Spotify"
     }

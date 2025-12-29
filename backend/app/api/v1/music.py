@@ -1,6 +1,5 @@
 from fastapi import APIRouter
-from app.services.music_service import fetch_artists_for_year
-
+from app.services.music_service import fetch_songs_for_year, fetch_artists_for_year
 router = APIRouter()
 
 @router.get("/year/{year}/artists")
