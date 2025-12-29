@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.year import router as year_router
 from app.api.v1.movies import router as movies_router
 
-from backend.resources.wiki_service import fetch_year_events
+from resources.wiki_service import fetch_year_events
 
 app = FastAPI()
 

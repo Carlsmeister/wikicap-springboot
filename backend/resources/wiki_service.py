@@ -1,4 +1,4 @@
-import requests
+import httpx
 import re
 from .wiki_cleaner import CLEANER
 
@@ -21,7 +21,7 @@ def fetch_year_summary(year: int) -> str:
     returns: str: A summary of events for the specified year.
     """
     WIKI_API_URL = f"https://en.wikipedia.org/w/rest.php/v1/page/{year}"
-    fetch = requests.get(WIKI_API_URL, headers=HEADERS, timeout=10)
+    fetch = httpx.get(WIKI_API_URL, headers=HEADERS, timeout=10)
     if fetch.status_code != 200:
         raise Exception("Failed to connect to Wikipedia API")
 
