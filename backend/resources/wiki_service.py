@@ -5,6 +5,10 @@ from .wiki_cleaner import CLEANER
 MONTHS = re.compile(
     r"\n=+\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*=+\s*\n",
 )
+BIRTH_PATTERN = re.compile(
+    r"\b(actor|actress|footballer|singer|athlete|model|swimmer|player|figure skater|rapper)\b",
+    re.IGNORECASE
+)
 
 
 HEADERS = {
@@ -74,6 +78,9 @@ def extract_year_events(month_text: str, limit: int = 3) -> list:
 
         clean = CLEANER.clean_event_line(line, max_len=200, keep_date_prefix=True)
         if not clean:
+            continue
+
+        if BIRTH_PATTERN.search(clean):
             continue
 
         events.append(clean)

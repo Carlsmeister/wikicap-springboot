@@ -26,24 +26,33 @@ const statsEl = document.querySelector("#stats");
   // Start of nobel prize winners fetch
   async function fetchNobel(year) {
     const res = await fetch(`${API_BASE}/api/year/${year}/nobel`);
-    if (!res.ok) return [];
+    if (!res.ok) return {};
     const data = await res.json();
-    return data.results ?? [];
+    return data.nobel_prizes ?? {};
   }
 
   function renderNobel(nobelData) {
     clearNobel();
 
+
     if (!nobelData || !nobelTpl || !nobelGrid || !nobelSection) return;
 
-    const nobels = nobelData?.nobels ?? nobelData?.results ?? [];
-    if (!Array.isArray(nobels) || nobels.length === 0) return;
+    const winners = Object.entries(nobelData).flatMap(
+      ([category, people]) =>
+        people.map(p => ({...p, category}))
+    );
+
+    if (winners.length === 0) return;
 
     nobelSection.classList.remove("hidden");
-    if (statsEl) statsEl.textContent = `$(nobels.length) Nobel Prize winners found`;
+    if (statsEl) statsEl.textContent = `${winners.length} Nobel Prize winners found`;
 
-    for (const winner of nobels) {
+    winners.forEach((winner, index) => {
       const node = nobelTpl.content.firstElementChild.cloneNode(true);
+
+
+      const isLeft = index % 2 === 0;
+      node.classList.add(isLeft ? "slide-in-blurred-left-normal" : "slide-in-blurred-right-normal");
 
       const img = node.querySelector("img");
       const nameEl = node.querySelector(".name");
@@ -51,22 +60,19 @@ const statsEl = document.querySelector("#stats");
       const motivationEl = node.querySelector(".motivation");
 
       nameEl.textContent = winner.name ?? "Unknown";
-      categoryEl.textContent = winner.category ?? "";
+      categoryEl.textContent = winner.category ?? "Unknown Category";
       motivationEl.textContent = winner.motivation ?? "";
 
-      const imgUrl = winner.image_url || winner.image || "";
+      const imgUrl = winner.image || "";
       if (imgUrl) {
         img.src = imgUrl;
-        img.alt = winner.name ? `Portrait of ${winner.name}` : "Portrait image";
+        img.alt = `Portrait of ${winner.name}`;
       } else {
         img.src = "https://upload.wikimedia.org/wikipedia/commons/3/3a/Nobel_Prize.png";
-        img.alt = "Nobel Prize";
+        img.alt = "Nobel Prize Medal";
       }
-
       nobelGrid.appendChild(node);
-    }
-
-
+    });
   }
 
 function setStatus(text, kind = "info") {
@@ -105,8 +111,7 @@ function clearResults() {
 function renderMonthCard({ month, year, events, index }) {
   const node = tpl.content.firstElementChild.cloneNode(true);
 
-  // Alternate left/right
-  const isOdd = index % 2 === 0; // 0-based: 0=left, 1=right, ...
+  const isOdd = index % 2 === 0;
   node.classList.add(isOdd ? "justify-start" : "justify-end");
 
   const card = node.querySelector(".component-card");

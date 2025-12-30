@@ -1,4 +1,5 @@
 import requests
+from backend.resources.wiki_nobel_extractor import extract_nobel
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 
@@ -9,12 +10,12 @@ HEADERS = {
 }
 
 def get_nobel_prizes(year: int) -> dict:
-    title = f"{year}_Nobel_Prize"
+    title = f"{year}_Nobel_Prizes"
 
     params = {
         "action": "parse",
         "page": title,
-        "prop": "wikitext",
+        "prop": "text",
         "format": "json",
         "formatversion": "2",
     }
@@ -23,6 +24,10 @@ def get_nobel_prizes(year: int) -> dict:
     r.raise_for_status()
     data = r.json()
 
-    wikitext = (data.get("parse", {}).get("wikitext") or "")
+    html = (data.get("parse", {}).get("text") or "")
 
-    return {"year": year, "laureates": [], "raw_len": len(wikitext)}
+    prizes = extract_nobel(html)
+    return {
+        "year": year,
+        "nobel_prizes": prizes,
+    }
