@@ -1,10 +1,14 @@
+import {renderMovies, renderSeries} from "../components/MediaSection.js";
+
 const API_BASE = "http://127.0.0.1:8000";
 
 const form = document.querySelector("#yearForm");
 const input = document.querySelector("#yearInput");
 const statusEl = document.querySelector("#status");
 const resultsEl = document.querySelector("#results");
-const tpl = document.querySelector("#monthCardTpl");
+const movieSection = document.querySelector("#movieSection");
+const seriesSection = document.querySelector("#seriesSection");
+const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
 
 const recapHeader = document.querySelector("#recapHeader");
@@ -40,12 +44,14 @@ function setStatus(text, kind = "info") {
 
 function clearResults() {
   resultsEl.innerHTML = "";
+  movieSection.innerHTML = "";
+  seriesSection.innerHTML = "";
   recapHeader.classList.add("hidden");
   yearBadge.textContent = "";
 }
 
 function renderMonthCard({ month, year, events, index }) {
-  const node = tpl.content.firstElementChild.cloneNode(true);
+  const node = wikiTpl.content.firstElementChild.cloneNode(true);
 
   // Alternate left/right
   const isOdd = index % 2 === 0; // 0-based: 0=left, 1=right, ...
@@ -74,19 +80,27 @@ function renderMonthCard({ month, year, events, index }) {
 }
 
 async function fetchYear(year) {
-  const url = `${API_BASE}/api/year/${encodeURIComponent(year)}`;
+  const wikiUrl = `${API_BASE}/api/year/${encodeURIComponent(year)}`;
+  const mediaUrl = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
 
-  const res = await fetch(url, { method: "GET" });
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
-  }
-  return await res.json();
+  const [wikiRes, mediaRes] = await Promise.all([
+    fetch(wikiUrl),
+    fetch(mediaUrl)
+  ]);
+
+  if (!wikiRes.ok) throw new Error(`Wiki API error: ${wikiRes.status}`);
+  if (!mediaRes.ok) throw new Error(`Media API error: ${mediaRes.status}`);
+
+  const wikiData = await wikiRes.json();
+  const mediaData = await mediaRes.json();
+
+  return { ...wikiData, ...mediaData };
 }
-if (!form || !input || !statusEl || !resultsEl || !tpl || !recapHeader || !yearBadge || !submitBtn) {
+if (!form || !input || !statusEl || !resultsEl || !wikiTpl || !recapHeader || !yearBadge || !submitBtn) {
   console.error("Missing DOM element(s):", {
-    form, input, statusEl, resultsEl, tpl, recapHeader, yearBadge, submitBtn
+    form, input, statusEl, resultsEl, tpl: wikiTpl, recapHeader, yearBadge, submitBtn
   });
-  throw new Error("HTML saknar ett eller flera id:n som scriptet behöver.");
+  throw new Error("HTML is missing one or more IDs that the script requires.");
 }
 
 form.addEventListener("submit", async (e) => {
@@ -96,12 +110,12 @@ form.addEventListener("submit", async (e) => {
   const year = Number(raw);
 
   if (!raw || Number.isNaN(year) || year < 1 || year > 9999) {
-    setStatus("Skriv ett giltigt år (t.ex. 1997).", "error");
+    setStatus("Please enter a valid year (e.g. 1997).", "error");
     return;
   }
 
   clearResults();
-  setStatus("Hämtar data…", "loading");
+  setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
@@ -112,11 +126,11 @@ form.addEventListener("submit", async (e) => {
     const entries = Object.entries(eventsByMonth).filter(([, arr]) => Array.isArray(arr) && arr.length);
 
     if (entries.length === 0) {
-      setStatus(`Hittade inga events för ${year}.`, "error");
+      setStatus(`Found no events for ${year}.`, "error");
       return;
     }
 
-    heroText.textContent = String(`Året var ${year}`);
+    heroText.textContent = String(`The year was ${year}`);
 
     // Show header badge
     recapHeader.classList.remove("hidden");
@@ -128,12 +142,23 @@ form.addEventListener("submit", async (e) => {
       renderMonthCard({ month, year, events, index: i });
     });
 
+    if (data.movies?.topMovies) {
+      const sortedMovies = [...data.movies.topMovies].sort((a, b) => b.rating - a.rating);
+      movieSection.innerHTML = renderMovies(sortedMovies);
+    }
+
+    if (data.series?.topSeries) {
+      const sortedSeries = [...data.series.topSeries].sort((a, b) => b.rating - a.rating);
+      seriesSection.innerHTML = renderSeries(sortedSeries);
+    }
+
     setStatus("");
   } catch (err) {
     console.error(err);
-    setStatus("Kunde inte hämta data. Är backend igång på 127.0.0.1:8000?", "error");
+    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8000?", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
   }
 });
+
