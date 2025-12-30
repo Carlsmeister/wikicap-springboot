@@ -1,10 +1,6 @@
 import re
 from dataclasses import dataclass
 
-BIRTH_PATTERN = re.compile(
-    r"\b(actor|actress|footballer|singer|athlete|model|swimmer|player|figure skater|rapper)\b",
-    re.IGNORECASE
-)
 
 @dataclass(frozen=True)
 class WikiCleaner():

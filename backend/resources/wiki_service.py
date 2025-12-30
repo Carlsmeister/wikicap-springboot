@@ -1,14 +1,9 @@
 import requests
 import re
 from .wiki_cleaner import CLEANER
+from bs4 import BeautifulSoup
 
-MONTHS = re.compile(
-    r"\n=+\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*=+\s*\n",
-)
-BIRTH_PATTERN = re.compile(
-    r"\b(actor|actress|footballer|singer|athlete|model|swimmer|player|figure skater|rapper)\b",
-    re.IGNORECASE
-)
+
 
 
 HEADERS = {
@@ -16,7 +11,7 @@ HEADERS = {
 }
 
 
-def fetch_year_summary(year: int) -> str:
+def fetch_year_html(year: int) -> str:
     """
     This function fetches a summary of events that occurred in a given year from Wikipedia.
     args:
@@ -24,70 +19,22 @@ def fetch_year_summary(year: int) -> str:
 
     returns: str: A summary of events for the specified year.
     """
-    WIKI_API_URL = f"https://en.wikipedia.org/w/rest.php/v1/page/{year}"
-    fetch = requests.get(WIKI_API_URL, headers=HEADERS, timeout=10)
-    if fetch.status_code != 200:
-        raise Exception("Failed to connect to Wikipedia API")
+    WIKI_API_URL = f"https://en.wikipedia.org/w/api.php"
+    params = {
+        "action": "parse",
+        "page": str(year),
+        "prop": "text",
+        "format": "json",
+        "formatversion": "2",
+    }
 
-    return fetch.json().get("source", "")
+    response = requests.get(WIKI_API_URL, params = params, headers = HEADERS)
+    response.raise_for_status()
+
+    return response.json()["parse"]["text"]
 
 
-def strip_wiki_recap(text: str) -> str:
-    """
-    This function removes the all the text before the '== month events ==' section in a Wikipedia year summary.
-    args:
-        text (str): The Wikipedia year summary text.
 
-    returns: str: The cleaned summary text.
-    """
-    split_text = "== January =="
-    index = text.find(split_text)
-    return text[index: ] if index != -1 else text
-
-def split_by_months(text: str) -> dict:
-    """
-    This function splits the year summary text into a dictionary of months and their corresponding events.
-    args:
-        text (str): The cleaned Wikipedia year summary text.
-    """
-    months = MONTHS.split(text)
-
-    month_dict = {}
-
-    for month in range(1, len(months), 2):
-        month_name = months[month]
-        content = months[month + 1]
-        month_dict[month_name] = content.strip()
-
-    return month_dict
-
-def extract_year_events(month_text: str, limit: int = 3) -> list:
-    """
-    This function extracts a list of events from a month's text in the year summary.
-    args:
-        month_text (str): The text for a specific month.
-        limit (int): The maximum number of events to extract.
-
-    returns: list: A list of extracted events.
-    """
-    events = []
-
-    for line in month_text.splitlines():
-        if not line.startswith("*"):
-            continue
-
-        clean = CLEANER.clean_event_line(line, max_len=200, keep_date_prefix=True)
-        if not clean:
-            continue
-
-        if BIRTH_PATTERN.search(clean):
-            continue
-
-        events.append(clean)
-        if len(events) >= limit:
-            break
-
-    return events
 
 def fetch_year_events(year: int) -> dict:
     """
@@ -98,13 +45,41 @@ def fetch_year_events(year: int) -> dict:
     returns:
             dict: A dictionary with months as keys and lists of events as values.
     """
-    text = fetch_year_summary(year)
-    text = strip_wiki_recap(text)
 
-    months = split_by_months(text)
+    html = fetch_year_html(year)
+    soup = BeautifulSoup(html, "html.parser")
 
-    return {
-        month: extract_year_events(content, limit=6)
-        for month, content in months.items()
-        if content
-    }
+    events_h2 = soup.find("h2", id = "Events")
+    if not events_h2:
+        events_span = soup.find("span", id = "Events")
+        events_h2 = events_span.find_parent("h2") if events_span else None
+
+    if not events_h2:
+        return {}
+
+    events_by_month = {}
+    current_month = None
+
+    node = events_h2.find_next()
+    while node:
+        if node.name == "h2":
+            break
+
+        if node.name == "h3":
+            current_month = node.get_text(" ", strip = True)
+            events_by_month[current_month] = []
+
+        elif node.name == "li" and current_month:
+            if len(events_by_month[current_month]) >= 6:
+                node = node.find_next()
+                continue
+            
+            clean = CLEANER.clean_event_line(
+                "* " + node.get_text(" ", strip= True),
+                keep_date_prefix = False
+            )
+            if clean:
+                events_by_month[current_month].append(clean)
+
+        node = node.find_next()
+    return events_by_month
