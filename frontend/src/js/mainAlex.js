@@ -16,6 +16,29 @@ const nobelGrid = document.querySelector("#nobelGrid");
 const nobelTpl = document.querySelector("#nobelCardTpl");
 const statsEl = document.querySelector("#stats");
 
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+
+    entry.target.classList.remove(
+      "opacity-0",
+      "blur-sm",
+      "-translate-x-10",
+      "translate-x-10"
+    );
+
+    entry.target.classList.add(
+      "opacity-100",
+      "blur-0",
+      "translate-x-0"
+    );
+
+    observer.unobserve(entry.target);
+  });
+},
+{  threshold: 0.15}
+
+    );
 
   function clearNobel() {
   if (nobelGrid) nobelGrid.innerHTML = "";
@@ -52,7 +75,16 @@ const statsEl = document.querySelector("#stats");
 
 
       const isLeft = index % 2 === 0;
-      node.classList.add(isLeft ? "slide-in-blurred-left-normal" : "slide-in-blurred-right-normal");
+      node.classList.add("reveal",
+        "opacity-0",
+        "transition-all",
+        "duration-700",
+        "ease-out",
+        "blur-sm",
+        isLeft ? "-translate-x-10" : "translate-x-10"
+      );
+
+      node.dataset.reveal = isLeft ? "left" : "right";
 
       const img = node.querySelector("img");
       const nameEl = node.querySelector(".name");
@@ -72,6 +104,7 @@ const statsEl = document.querySelector("#stats");
         img.alt = "Nobel Prize Medal";
       }
       nobelGrid.appendChild(node);
+      observer.observe(node);
     });
   }
 
@@ -115,7 +148,17 @@ function renderMonthCard({ month, year, events, index }) {
   node.classList.add(isOdd ? "justify-start" : "justify-end");
 
   const card = node.querySelector(".component-card");
-  card.classList.add(isOdd ? "slide-in-blurred-left-normal" : "slide-in-blurred-right-normal");
+
+  card.classList.add("reveal",
+    "opacity-0",
+    "transition-all",
+    "duration-700",
+    "ease-out",
+    "blur-sm",
+    isOdd ? "-translate-x-10" : "translate-x-10"
+  );
+  card.style.transitionDelay = `${index * 80}ms`;
+  card.dataset.reveal = isOdd ? "left" : "right";
 
   const title = node.querySelector(".monthTitle");
   const chip = node.querySelector(".monthChip");
@@ -134,6 +177,7 @@ function renderMonthCard({ month, year, events, index }) {
   }
 
   resultsEl.appendChild(node);
+  observer.observe(card);
 }
 
 async function fetchYear(year) {
@@ -145,12 +189,7 @@ async function fetchYear(year) {
   }
   return await res.json();
 }
-if (!form || !input || !statusEl || !resultsEl || !tpl || !recapHeader || !yearBadge || !submitBtn) {
-  console.error("Missing DOM element(s):", {
-    form, input, statusEl, resultsEl, tpl, recapHeader, yearBadge, submitBtn
-  });
-  throw new Error("HTML saknar ett eller flera id:n som scriptet behöver.");
-}
+
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -190,12 +229,7 @@ form.addEventListener("submit", async (e) => {
 
     heroText.textContent = String(`Året var ${year}`);
 
-    // Show header badge
-    recapHeader.classList.remove("hidden");
-    recapHeader.classList.add("flex");
-    yearBadge.textContent = String(year);
 
-    // Render
     entries.forEach(([month, events], i) => {
       renderMonthCard({ month, year, events, index: i });
     });

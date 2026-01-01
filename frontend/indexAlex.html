@@ -32,7 +32,7 @@
         </button>
       </form>
       <div id="status" class="text-center text-sm text-slate-300"></div>
-      <h1 class="year-h1"><span> </span><span id="heroText"></span></h1>
+      <h1 class="year-h1 pt-0.5"><span> </span><span id="heroText"></span></h1>
 
       <section class="space-y-4">
         <div id="recapHeader" class="hidden items-center justify-between">
@@ -71,16 +71,13 @@
         </div>
       </template>
 
-      <!-- Note 2 self , här lägger jag nobelpris sektionen -->
       <section class="hidden space-y-6 pt-10" id="nobelSection">
         <div class="flex items-center justify-between">
           <p class="section-label">Nobel Price Winners Of The Year</p>
           <span id="stats">Nobel Prize</span>
         </div>
 
-        <div id="nobelGrid" class="flex flex-col gap-6">
-          <!-- Nobel cards will be appended here -->
-        </div>
+        <div id="nobelGrid" class="flex flex-col gap-6"></div>
       </section>
     </main>
     <script src="./src/js/mainAlex.js"></script>
