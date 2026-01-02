@@ -1,7 +1,7 @@
 import requests
 import re
 from .wiki_cleaner import CLEANER
-from bs4 import BeautifulSoup
+
 
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
@@ -17,6 +17,19 @@ MONTHS = [
 
 
 def normalize_toc(toc: dict) -> list[dict]:
+    """
+    Function to normalize the TOC structure into a flat list of items
+
+    The Wikipedia API may return Data in nested dictionaries and lists.
+    This functions flattens the structure into a single list of items, for
+    easier processing.
+
+    Args:
+        toc (dict): The TOC data structure from the Wikipedia API.
+
+    Returns:
+        list[dict]: A flat list of TOC items.
+    """
     items = []
 
     for value in toc.values():
@@ -28,7 +41,15 @@ def normalize_toc(toc: dict) -> list[dict]:
     return items
 
 def fetch_year_toc(year: int) -> str:
+    """Fetch the TOC for a given year from Wikipedia.
+    This function uses the wikipedia API to fetch the TOC data for a specified year.
 
+    Args:
+        year (int): The year for which to fetch the TOC.
+
+    Returns:
+        list [dict]: The TOC data structure.
+        """
     params = {
         "action": "parse",
         "page": str(year),
@@ -43,6 +64,9 @@ def fetch_year_toc(year: int) -> str:
 
 
 def get_month_sections(year: int) -> dict[str, str]:
+    """
+    Get the month sections for a given year from Wikipedia.
+    """
     toc = fetch_year_toc(year)
     items = normalize_toc(toc)
 
@@ -109,52 +133,3 @@ if __name__ == "__main__":
     for item in items:
         print(item["index"], item["line"])
 
-
-
-# def fetch_year_events(year: int) -> dict:
-#     """
-#     This function fetches and processes the year summary from Wikipedia to extract events by month.
-#     args:
-#         year (int): The year for which to fetch events.
-
-#     returns:
-#             dict: A dictionary with months as keys and lists of events as values.
-#     """
-
-#     html = fetch_year_html(year)
-#     soup = BeautifulSoup(html, "html.parser")
-
-#     events_h2 = soup.find("h2", id = "Events")
-#     if not events_h2:
-#         events_span = soup.find("span", id = "Events")
-#         events_h2 = events_span.find_parent("h2") if events_span else None
-
-#     if not events_h2:
-#         return {}
-
-#     events_by_month = {}
-#     current_month = None
-
-#     node = events_h2.find_next()
-#     while node:
-#         if node.name == "h2":
-#             break
-
-#         if node.name == "h3":
-#             current_month = node.get_text(" ", strip = True)
-#             events_by_month[current_month] = []
-
-#         elif node.name == "li" and current_month:
-#             if len(events_by_month[current_month]) >= 6:
-#                 node = node.find_next()
-#                 continue
-
-#             clean = CLEANER.clean_event_line(
-#                 "* " + node.get_text(" ", strip= True),
-#                 keep_date_prefix = False
-#             )
-#             if clean:
-#                 events_by_month[current_month].append(clean)
-
-#         node = node.find_next()
-#     return events_by_month
