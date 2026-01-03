@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WikiCap</title>
+    <link rel="stylesheet" href="public/output.css" />
+  </head>
+  <body class = "min-h-screen bg-slate-950 bg-[radial-gradient(circle_at_top,#1f2937_0,#020617_45%,#000_100%)] text-slate-50">
+    <main id="app" class="">
+      <header class="bg-slate-800 w-screen fixed">
+        <nav class="flex items-center justify-between p-8">
+          <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
+          <div id="navItems" class="flex gap-6">
+            <a href="#" class="text-slate-300 hover:text-white transition-colors">Händelser</a>
+            <a href="#" class="text-slate-300 hover:text-white transition-colors">Musik</a>
+            <a href="#movieSection" class="text-slate-300 hover:text-white transition-colors">Filmer</a>
+            <a href="#" class="text-slate-300 hover:text-white transition-colors">Sport</a>
+          </div>
+        </nav>
+      </header>
+      <div id="heroSection" class="flex justify-center items-center h-screen pt-24">
+        <form id="searchForm" class="flex flex-col sm:flex-row gap-3 justify-center">
+          <input
+            id="year"
+            type="text"
+            name="year"
+            placeholder="Till exempel 1997"
+            class="w-full sm:w-48 bg-slate-900/80 border border-slate-700/80 rounded-full px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:text-slate-500"
+          />
+          <button
+            id="fetchYear"
+            type="submit"
+            class="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium bg-indigo-500 hover:bg-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-slate-950"
+          >
+            Hämta år
+          </button>
+        </form>
+      </div>
+
+  <div id="movieSection"></div>
+    </main>
+    <script type="module" src="src/js/main.js"></script>
+  </body>
+</html>

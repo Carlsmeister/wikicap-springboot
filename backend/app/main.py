@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.year import router as year_router
 from app.api.v1.movies import router as movies_router
+
+from resources.wiki_service import fetch_year_events
 from app.api.v1.music import router as music_router
 
 app = FastAPI()
@@ -29,3 +31,15 @@ def read_root():
     return {
         "message": "WikiCap API is running!",
     }
+
+@app.get("/api/year/{year}")
+def get_year(year: int):
+    return {
+        "year": year,
+        "events_by_month": fetch_year_events(year)
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="8000", port=8000)
+
