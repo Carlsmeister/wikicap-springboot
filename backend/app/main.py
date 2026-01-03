@@ -37,12 +37,7 @@ def year_overview(year: int):
         "year": year,
         "events_by_month": fetch_year_summary(year),
     }
-# @app.get("/api/year/{year}")
-# def get_year(year: int):
-#     return {
-#         "year": year,
-#         "events_by_month": fetch_year_events(year)
-#     }
+
 
 @app.get("/api/year/{year}/nobel")
 def year_nobel(year: int):

@@ -10,6 +10,17 @@ HEADERS = {
 }
 
 def get_nobel_prizes(year: int) -> dict:
+    """
+    Fetch Nobel Prize laureates for a given year from Wikipedia.
+    This function fetches the wikipedia page dedicated
+    to nobel prizes for a specified year and extracts the laureates
+    and their motivations using the extract_nobel function.
+    Args:
+        year (int): The year for which to fetch Nobel Prize laureates.
+
+    Returns:
+        dict: A dictionary containing Nobel Prize categories and their laureates.
+    """
     title = f"{year}_Nobel_Prizes"
 
     params = {
