@@ -17,6 +17,9 @@ const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
 const submitBtn = document.querySelector("#submitBtn");
 
+const MIN_YEAR = 1900;
+const MAX_YEAR = new Date().getFullYear();
+
 function setStatus(text, kind = "info") {
   statusEl.className = "text-center";
   statusEl.innerHTML = "";
@@ -76,8 +79,8 @@ form.addEventListener("submit", async (e) => {
   const raw = input.value.trim();
   const year = Number(raw);
 
-  if (!raw || Number.isNaN(year) || year < 1 || year > 9999) {
-    setStatus("Please enter a valid year (e.g. 1997).", "error");
+  if (!raw || Number.isNaN(year) || year < MIN_YEAR || year > MAX_YEAR) {
+    setStatus(`Skriv ett giltigt år (${MIN_YEAR}-${MAX_YEAR}).`, "error");
     return;
   }
 
