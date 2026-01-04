@@ -114,3 +114,4 @@ class WikiCleaner():
         return stripped
 
 CLEANER = WikiCleaner.build()
+
