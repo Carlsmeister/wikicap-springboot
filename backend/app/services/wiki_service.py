@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 import re
 from backend.app.clients.wiki_client import get_year_page_source
 from backend.app.utils.wiki_cleaner import CLEANER
@@ -82,6 +83,7 @@ def fetch_year_events(year: int) -> dict:
     returns:
         dict: A dictionary with months as keys and lists of events as values.
     """
+
     text = get_year_page_source(year)
     text = strip_wiki_recap(text)
 
