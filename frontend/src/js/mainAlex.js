@@ -1,10 +1,16 @@
+import { renderHighlights, renderMovies, renderSeries } from "../components/MediaSection.js";
+import { renderWikiSection } from "../components/WikiSection.js";
+
 const API_BASE = "http://127.0.0.1:8000";
 
 const form = document.querySelector("#yearForm");
 const input = document.querySelector("#yearInput");
 const statusEl = document.querySelector("#status");
 const resultsEl = document.querySelector("#results");
-const tpl = document.querySelector("#monthCardTpl");
+const highlightsSection = document.querySelector("#highlightsSection");
+const movieSection = document.querySelector("#movieSection");
+const seriesSection = document.querySelector("#seriesSection");
+const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
 
 const recapHeader = document.querySelector("#recapHeader");
@@ -122,7 +128,6 @@ function setStatus(text, kind = "info") {
     return;
   }
 
-
   const span = document.createElement("span");
   span.className = "text-sm";
 
@@ -134,9 +139,11 @@ function setStatus(text, kind = "info") {
   statusEl.appendChild(span);
 }
 
-
 function clearResults() {
   resultsEl.innerHTML = "";
+  highlightsSection.innerHTML = "";
+  movieSection.innerHTML = "";
+  seriesSection.innerHTML = "";
   recapHeader.classList.add("hidden");
   yearBadge.textContent = "";
 }
@@ -181,13 +188,15 @@ function renderMonthCard({ month, year, events, index }) {
 }
 
 async function fetchYear(year) {
-  const url = `${API_BASE}/api/year/${encodeURIComponent(year)}`;
+  const url = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
 
-  const res = await fetch(url, { method: "GET" });
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
-  return await res.json();
+
+  return await response.json();
 }
 
 
@@ -197,13 +206,13 @@ form.addEventListener("submit", async (e) => {
   const raw = input.value.trim();
   const year = Number(raw);
 
-  if (!raw || Number.isNaN(year) || year < 1 || year > 9999) {
-    setStatus("Skriv ett giltigt år (t.ex. 1997).", "error");
+  if (!raw || Number.isNaN(year) || year < MIN_YEAR || year > MAX_YEAR) {
+    setStatus(`Skriv ett giltigt år (${MIN_YEAR}-${MAX_YEAR}).`, "error");
     return;
   }
   clearNobel();
   clearResults();
-  setStatus("Hämtar data…", "loading");
+  setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
@@ -219,15 +228,17 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await fetchYear(year);
 
+    // Check if we have events data
     const eventsByMonth = data?.events_by_month ?? {};
-    const entries = Object.entries(eventsByMonth).filter(([, arr]) => Array.isArray(arr) && arr.length);
+    const hasEvents = Object.keys(eventsByMonth).length > 0;
 
-    if (entries.length === 0) {
-      setStatus(`Hittade inga events för ${year}.`, "error");
+    if (!hasEvents) {
+      setStatus(`Found no events for ${year}.`, "error");
       return;
     }
 
-    heroText.textContent = String(`Året var ${year}`);
+    // Update hero text
+    heroText.textContent = `The year was ${year}`;
 
 
     entries.forEach(([month, events], i) => {
@@ -237,7 +248,7 @@ form.addEventListener("submit", async (e) => {
     setStatus("");
   } catch (err) {
     console.error(err);
-    setStatus("Kunde inte hämta data. Är backend igång på 127.0.0.1:8000?", "error");
+    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8000?", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
