@@ -4,12 +4,13 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.v1.year import router as year_router
+from app.api.v1.movies import router as movies_router
+from app.api.v1.billboard import router as billboard_router
 # from app.api.v1.year import router as year_router
 # from app.api.v1.movies import router as movies_router
 
 from backend.resources.wiki_service import fetch_year_events
-from backend.resources.artist_of_the_year import get_artist_of_the_year
-from backend.resources.hit_song_year import get_year_with_hit_songs
 
 app = FastAPI()
 
@@ -21,8 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(year_router, prefix="/api/v1")
-# app.include_router(movies_router, prefix="/api/v1")
+app.include_router(year_router, prefix="/api/v1")
+app.include_router(movies_router, prefix="/api/v1")
+app.include_router(billboard_router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
@@ -37,16 +39,7 @@ def get_year(year: int):
         "events_by_month": fetch_year_events(year)
     }
     
-@app.get("/api/billboard/{year}")
-def get_billboard_artists(year:int):
-    return{
-        "year": year,
-        "top_artists": get_artist_of_the_year(year)
-    }    
-    
-@app.get("/api/billboard/{year}/top-songs")
-def get_billboard_top_songs(year: int, limit: int=5):
-    return get_year_with_hit_songs(year, limit)    
+
 
 if __name__ == "__main__":
     import uvicorn
