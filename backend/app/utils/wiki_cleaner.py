@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class WikiCleaner():
     """
@@ -114,3 +115,4 @@ class WikiCleaner():
         return stripped
 
 CLEANER = WikiCleaner.build()
+

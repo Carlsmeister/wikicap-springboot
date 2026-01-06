@@ -1,18 +1,118 @@
+import { renderHighlights, renderMovies, renderSeries } from "../components/MediaSection.js";
+import { renderWikiSection } from "../components/WikiSection.js";
+
 const API_BASE = "http://127.0.0.1:8000";
 
 const form = document.querySelector("#yearForm");
 const input = document.querySelector("#yearInput");
 const statusEl = document.querySelector("#status");
 const resultsEl = document.querySelector("#results");
-const tpl = document.querySelector("#monthCardTpl");
+const highlightsSection = document.querySelector("#highlightsSection");
+const movieSection = document.querySelector("#movieSection");
+const seriesSection = document.querySelector("#seriesSection");
+const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
 
 const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
 const submitBtn = document.querySelector("#submitBtn");
 
-const MIN_YEAR = 1900;
-const MAX_YEAR = new Date().getFullYear();
+const nobelSection = document.querySelector("#nobelSection");
+const nobelGrid = document.querySelector("#nobelGrid");
+const nobelTpl = document.querySelector("#nobelCardTpl");
+const statsEl = document.querySelector("#stats");
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+
+    entry.target.classList.remove(
+      "opacity-0",
+      "blur-sm",
+      "-translate-x-10",
+      "translate-x-10"
+    );
+
+    entry.target.classList.add(
+      "opacity-100",
+      "blur-0",
+      "translate-x-0"
+    );
+
+    observer.unobserve(entry.target);
+  });
+},
+{  threshold: 0.15}
+
+    );
+
+  function clearNobel() {
+  if (nobelGrid) nobelGrid.innerHTML = "";
+  if (nobelSection) nobelSection.classList.add("hidden");
+  if (statsEl) statsEl.textContent = "";
+}
+
+  // Start of nobel prize winners fetch
+  async function fetchNobel(year) {
+    const res = await fetch(`${API_BASE}/api/year/${year}/nobel`);
+    if (!res.ok) return {};
+    const data = await res.json();
+    return data.nobel_prizes ?? {};
+  }
+
+  function renderNobel(nobelData) {
+    clearNobel();
+
+
+    if (!nobelData || !nobelTpl || !nobelGrid || !nobelSection) return;
+
+    const winners = Object.entries(nobelData).flatMap(
+      ([category, people]) =>
+        people.map(p => ({...p, category}))
+    );
+
+    if (winners.length === 0) return;
+
+    nobelSection.classList.remove("hidden");
+    if (statsEl) statsEl.textContent = `${winners.length} Nobel Prize winners found`;
+
+    winners.forEach((winner, index) => {
+      const node = nobelTpl.content.firstElementChild.cloneNode(true);
+
+
+      const isLeft = index % 2 === 0;
+      node.classList.add("reveal",
+        "opacity-0",
+        "transition-all",
+        "duration-700",
+        "ease-out",
+        "blur-sm",
+        isLeft ? "-translate-x-10" : "translate-x-10"
+      );
+
+      node.dataset.reveal = isLeft ? "left" : "right";
+
+      const img = node.querySelector("img");
+      const nameEl = node.querySelector(".name");
+      const categoryEl = node.querySelector(".category");
+      const motivationEl = node.querySelector(".motivation");
+
+      nameEl.textContent = winner.name ?? "Unknown";
+      categoryEl.textContent = winner.category ?? "Unknown Category";
+      motivationEl.textContent = winner.motivation ?? "";
+
+      const imgUrl = winner.image || "";
+      if (imgUrl) {
+        img.src = imgUrl;
+        img.alt = `Portrait of ${winner.name}`;
+      } else {
+        img.src = "https://upload.wikimedia.org/wikipedia/en/e/ed/Nobel_Prize.png";
+        img.alt = "Nobel Prize Medal";
+      }
+      nobelGrid.appendChild(node);
+      observer.observe(node);
+    });
+  }
 
 function setStatus(text, kind = "info") {
   statusEl.className = "text-center";
@@ -28,7 +128,6 @@ function setStatus(text, kind = "info") {
     return;
   }
 
-
   const span = document.createElement("span");
   span.className = "text-sm";
 
@@ -40,9 +139,11 @@ function setStatus(text, kind = "info") {
   statusEl.appendChild(span);
 }
 
-
 function clearResults() {
   resultsEl.innerHTML = "";
+  highlightsSection.innerHTML = "";
+  movieSection.innerHTML = "";
+  seriesSection.innerHTML = "";
   recapHeader.classList.add("hidden");
   yearBadge.textContent = "";
 }
@@ -50,12 +151,21 @@ function clearResults() {
 function renderMonthCard({ month, year, events, index }) {
   const node = tpl.content.firstElementChild.cloneNode(true);
 
-  // Alternate left/right
-  const isOdd = index % 2 === 0; // 0-based: 0=left, 1=right, ...
+  const isOdd = index % 2 === 0;
   node.classList.add(isOdd ? "justify-start" : "justify-end");
 
   const card = node.querySelector(".component-card");
-  card.classList.add(isOdd ? "slide-in-blurred-left-normal" : "slide-in-blurred-right-normal");
+
+  card.classList.add("reveal",
+    "opacity-0",
+    "transition-all",
+    "duration-700",
+    "ease-out",
+    "blur-sm",
+    isOdd ? "-translate-x-10" : "translate-x-10"
+  );
+  card.style.transitionDelay = `${index * 80}ms`;
+  card.dataset.reveal = isOdd ? "left" : "right";
 
   const title = node.querySelector(".monthTitle");
   const chip = node.querySelector(".monthChip");
@@ -74,23 +184,21 @@ function renderMonthCard({ month, year, events, index }) {
   }
 
   resultsEl.appendChild(node);
+  observer.observe(card);
 }
 
 async function fetchYear(year) {
-  const url = `${API_BASE}/api/year/${encodeURIComponent(year)}`;
+  const url = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
 
-  const res = await fetch(url, { method: "GET" });
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
-  return await res.json();
+
+  return await response.json();
 }
-if (!form || !input || !statusEl || !resultsEl || !tpl || !recapHeader || !yearBadge || !submitBtn) {
-  console.error("Missing DOM element(s):", {
-    form, input, statusEl, resultsEl, tpl, recapHeader, yearBadge, submitBtn
-  });
-  throw new Error("HTML saknar ett eller flera id:n som scriptet behöver.");
-}
+
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -102,31 +210,37 @@ form.addEventListener("submit", async (e) => {
     setStatus(`Skriv ett giltigt år (${MIN_YEAR}-${MAX_YEAR}).`, "error");
     return;
   }
-
+  clearNobel();
   clearResults();
-  setStatus("Hämtar data…", "loading");
+  setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
   try {
+    const nobelData = await fetchNobel(year);
+    renderNobel(nobelData);
+  } catch (err) {
+    console.error(err);
+    setStatus("Kunde inte hämta Nobel-data.", "error");
+    clearNobel();
+  }
+
+  try {
     const data = await fetchYear(year);
 
+    // Check if we have events data
     const eventsByMonth = data?.events_by_month ?? {};
-    const entries = Object.entries(eventsByMonth).filter(([, arr]) => Array.isArray(arr) && arr.length);
+    const hasEvents = Object.keys(eventsByMonth).length > 0;
 
-    if (entries.length === 0) {
-      setStatus(`Hittade inga events för ${year}.`, "error");
+    if (!hasEvents) {
+      setStatus(`Found no events for ${year}.`, "error");
       return;
     }
 
-    heroText.textContent = String(`Året var ${year}`);
+    // Update hero text
+    heroText.textContent = `The year was ${year}`;
 
-    // Show header badge
-    recapHeader.classList.remove("hidden");
-    recapHeader.classList.add("flex");
-    yearBadge.textContent = String(year);
 
-    // Render
     entries.forEach(([month, events], i) => {
       renderMonthCard({ month, year, events, index: i });
     });
@@ -134,9 +248,13 @@ form.addEventListener("submit", async (e) => {
     setStatus("");
   } catch (err) {
     console.error(err);
-    setStatus("Kunde inte hämta data. Är backend igång på 127.0.0.1:8000?", "error");
+    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8000?", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
   }
+
+
+
 });
+
