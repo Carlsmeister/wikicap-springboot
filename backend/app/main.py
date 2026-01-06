@@ -14,7 +14,6 @@ from app.api.v1.wiki import router as wiki_router
 # from app.api.v1.year import router as year_router
 # from app.api.v1.movies import router as movies_router
 
-from resources.wiki_service import fetch_year_events
 from app.api.v1.music import router as music_router
 
 app = FastAPI()
