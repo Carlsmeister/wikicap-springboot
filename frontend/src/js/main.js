@@ -62,3 +62,4 @@ async function getMovies(event) {
     document.getElementById("movieSection").innerHTML = renderMovies(data.movies.topMovies);
 
 }
+
