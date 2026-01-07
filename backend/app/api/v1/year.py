@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, HTTPException, status
 
 from app.services.awards_service import fetch_oscar_highlights
 from app.services.movie_service import fetch_movies_for_year
