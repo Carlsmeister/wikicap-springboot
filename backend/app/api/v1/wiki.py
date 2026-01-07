@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.app.services.wiki_service import fetch_year_events
+from backend.app.services.wiki_service import fetch_year_summary
 
 router = APIRouter()
 
@@ -7,5 +7,5 @@ router = APIRouter()
 def get_year(year: int):
     return {
         "year": year,
-        "events_by_month": fetch_year_events(year)
+        "events_by_month": fetch_year_summary(year)
     }

@@ -30,6 +30,7 @@ app.include_router(billboard_router, prefix="/api/v1")
 app.include_router(music_router, prefix="/api/v1")
 app.include_router(awards_router, prefix="/api/v1")
 app.include_router(wiki_router, prefix="/api/v1")
+app.include_router(nobel_router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
