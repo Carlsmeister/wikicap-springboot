@@ -15,7 +15,8 @@
     --vermilion: #FF4F0F;
 
 
-    --bg: #f7FAFB;
+
+    --bg: #fbfdec;
     --text: #0B1220;
     --muted: rgba(11, 18, 32, 0.6);
     --stroke: rgba(15, 23, 42, 0.1);
@@ -32,21 +33,21 @@
 @layer utilities {
   .reveal-left {
     opacity: 0;
-    transform: translateX(-60px) scale(0.985);
+    transform: translateX(-600px) scale(0.985);
     filter: blur(6px);
     transition:
-      transform 800ms cubic-bezier(0.2, 1, 0.32, 1),
-      opacity 260ms ease,
+      transform 2s cubic-bezier(0.2, 1, 0.32, 1),
+      opacity 2s ease,
       filter 260ms ease;
   }
   .reveal-right{
     opacity: 0;
-    transform: translateX(60px) scale(0.985);
+    transform: translateX(600px) scale(0.985);
     filter: blur(6px);
     transition:
-      transform 800ms cubic-bezier(0.2, 1, 0.32, 1),
-      opacity 260ms ease,
-      filter 260ms ease;
+      transform 2s cubic-bezier(0.2, 1, 0.32, 1),
+      opacity 2s ease,
+      filter 2s ease;
   }
   .is-visible {
     opacity: 1;
