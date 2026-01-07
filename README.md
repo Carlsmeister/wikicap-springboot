@@ -105,8 +105,9 @@ npm run dev
 6. **Start the FastAPI server**
 
 ```bash
-cd backend
-uvicorn app.main:app --reload
+uvicorn backend.app:app --reload
+
+py -3.13 -m uvicorn app:app --reload
 ```
 
 ---
