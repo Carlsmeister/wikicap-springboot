@@ -156,6 +156,7 @@
   .year-title {
     font-weight: 800;
     letter-spacing: -0.035em;
+    text-align: center;
     line-height: 0.95;
     font-size: clamp(2.1rem, 4.8vw, 3.6rem);
 
