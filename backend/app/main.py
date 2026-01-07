@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
+# from app.api.v1.year import router as year_router
+# from app.api.v1.movies import router as movies_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.year import router as year_router
@@ -11,9 +12,6 @@ from app.api.v1.movies import router as movies_router
 from app.api.v1.billboard import router as billboard_router
 from app.api.v1.awards import router as awards_router
 from app.api.v1.wiki import router as wiki_router
-# from app.api.v1.year import router as year_router
-# from app.api.v1.movies import router as movies_router
-
 from app.api.v1.music import router as music_router
 
 app = FastAPI()

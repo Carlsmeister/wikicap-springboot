@@ -10,7 +10,23 @@ HEADERS = {
 }
 
 def get_billboard_artist(year: int) ->list[str]:
-    
+    """
+    Retrieve the Billboard Wikipedia page and table class for a given year.
+
+    This function selects the correct Wikipedia URL pattern based on the year,
+    sends an HTTP GET request to fetch the page, and returns both the HTTP
+    response object and the expected table CSS class used for parsing artist
+    information. If the request fails, both values are returned as None.
+
+    Args:
+        year (int): The year for which to retrieve the Billboard page.
+
+    Returns:
+        tuple: A tuple containing:
+            - httpx.Response or None: The HTTP response if the request was successful.
+            - str or None: The CSS class name of the Billboard data table.
+            Returns (None, None) if the request fails.
+    """
     if year >=2000:
         url = (f"https://en.wikipedia.org/wiki/"
                f"List_of_Billboard_Hot_100_number-one_of_{year}"
@@ -34,17 +50,19 @@ LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
 def get_artist_lastfm(artist_name: str, limit: int=5) ->list[dict]:
     """
-    Search for artist by name using Last.fm API. 
-    
-    Function calls Last.fm's "artist.search" endpoint and returns a list of mathcing artist names.
-    If the request fails, times out or data is missing, an empty list is returned.
-    
-        Args: 
-            artist_name(str): The name of the artist to search for.
-            limit (int): Maximum number of artrists to return. Defaults at 5.
+    Search for artists by name using the Last.fm API.
 
-        Returns: 
-            list[dict]: A list of artist names. Returns an empty list if no artist is found.  
+    This function calls Last.fm's ``artist.search`` endpoint and returns a list
+    of matching artist names. If the request fails, times out, or expected data
+    is missing in the API response, an empty list is returned.
+
+    Args:
+        artist_name (str): The name of the artist to search for.
+        limit (int): Maximum number of artists to return. Defaults to 5.
+
+    Returns:
+        list[str]: A list of matching artist names. Returns an empty list if no
+        artists are found or the request fails.
     """
     
     params = {
@@ -91,14 +109,14 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
     """
     Retrive an artist's hit songs from the Last.fm API. 
     
-    Uses the "artist.gettoptracks" endpoint to fetch a list of the artists most popluar songs.
-    If the request fails, times out or data is missing, an empty list is returned.
+    This fucntion calls LastFm's "artist.gettoptracks" endpoint to returns a list of the artists most popluar songs.
+    If the request fails, times out or data is missing from the API response, an empty list is returned.
     
     Args:
         artist (str): The name of the artist.
         limit (int): Maximum number of songss to return. Defaults at 5.
         
-    :Returns: 
+    Returns: 
         list[dict]: A list of dictionaries containing song titles. 
         Returns an empty list if no songs are found.    
     """

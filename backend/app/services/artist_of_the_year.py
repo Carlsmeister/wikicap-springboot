@@ -4,7 +4,18 @@ from app.clients.billboard_artist_client import get_billboard_artist
 
   
 def get_artist_of_the_year(year: int) ->list[str]:
+    """
+      Fetch the Billboard top artists for a given year. 
+      It retrives the HTTP response and table class from Billboard using get_billboard_artist function. 
+      Then it parses the HTML content with BeautifulSoup to extract artist names from the specified table.
     
+      Args:
+            year (int): The year for which to retrive the top Billboard artists.
+    
+      Returns:  
+            list[str]: A list of artist names for the specified year. 
+                Returns an empty list if no artists are found or if the request fails.  
+    """
     response, table_class = get_billboard_artist(year)
     
     if response is None or table_class is None: 
