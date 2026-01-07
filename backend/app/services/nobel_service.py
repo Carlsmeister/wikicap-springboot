@@ -1,5 +1,5 @@
-import requests
-from resources.wiki_nobel_extractor import extract_nobel
+import httpx
+from app.utils.wiki_nobel_extractor import extract_nobel
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 
@@ -31,7 +31,7 @@ def get_nobel_prizes(year: int) -> dict:
         "formatversion": "2",
     }
 
-    r = requests.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
+    r = httpx.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
     r.raise_for_status()
     data = r.json()
 
