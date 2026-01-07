@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <link rel="stylesheet" href="dist/output.css" />
+  </head>
+  <body class="page-shell">
+    <main class="page-main">
+      <header class="space-y-2 pt-3 ml-5">
+        <div class="flex items-center justify-center gap-2 pr-3">
+          <img src="https://img.icons8.com/?size=100&id=48164&format=png&color=000000" class="w-8 h-8 md:w-20 md:h-20 translate-y-[1px] opacity-80 hover:opacity-100 hover:drop-shadow-[0_0_6px_rgba(99,102,241,0.8)] transition" />
+          <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
+        </div>
+      </header>
+
+      <form id="yearForm" class="year-form">
+        <input id="yearInput" type="text" name="year" placeholder="For example 1997" class="year-input" />
+        <button id="submitBtn" type="submit" class="btn-primary shadow-cta-teal hover-lift">Get year</button>
+      </form>
+      <div id="status" class="status-text"></div>
+      <h1 class="year-title"><span> </span><span id="heroText"></span></h1>
+
+      <section class="space-y-4">
+        <div id="recapHeader" class="hidden items-center justify-between">
+          <p class="section-label">Recap</p>
+          <span id="yearBadge" class="timeline-node"></span>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-line"></div>
+
+          <div id="results" class="space-y-10 py-6"></div>
+        </div>
+      </section>
+
+      <section>
+        <div id="highlightsSection"></div>
+        <div id="movieSection"></div>
+        <div id="seriesSection"></div>
+      </section>
+
+      <template id="wikiCardTpl">
+        <div class="flex mt-6">
+          <div class="component-card shadow-glass-teal hover-lift w-full md:w-3/4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="monthTitle text-xl font-semibold"></h3>
+              <span class="monthChip stat-chip"></span>
+            </div>
+            <ul class="monthList space-y-2 text-slate-700 text-sm"></ul>
+          </div>
+        </div>
+      </template>
+
+      <template id="nobelCardTpl">
+        <div class="component-card shadow-glass-warm hover-lift flex gap-4 items-start">
+          <img class="w-16 h-16 rounded-2xl object-cover border border-slate-900/10" />
+          <div class="text-left space-y-1">
+            <p class="font-semibold text-slate-900 name"></p>
+            <p class="text-xs text-slate-500 category"></p>
+            <p class="text-sm text-slate-700 motivation"></p>
+          </div>
+        </div>
+      </template>
+
+      <section class="hidden space-y-6 pt-10" id="nobelSection">
+        <div class="flex items-center justify-between">
+          <p class="section-label">Nobel Price Winners Of The Year</p>
+          <span id="stats">Nobel Prize</span>
+        </div>
+
+        <div id="nobelGrid" class="flex flex-col gap-6"></div>
+      </section>
+    </main>
+    <script type="module" src="./src/js/mainAlex.js"></script>
+  </body>
+</html>
