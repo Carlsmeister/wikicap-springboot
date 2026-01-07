@@ -12,6 +12,7 @@ const movieSection = document.querySelector("#movieSection");
 const seriesSection = document.querySelector("#seriesSection");
 const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
+const tpl = wikiTpl;
 
 const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
@@ -54,7 +55,7 @@ const observer = new IntersectionObserver(entries => {
 
   // Start of nobel prize winners fetch
   async function fetchNobel(year) {
-    const res = await fetch(`${API_BASE}/api/year/${year}/nobel`);
+    const res = await fetch(`${API_BASE}/api/v1/year/${year}/nobel`);
     if (!res.ok) return {};
     const data = await res.json();
     return data.nobel_prizes ?? {};
@@ -203,13 +204,11 @@ async function fetchYear(year) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+
   const raw = input.value.trim();
   const year = Number(raw);
 
-  if (!raw || Number.isNaN(year) || year < MIN_YEAR || year > MAX_YEAR) {
-    setStatus(`Skriv ett giltigt år (${MIN_YEAR}-${MAX_YEAR}).`, "error");
-    return;
-  }
+
   clearNobel();
   clearResults();
   setStatus("Fetching data...", "loading");
@@ -228,8 +227,8 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await fetchYear(year);
 
-    // Check if we have events data
     const eventsByMonth = data?.events_by_month ?? {};
+    const entries = Object.entries(eventsByMonth);
     const hasEvents = Object.keys(eventsByMonth).length > 0;
 
     if (!hasEvents) {
