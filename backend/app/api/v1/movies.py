@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from backend.app.services.movie_service import fetch_movies_for_year
-from backend.app.services.movie_service import fetch_series_for_year
+from app.services.movie_service import fetch_movies_for_year
+from app.services.movie_service import fetch_series_for_year
 
 
 router = APIRouter()
