@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.app.services.nobel_service import get_nobel_prizes
+from app.services.nobel_service import get_nobel_prizes
 
 router = APIRouter()
 

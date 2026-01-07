@@ -1,4 +1,4 @@
-from backend.app.core import config
+from app.core import config
 import httpx
 
 BASE_URL = "https://api.themoviedb.org/3"

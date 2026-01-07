@@ -12,9 +12,7 @@ const movieSection = document.querySelector("#movieSection");
 const seriesSection = document.querySelector("#seriesSection");
 const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
-const tpl = document.querySelector("#wikiCardTpl");
-
-
+const tpl = wikiTpl;
 
 const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
@@ -196,6 +194,7 @@ async function fetchYear(year) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+
   const raw = input.value.trim();
   const year = Number(raw);
 
@@ -218,8 +217,8 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await fetchYear(year);
 
-    // Check if we have events data
     const eventsByMonth = data?.events_by_month ?? {};
+    const entries = Object.entries(eventsByMonth);
     const hasEvents = Object.keys(eventsByMonth).length > 0;
 
     if (!hasEvents) {

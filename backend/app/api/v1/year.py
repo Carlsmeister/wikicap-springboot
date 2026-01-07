@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Response
 
-from backend.app.services.awards_service import fetch_oscar_highlights
-from backend.app.services.movie_service import fetch_movies_for_year
-from backend.app.services.movie_service import fetch_series_for_year
-from backend.app.services.wiki_service import fetch_year_summary
+from app.services.awards_service import fetch_oscar_highlights
+from app.services.movie_service import fetch_movies_for_year
+from app.services.movie_service import fetch_series_for_year
+from app.services.wiki_service import fetch_year_summary
 
 # from app.services.music_serivce import fetch_music_for_year
 # from app.services.sport_serivce import fetch_sports_for_year

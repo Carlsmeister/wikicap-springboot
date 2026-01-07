@@ -1,5 +1,5 @@
-from backend.app.clients.movie_client import get_top_movies_by_year
-from backend.app.clients.movie_client import get_top_series_by_year
+from app.clients.movie_client import get_top_movies_by_year
+from app.clients.movie_client import get_top_series_by_year
 
 def fetch_movies_for_year(year: int):
     raw = get_top_movies_by_year(year)
