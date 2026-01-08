@@ -217,6 +217,13 @@
       -18px -18px 40px rgba(255, 255, 255, 0.85),
       0 28px 90px rgba(15, 23, 42, 0.06);
   }
+  /* Laggar satan i nobel korten , använder denna för att motverka */
+    .component-card-lite {
+    @apply rounded-3xl p-6;
+    background: rgba(255,255,255,0.86);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
+  }
 
 
   .component-card::after {
@@ -272,6 +279,32 @@
       -20px -20px 46px rgba(255, 255, 255, 0.90),
       0 34px 110px rgba(15, 23, 42, 0.07);
   }
+
+  /* Nobel grid */
+  .nobel-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .nobel-card {
+    @apply h-full flex flex-col items-center text-center gap-4 p-6;
+  }
+
+  .nobel-name {
+    @apply font-semibold text-slate-900 text-lg leading-tight;
+  }
+
+  .nobel-category {
+    @apply text-xs text-slate-500 uppercase tracking-wide;
+  }
+
+  .nobel-motivation {
+    @apply text-sm text-slate-700 leading-relaxed;
+  }
+
+  .nobel-img {
+    @apply w-20 h-20 rounded-2xl object-cover border border-slate-900/10 aspect-square;
+  }
+
 
 
 
