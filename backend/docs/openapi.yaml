@@ -1,3 +1,5 @@
+
+## Detta är endast filspecfik information
 openapi: 3.0.0
 info:
   title: WikiCap API
@@ -7,6 +9,8 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
+## Här under "paths" definieras alla endpoints och deras funktioner. Det är bara att följa strukturen som den är nu för varje ny endpoint.
+## Tänk på indenteringen då detta är i princip som JSON fast utan "{" och "}" där indenteringen gör jobbet istället.
 paths:
   /api/v1/year/{year}:
     get:
