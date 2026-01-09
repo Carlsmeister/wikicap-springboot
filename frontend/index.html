@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>test</title>
-    <link rel="stylesheet" href="public/output.css" />
+    <link rel="stylesheet" href="dist/output.css" />
   </head>
   <body class="page-shell">
-    <main class="page-main">
+    <main class="page-main-wide">
       <header class="space-y-2 pt-3 ml-5">
         <div class="flex items-center justify-center gap-2 pr-3">
           <img src="src/img/icons8-refresh-128.svg" class="w-8 h-8 md:w-20 md:h-20 translate-y-[1px] opacity-80 hover:opacity-100 hover:drop-shadow-[0_0_6px_rgba(99,102,241,0.8)] transition" />
@@ -22,7 +22,7 @@
       <div id="status" class="status-text"></div>
       <h1 class="year-title"><span> </span><span id="heroText"></span></h1>
 
-      <section class="space-y-4">
+      <section class="space-y-4 page-main-centered">
         <div id="recapHeader" class="hidden items-center justify-between">
           <p class="section-label">Recap</p>
           <span id="yearBadge" class="timeline-node"></span>
@@ -35,11 +35,6 @@
         </div>
       </section>
 
-      <section>
-        <div id="highlightsSection"></div>
-        <div id="movieSection"></div>
-        <div id="seriesSection"></div>
-      </section>
 
       <!-- Wikipedia recap del -->
       <template id="wikiCardTpl">
@@ -72,6 +67,12 @@
             </div>
           </div>
         </template>
+      </section>
+
+      <section>
+        <div id="highlightsSection"></div>
+        <div id="movieSection"></div>
+        <div id="seriesSection"></div>
       </section>
     </main>
     <script type="module" src="./src/js/mainAlex.js"></script>
