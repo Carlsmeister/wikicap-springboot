@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>test</title>
-    <link rel="stylesheet" href="public/output.css" />
+    <link rel="stylesheet" href="dist/output.css" />
   </head>
   <body class="page-shell">
     <main class="page-main">
@@ -53,27 +53,24 @@
         </div>
       </template>
       <!-- Nobel prize del -->
-      <template id="nobelCardTpl">
-        <div class="component-card shadow-glass-warm hover-lift flex gap-4 items-start">
-          <img class="w-16 h-16 rounded-2xl object-cover border border-slate-900/10" />
-          <div class="text-left space-y-1">
-            <p class="font-semibold text-slate-900 name"></p>
-            <p class="text-xs text-slate-500 category"></p>
-            <p class="text-sm text-slate-700 motivation"></p>
-          </div>
-        </div>
-      </template>
-
       <section class="hidden space-y-6 pt-10" id="nobelSection">
         <div class="flex items-center justify-between">
           <p class="section-label">Nobel Price Winners Of The Year</p>
           <span id="stats">Nobel Prize</span>
         </div>
 
-        <div id="nobelGrid" class="flex flex-col gap-6"></div>
+        <div id="nobelGrid" class="nobel-grid"></div>
+        <template id="nobelCardTpl">
+          <div class="component-card-lite nobel-card glass-shadow-warm">
+            <h3 class="nobel-name name"></h3>
+            <img class="nobel-img" />
+            <div class="space-y-2">
+              <p class="nobel-category category"></p>
+              <p class="nobel-motivation motivation"></p>
+            </div>
+          </div>
+        </template>
       </section>
-
-
     </main>
     <script type="module" src="./src/js/mainAlex.js"></script>
   </body>
