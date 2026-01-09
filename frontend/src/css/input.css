@@ -300,10 +300,8 @@
   }
 
   .nobel-img {
-    @apply w-20 h-20 rounded-2xl object-cover border border-slate-900/10 aspect-square;
+    @apply w-40 h-40 rounded-2xl object-cover border border-slate-900/10 aspect-square;
   }
-
-
 
 
   /* tidslinje */
