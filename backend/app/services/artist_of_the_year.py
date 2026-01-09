@@ -19,7 +19,10 @@ def get_artist_of_the_year(year: int) ->list[str]:
     response, table_class = get_billboard_artist(year)
     
     if response is None or table_class is None: 
-        return []
+        print("nu sket det sig här 1111")
+        # return []
+        return { "year": -1, "artists": [], "error": "det sket sig 1"}
+
     
     #Läser in HTML-sida med BeautifulSoup. 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -27,7 +30,8 @@ def get_artist_of_the_year(year: int) ->list[str]:
     #Letar upp rätt tabell på sidan när Billdoard listar topp 3 artister för året. 
     table = soup.find("table", class_=table_class)
     if not table: 
-        return [] 
+        print("nu sket det sig här 22222")
+        return { "year": -1, "artists": [], "error": "det sket sig 2"}
         
     list_of_artists = []
     
@@ -45,5 +49,7 @@ def get_artist_of_the_year(year: int) ->list[str]:
         if artist_name:
             list_of_artists.append(artist_name)
     
-    return list_of_artists  
-      
+    return {
+        "year": year,
+        "artists": list_of_artists  
+    }

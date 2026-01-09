@@ -4,13 +4,13 @@ from app.services.hit_song_year import get_year_with_hit_songs
 
 router = APIRouter()
 
-@router.get("/billboard/{year}")
+@router.get("/year/{year}/billboard/artist")
 def get_billboard_artists(year:int):
-    return{
-        "year": year,
-        "top_artists": get_artist_of_the_year(year)
-    }    
+    result = get_artist_of_the_year(year)
+    print(result)
+    print("Heejejjeje")
+    return result
     
-@router.get("/billboard/{year}/top-songs")
+@router.get("/year/{year}/billboard/artist/top-songs")
 def get_billboard_top_songs(year: int, limit: int=5):
     return get_year_with_hit_songs(year, limit)    

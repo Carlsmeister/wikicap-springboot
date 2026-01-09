@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.app.services.wiki_service import fetch_year_summary
+from app.services.wiki_service import fetch_year_summary
 
 router = APIRouter()
 

@@ -1,4 +1,4 @@
-from backend.app.clients.awards_client import (
+from app.clients.awards_client import (
     get_oscar_edition_by_year,
     get_oscar_categories,
     get_oscar_category_details

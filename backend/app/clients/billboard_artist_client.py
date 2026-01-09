@@ -48,7 +48,7 @@ URL = "https://ws.audioscrobbler.com/2.0/"
 LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
 
-def get_artist_lastfm(artist_name: str, limit: int=5) ->list[dict]:
+def get_artist_lastfm(artist_name: str, limit: int=9) ->list[dict]:
     """
     Search for artists by name using the Last.fm API.
 
@@ -64,7 +64,7 @@ def get_artist_lastfm(artist_name: str, limit: int=5) ->list[dict]:
         list[str]: A list of matching artist names. Returns an empty list if no
         artists are found or the request fails.
     """
-    
+
     params = {
         "method": "artist.search",
         "artist": artist_name,
@@ -97,7 +97,8 @@ def get_artist_lastfm(artist_name: str, limit: int=5) ->list[dict]:
     
     artist_list = []
     
-    for artist in artists:
+    TOP_ARTIST_LIMIT = 9
+    for artist in artists[:TOP_ARTIST_LIMIT]:
         name = artist.get("name")
         if name is not None:
             artist_list.append(name)

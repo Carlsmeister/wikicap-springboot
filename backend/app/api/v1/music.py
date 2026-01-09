@@ -7,6 +7,6 @@ def get_artists(year: int):
     return fetch_artists_for_year(year)
 
 
-@router.get("/year/{year}/songs")
+@router.get("/year/{year}/top-songs")
 def get_songs(year: int):
     return fetch_songs_for_year(year)

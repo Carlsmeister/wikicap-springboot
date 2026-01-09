@@ -1,5 +1,5 @@
 import requests
-from backend.resources.wiki_nobel_extractor import extract_nobel
+from resources.wiki_nobel_extractor import extract_nobel
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 

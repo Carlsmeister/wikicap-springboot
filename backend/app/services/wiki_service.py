@@ -1,6 +1,6 @@
 import requests
-from backend.app.clients.wiki_client import get_year_page_source
-from backend.app.utils.wiki_cleaner import CLEANER
+from app.clients.wiki_client import get_year_page_source
+from app.utils.wiki_cleaner import CLEANER
 
 
 
