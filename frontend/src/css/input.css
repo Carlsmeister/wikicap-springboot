@@ -31,28 +31,23 @@
 
 /* gömda scroll event */
 @layer utilities {
-  .reveal-left {
+  .reveal-left, .reveal-right {
     opacity: 0;
-    transform: translateX(-600px) scale(0.985);
-    filter: blur(6px);
+    will-change: transform, opacity;
     transition:
-      transform 2s cubic-bezier(0.2, 1, 0.32, 1),
-      opacity 2s ease,
-      filter 260ms ease;
+      transform 700ms cubic-bezier(0.2, 1, 0.32, 1),
+      opacity 700ms cubic-bezier(0.2, 1, 0.32, 1),
+  }
+
+  .reveal-left {
+    transform: translate3d(-60px, 0, 0);
   }
   .reveal-right{
-    opacity: 0;
-    transform: translateX(600px) scale(0.985);
-    filter: blur(6px);
-    transition:
-      transform 2s cubic-bezier(0.2, 1, 0.32, 1),
-      opacity 2s ease,
-      filter 2s ease;
+    transform: translate3d(60px, 0, 0);
   }
   .is-visible {
     opacity: 1;
-    transform: translateX(0) scale(1);
-    filter: blur(0);
+    transform: translate3d(0, 0, 0);
   }
   .hover-lift{
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
