@@ -1,40 +1,44 @@
 from fastapi import APIRouter, HTTPException, status
 import httpx
 from app.services.wiki_service import fetch_year_summary
+from app.utils.validate_year import validate_year
 
 router = APIRouter()
 
+
+
 @router.get("/year/{year}/wiki", status_code=status.HTTP_200_OK)
 def get_year(year: int):
-    if year <1800 or year > 2027:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail = "BAD REQUEST: Year must be between 1800 and 2027"
-        )
+    validate_year(year)
+
 
     try:
         events = fetch_year_summary(year)
 
-    except httpx.HTTPError as e:
-        if e.response.status_code == 404:
+    except httpx.HTTPStatusError as e:
+        code = e.response.status_code
+        if code == 404:
             raise HTTPException(
                 status_code = status.HTTP_404_NOT_FOUND,
                 detail = f"NOT FOUND: Wikipedia page for year {year} not found."
             )
+
+        if code == 429:
+            raise HTTPException(
+                status_code = status.HTTP_429_TOO_MANY_REQUESTS,
+                detail = "TOO MANY REQUESTS: Rate limit exceeded when accessing Wikipedia."
+            )
         raise HTTPException(
             status_code = status.HTTP_502_BAD_GATEWAY,
-            detail = "BAD GATEWAY: Error connecting to Wikipedia API."
+            detail = f"BAD GATEWAY: Wikipedia returned {code}."
         )
-    except Exception as e:
-        raise HTTPException(
-            status_code = status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail = "SERVICE UNAVAILABLE: An unexpected error occurred."
-        )
+
     if not events:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND,
             detail = f"NOT FOUND: No events found for year {year}."
         )
+
     return {
         "year": year,
         "events_by_month": events

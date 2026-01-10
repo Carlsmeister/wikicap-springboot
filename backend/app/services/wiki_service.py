@@ -145,7 +145,7 @@ def extract_month_events(wikitext: str, limit: int = 6) -> list[str]:
 
     return events
 
-def fetch_year_summary(year: int) -> str:
+def fetch_year_summary(year: int) -> dict[str, list[str]]:
     """
     Fetch a sumarized list of events for each month in a given year.
     This functions data flow:
