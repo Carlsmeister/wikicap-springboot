@@ -7,9 +7,12 @@ const form = document.querySelector("#yearForm");
 const input = document.querySelector("#yearInput");
 const statusEl = document.querySelector("#status");
 const resultsEl = document.querySelector("#results");
+
+const entertainmentSection = document.querySelector("#entertainmentSection");
 const highlightsSection = document.querySelector("#highlightsSection");
 const movieSection = document.querySelector("#movieSection");
 const seriesSection = document.querySelector("#seriesSection");
+
 const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
 const tpl = wikiTpl;
@@ -118,8 +121,21 @@ function setStatus(text, kind = "info") {
 
   if (kind === "loading") {
     statusEl.innerHTML = `
-      <div class="status-row">
-        <div class="loader" aria-label="Loading"></div>
+      <div class="status-flex">
+        <div class="loader" aria-label="Loading">
+          <svg class="infinite-svg" viewBox="0 0 200 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="wcGrad" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="var(--apricot)"/>
+              <stop offset="50%" stop-color="var(--vermilion)"/>
+              <stop offset="100%" stop-color="var(--primary)"/>
+            </linearGradient>
+          </defs>
+          <path class="infinity-track" d="M20,50 C40,20 80,20 100,50 C120,80 160,80 180,50 C160,20 120,20 100,50 C80,80 40,80 20,50" />
+
+            <path class="infinity-path" stroke="url(#wcGrad)" d="M20,50 C40,20 80,20 100,50 C120,80 160,80 180,50 C160,20 120,20 100,50 C80,80 40,80 20,50" />
+          </svg>
+        </div>
         <span class="status-text">${text}</span>
       </div>
     `;
@@ -202,7 +218,7 @@ form.addEventListener("submit", async (e) => {
 
   clearNobel();
   clearResults();
-  setStatus("Fetching data...", "loading");
+  setStatus("", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
@@ -219,6 +235,7 @@ form.addEventListener("submit", async (e) => {
     const data = await fetchYear(year);
 
     const eventsByMonth = data?.events_by_month ?? {};
+    const entries = Object.entries(eventsByMonth);
     const hasEvents = Object.keys(eventsByMonth).length > 0;
 
     if (!hasEvents) {
@@ -228,13 +245,31 @@ form.addEventListener("submit", async (e) => {
 
     // Update hero text
     heroText.textContent = `The year was ${year}`;
-    const entries = Object.entries(eventsByMonth);
-    
+    //const entries = Object.entries(eventsByMonth);
+
 
 
     entries.forEach(([month, events], i) => {
       renderMonthCard({ month, year, events, index: i });
     });
+
+    if (data.movie_highlights && data.movies?.topMovies && data.series?.topSeries) {
+
+      entertainmentSection.classList.remove("hidden");
+
+      highlightsSection.innerHTML = renderHighlights(data.movie_highlights, year);
+      movieSection.innerHTML = renderMovies(listSorter(data.movies.topMovies, "rating"));
+      seriesSection.innerHTML = renderSeries(listSorter(data.series.topSeries, "rating"));
+
+      setTimeout(() => {
+        const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
+        const seriesCards = seriesSection.querySelectorAll('.series-card.reveal');
+        
+        movieCards.forEach(card => observer.observe(card));
+        seriesCards.forEach(card => observer.observe(card));
+      }, 0);
+
+    }
 
     setStatus("");
   } catch (err) {
@@ -244,8 +279,22 @@ form.addEventListener("submit", async (e) => {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
   }
-
-
-
 });
+
+/**
+ * Generic insertion sort function for sorting arrays by a numeric property in descending order
+ * @param {Array} arr - Array to sort
+ * @param {string} property - Property name to sort by, e.g rating, votes etc.
+ * @returns {Array} - Sorted array (new array, doesn't mutate original)
+ */
+function listSorter(arr, property) {
+  const sorted = [...arr];
+
+  for (let i = 1; i < sorted.length; i++) {
+    for (let j = i; j > 0 && sorted[j][property] > sorted[j - 1][property]; j--) {
+      [sorted[j], sorted[j - 1]] = [sorted[j - 1], sorted[j]];
+    }
+  }
+  return sorted;
+}
 

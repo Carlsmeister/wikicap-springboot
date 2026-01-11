@@ -17,25 +17,34 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
         dict: A dictionary containing the year, artist names and their top songs.
     """   
    
-    artists = get_artist_of_the_year(year)
-    
+    artists_payload = get_artist_of_the_year(year)
+
+    # Om get_artist_of_the_year returnerar felobjekt
+    if isinstance(artists_payload, dict) and artists_payload.get("error"):
+        return {
+            "year": year,
+            "artist": [],
+            "error": artists_payload.get("error")
+        }
+
+    # Plocka ut själva listan med artistnamn
+    artist_names = artists_payload.get("artists", []) if isinstance(artists_payload, dict) else artists_payload
+
     result = {
         "year": year,
         "artist": []
-    }  
-    
-    for artist in artists: 
-        top_songs = get_hit_song(artist, limit)    
-        
-        if not top_songs: 
-            continue  
-        
+    }
+
+    for name in artist_names:
+        top_songs = get_hit_song(name, limit)
+        if not top_songs:
+            continue
+
         result["artist"].append({
-            "artist": artist, 
+            "artist": name,
             "toptracks": top_songs
         })
 
-
-    return result   
+    return result
 
    

@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test</title>
+    <title>WikiCap</title>
     <link rel="stylesheet" href="public/output.css" />
   </head>
   <body class="page-shell">
-    <main class="page-main">
+    <main class="page-main-wide">
       <header class="space-y-2 pt-3 ml-5">
         <div class="flex items-center justify-center gap-2 pr-3">
           <img src="src/img/icons8-refresh-128.svg" class="w-8 h-8 md:w-20 md:h-20 translate-y-[1px] opacity-80 hover:opacity-100 hover:drop-shadow-[0_0_6px_rgba(99,102,241,0.8)] transition" />
@@ -20,9 +20,9 @@
         <button id="submitBtn" type="submit" class="btn-primary shadow-cta-teal hover-lift">Get year</button>
       </form>
       <div id="status" class="status-text"></div>
-      <h1 class="year-title"><span> </span><span id="heroText"></span></h1>
+      <h1 class="year-title"><span id="heroText"></span></h1>
 
-      <section class="space-y-4">
+      <section class="space-y-4 page-main-centered">
         <div id="recapHeader" class="hidden items-center justify-between">
           <p class="section-label">Recap</p>
           <span id="yearBadge" class="timeline-node"></span>
@@ -35,11 +35,7 @@
         </div>
       </section>
 
-      <section>
-        <div id="highlightsSection"></div>
-        <div id="movieSection"></div>
-        <div id="seriesSection"></div>
-      </section>
+
       <!-- Wikipedia recap del -->
       <template id="wikiCardTpl">
         <div class="flex mt-6">
@@ -91,19 +87,33 @@
           </div>
         </div>
       </template>
+    </section>
 
+      <!-- Nobel prize del -->
       <section class="hidden space-y-6 pt-10" id="nobelSection">
         <div class="flex items-center justify-between">
-          <p class="section-label">Nobel Price Winners Of The Year</p>
+          <p class="section-label">Nobel Prize Winners Of The Year</p>
           <span id="stats">Nobel Prize</span>
         </div>
 
-        <div id="nobelGrid" class="flex flex-col gap-6"></div>
+        <div id="nobelGrid" class="nobel-grid"></div>
+        <template id="nobelCardTpl">
+          <div class="component-card-lite nobel-card glass-shadow-warm">
+            <h3 class="nobel-name name"></h3>
+            <img class="nobel-img" />
+            <div class="space-y-2">
+              <p class="nobel-category category"></p>
+              <p class="nobel-motivation motivation"></p>
+            </div>
+          </div>
+        </template>
       </section>
 
-      
-
-
+      <section class="hidden space-y-10 pt-10 page-main-wide flex-row" id="entertainmentSection">
+        <div id="highlightsSection"></div>
+        <div id="movieSection"></div>
+        <div id="seriesSection"></div>
+      </section>
     </main>
     <script type="module" src="./src/components/SpotifySection.js"></script>
   </body>

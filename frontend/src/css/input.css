@@ -1,11 +1,14 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
 
 @source "../index.html";
 @source "../**/*.html";
 @source "../**/*.js";
 
-/* Bas styling */
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 @layer base {
   :root {
@@ -13,211 +16,321 @@
     --cream: #FFE3BB;
     --apricot: #FFA673;
     --vermilion: #FF4F0F;
-
-
-
     --bg: #fbfdec;
     --text: #0B1220;
     --muted: rgba(11, 18, 32, 0.6);
     --stroke: rgba(15, 23, 42, 0.1);
     --glass: rgba(255, 255, 255, 0.78);
   }
+
   body {
     color: var(--text);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-size: revert;
+  }
 }
 
-/* Reveal Hover och Shadows */
+/* ============================================
+   UTILITIES
+   ============================================ */
 
-/* gömda scroll event */
 @layer utilities {
-  .reveal-left {
-    opacity: 0;
-    transform: translateX(-600px) scale(0.985);
-    filter: blur(6px);
-    transition:
-      transform 2s cubic-bezier(0.2, 1, 0.32, 1),
-      opacity 2s ease,
-      filter 260ms ease;
+  /* Scroll Reveal Animations */
+
+  .loader{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 100px;
   }
-  .reveal-right{
+
+  .infinite-svg{
+    width: 300px;
+    height: 100px;
+  }
+
+  .infinity-track{
+    fill: none;
+    stroke: var(--cream);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.35;
+  }
+
+  .infinity-path{
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    stroke-dasharray: 120 380;
+    stroke-dashoffset: 0;
+    animation: infinity-dash 1.4s linear infinite;
+
+  }
+  @keyframes infinity-dash {
+    72.5% {opacity: 1;}
+    to {stroke-dashoffset: -500;}
+  }
+
+  .reveal-left, .reveal-right {
     opacity: 0;
-    transform: translateX(600px) scale(0.985);
     filter: blur(6px);
     transition:
       transform 2s cubic-bezier(0.2, 1, 0.32, 1),
       opacity 2s ease,
       filter 2s ease;
   }
+
+  .reveal-left {
+    transform: translateX(-600px) scale(0.985);
+  }
+
+  .reveal-right {
+    transform: translateX(600px) scale(0.985);
+  }
+
   .is-visible {
     opacity: 1;
     transform: translateX(0) scale(1);
     filter: blur(0);
   }
-  .hover-lift{
+
+  /* Hover Effects */
+  .hover-lift {
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
   }
-  .hover-lift:hover{
+
+  .hover-lift:hover {
     transform: translateY(-1px);
     filter: brightness(1.02);
   }
 
-  /* Shadows */
-  .shadow-glass-teal{
+  /* Shadow Utilities */
+  .shadow-glass-teal {
     filter:
       drop-shadow(0 22px 60px rgba(3, 166, 161, 0.16))
       drop-shadow(0 14px 38px rgba(255, 166, 115, 0.10));
   }
 
-  .glass-shadow-warm{
+  .glass-shadow-warm {
     filter:
       drop-shadow(0 26px 70px rgba(255, 227, 187, 0.35))
       drop-shadow(0 14px 38px rgba(255, 166, 115, 0.14));
   }
 
-  .glass-shadow-amber{
+  .glass-shadow-amber {
     filter:
       drop-shadow(0 22px 60px rgba(255, 79, 15, 0.12))
       drop-shadow(0 14px 38px rgba(255, 166, 115, 0.10));
   }
-  .shadow-cta-teal{
+
+  .shadow-cta-teal {
     box-shadow:
       0 16px 34px rgba(3, 166, 161, 0.28),
       0 1px 0 rgba(255, 255, 255, 0.22) inset;
   }
 }
 
-/* Components för hela sidan */
+/* ============================================
+   COMPONENTS
+   ============================================ */
+
 @layer components {
+
+  /* PAGE LAYOUT */
   .page-shell {
-    @apply min-h-screen px-4;
+    @apply min-h-screen px-4 lg:px-8 xl:px-12;
     background:
       radial-gradient(1200px circle at 20% -10%, rgba(3, 166, 161, 0.18), transparent 55%),
       radial-gradient(1000px circle at 90% 0%, rgba(255, 166, 115, 0.18), transparent 55%),
       radial-gradient(900px circle at 50% 110%, rgba(255, 227, 187, 0.55), transparent 55%),
       linear-gradient(var(--bg), var(--bg));
   }
-  .page-main {
-    @apply mx-auto w-full max-w-4xl py-12 space-y-10;
+
+  .page-main-centered {
+    @apply mx-auto w-full max-w-4xl py-12 space-y-16;
   }
+
+  .page-main-wide {
+    @apply mx-auto w-full max-w-7xl py-12 space-y-16;
+  }
+
+  /* HERO SECTION */
   .hero {
     @apply text-center space-y-5;
   }
+
   .brand-row {
     @apply inline-flex items-center justify-center gap-3;
   }
+
+  .hero-subtitle {
+    @apply max-w-2xl mx-auto text-sm md:text-base;
+    color: rgba(11, 18, 32, 0.7);
+  }
+
+  .hero-panel {
+    @apply mx-auto max-w-2xl rounded-3xl p-4 md:p-5;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    box-shadow:
+      0 18px 60px rgba(15, 23, 42, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.9) inset;
+    backdrop-filter: blur(18px);
+  }
+
+  /* TYPOGRAPHY */
   .title {
     @apply text-4xl md:text-5xl font-semibold tracking-tight;
     letter-spacing: -0.02em;
   }
-  .hero-subtitle {
-    @apply max-w-2xl mx-auto text-sm md:text-base;
-    color: rgba(11,18,32,0.7);
-  }
-  .hero-panel{
-    @apply mx-auto max-w-2xl rounded-3xl p-4 md:p-5;
-    background: rgba(255,255,255,0.7);
-    border: 1px solid rgba(15,23,42,0.1);
-    box-shadow:
-      0 18px 60px rgba(15,23,42,0.1),
-      0 1px 0 rgba(255,255,255,0.9) inset;
-    backdrop-filter: blur(18px);
-  }
-  .year-form{
-    @apply flex flex-col sm:flex-row gap-3 justify-center;
-  }
-  .year-input{
-    @apply w-full sm:w-56 rounded-full px-4 py-3 text-sm outline-none;
-    background: rgba(255,255,255,0.85);
-    border: 1px solid rgba(15,23,42,0.12);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset;
-  }
-  .year-input::placeholder{
-    color: rgba(11,18,32,0.45);
-  }
-  .year-input:focus {
-    border-color: rgba(3,166,161, 0.2);
-    box-shadow:
-      0 0 0 4px rgba(3,166,161,0.2) inset;
+
+  .title-large {
+    @apply text-5xl md:text-6xl font-bold tracking-tight;
+    letter-spacing: -0.03em;
   }
 
-
-  /* knappar och status */
-  .btn-primary{
-    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium;
-    background: var(--primary);
-    color: white;
+  .title-medium {
+    @apply text-3xl md:text-4xl font-semibold tracking-tight;
+    letter-spacing: -0.02em;
   }
 
-  .status-text{
-    @apply text-center text-sm;
-    color: rgba(11,18,32,0.65);
+  .title-small {
+    @apply text-2xl md:text-3xl font-medium tracking-tight;
+    letter-spacing: -0.015em;
   }
 
   .year-title {
     font-weight: 800;
     letter-spacing: -0.035em;
+    line-height: 1;
     text-align: center;
-    line-height: 0.95;
     font-size: clamp(2.1rem, 4.8vw, 3.6rem);
-
-      background: linear-gradient(
-        90deg,
-        rgba(3, 166, 161, 1) 0%,
-        rgba(255, 166, 115, 1) 55%,
-        rgba(255, 79, 15, 1) 100%
-    );
+    background: linear-gradient(90deg, rgba(3, 166, 161, 1) 0%, rgba(255, 166, 115, 1) 55%, rgba(255, 79, 15, 1) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-
-    text-shadow: 0 10px 30px rgba(15,23,42,0.1);
+    text-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
   }
 
-  /* sektioner */
+  /* Gradient Titles */
+  .title-gradient-teal {
+    @apply font-bold;
+    background: linear-gradient(135deg, rgba(3, 166, 161, 1) 0%, rgba(3, 166, 161, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .title-gradient-warm {
+    @apply font-bold;
+    background: linear-gradient(135deg, rgba(255, 166, 115, 1) 0%, rgba(255, 79, 15, 1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .title-gradient-sunset {
+    @apply font-bold;
+    background: linear-gradient(135deg, rgba(255, 227, 187, 1) 0%, rgba(255, 166, 115, 1) 50%, rgba(255, 79, 15, 1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .title-gradient-vermilion {
+    @apply font-bold;
+    background: linear-gradient(135deg, rgba(255, 79, 15, 1) 0%, rgba(255, 79, 15, 0.7) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Text Utilities */
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .text-subtle {
+    color: rgba(11, 18, 32, 0.55);
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold tracking-tight;
+    letter-spacing: -0.015em;
+  }
+
+  /* FORMS */
+  .year-form {
+    @apply flex flex-col sm:flex-row gap-3 justify-center;
+  }
+
+  .year-input {
+    @apply w-full sm:w-56 rounded-full px-4 py-3 text-sm outline-none;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  }
+
+  .year-input::placeholder {
+    color: rgba(11, 18, 32, 0.45);
+  }
+
+  .year-input:focus {
+    border-color: rgba(3, 166, 161, 0.2);
+    box-shadow: 0 0 0 4px rgba(3, 166, 161, 0.2) inset;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium;
+    background: var(--primary);
+    color: white;
+  }
+
+  /* BADGES */
+  .badge {
+    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold;
+    background: rgba(3, 166, 161, 0.1);
+    border: 1px solid rgba(3, 166, 161, 0.2);
+    color: rgba(11, 18, 32, 0.9);
+  }
+
+  .section-label {
+    @apply text-xs tracking-widest uppercase;
+    color: rgba(11, 18, 32, 0.55);
+  }
+
+  /* SECTIONS */
   .section {
     @apply space-y-4;
   }
 
-  .section-header {
-    @apply hidden items-center justify-between;
-  }
-
-  .section-label{
-    @apply text-xs tracking-widest uppercase;
-    color: rgba(11,18,32,0.55);
-  }
-
-
-
-  .badge{
-    @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold;
-    background: rgba(3,166,161,0.1);
-    border: 1px solid rgba(3,166,161,0.2);
-    color: rgba(11,18,32,0.9);
-  }
-
-  /* Recap kort */
-
+  /* CARDS */
   .component-card {
     position: relative;
     border-radius: 30px;
     padding: 28px;
-    background: linear-gradient(
-      180deg,
-      rgba(255,255,255,0.92),
-      rgba(255,255,255,0.76)
-    );
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76));
     border: 1px solid rgba(15, 23, 42, 0.06);
     backdrop-filter: blur(18px);
-
-
     box-shadow:
       22px 22px 44px rgba(15, 23, 42, 0.10),
       -18px -18px 40px rgba(255, 255, 255, 0.85),
       0 28px 90px rgba(15, 23, 42, 0.06);
   }
 
+  .component-card-lite {
+    @apply rounded-3xl p-6;
+    background: rgba(255, 255, 255, 0.86);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
+  }
 
   .component-card::after {
     content: "";
@@ -225,20 +338,11 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-
     background:
-      radial-gradient(900px circle at 12% 12%,
-        rgba(255, 227, 187, 0.42),
-        transparent 55%
-      ),
-      radial-gradient(900px circle at 88% 88%,
-        rgba(255, 79, 15, 0.10),
-        transparent 60%
-      );
-
+      radial-gradient(900px circle at 12% 12%, rgba(255, 227, 187, 0.42), transparent 55%),
+      radial-gradient(900px circle at 88% 88%, rgba(255, 79, 15, 0.10), transparent 60%);
     opacity: 0.85;
   }
-
 
   .component-card::before {
     content: "";
@@ -246,40 +350,437 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-
-    background: linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.90),
-      rgba(255,255,255,0.20) 42%,
-      rgba(255,255,255,0.0) 66%
-    );
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.90), rgba(255, 255, 255, 0.20) 42%, rgba(255, 255, 255, 0.0) 66%);
     opacity: 0.50;
   }
-
 
   .component-card > * {
     position: relative;
     z-index: 1;
   }
 
-
   .component-card:hover {
     transform: translateY(-2px);
     transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
-
     box-shadow:
       26px 26px 56px rgba(15, 23, 42, 0.12),
       -20px -20px 46px rgba(255, 255, 255, 0.90),
       0 34px 110px rgba(15, 23, 42, 0.07);
   }
 
+  /* NOBEL CARDS */
+  .nobel-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
 
+  .nobel-card {
+    @apply h-full flex flex-col items-center text-center gap-4 p-6;
+  }
 
-  /* tidslinje */
-  .timeline-wrap{
+  .nobel-name {
+    @apply font-semibold text-slate-900 text-lg leading-tight;
+  }
+
+  .nobel-category {
+    @apply text-xs text-slate-500 uppercase tracking-wide;
+  }
+
+  .nobel-motivation {
+    @apply text-sm text-slate-700 leading-relaxed;
+  }
+
+  .nobel-img {
+    @apply w-40 h-40 rounded-2xl object-cover border border-slate-900/10 aspect-square;
+  }
+
+  /* ============================================
+     AWARDS SECTION
+     ============================================ */
+
+  .awards-section-container {
+    @apply space-y-6;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .awards-section-container {
+      @apply space-y-4;
+    }
+  }
+
+  .awards-year-label {
+    @apply text-2xl font-medium tracking-wide;
+    color: rgba(11, 18, 32, 0.5);
+    margin-bottom: -0.25rem;
+    padding-left: 2rem;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .awards-year-label {
+      @apply text-xl;
+      padding-left: 1rem;
+    }
+  }
+
+  .awards-section-title {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .awards-section-title {
+      @apply text-2xl;
+    }
+  }
+
+  /* Award Cards */
+  .award-card {
+    position: relative;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .award-card-inner {
+    @apply flex flex-col items-center text-center gap-3;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-inner {
+      @apply gap-2;
+    }
+  }
+
+  .award-card-category {
+    @apply text-lg tracking-wider uppercase font-semibold;
+    color: rgba(255, 166, 115, 0.85);
+    letter-spacing: 0.08em;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-category {
+      @apply text-base;
+    }
+  }
+
+  /* Shared Image Wrapper Styles */
+  .award-card-image-wrapper,
+  .award-card-poster-image-wrapper {
+    background: transparent;
+    border: 2px solid rgba(255, 166, 115, 0.3);
+    border-radius: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(255, 166, 115, 0.1);
+    transition: all 280ms ease;
+    cursor: pointer;
+  }
+
+  .award-card-image-wrapper:hover,
+  .award-card-poster:hover .award-card-poster-image-wrapper {
+    border-color: rgba(255, 166, 115, 0.5);
+    box-shadow: 0 12px 32px rgba(255, 166, 115, 0.25);
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  /* Actor Image Wrapper */
+  .award-card-image-wrapper {
+    width: 200px;
+    height: 240px;
+  }
+
+  @media (max-width: 768px) {
+    .award-card-image-wrapper {
+      width: 160px;
+      height: 160px;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-image-wrapper {
+      width: 150px;
+      height: 180px;
+    }
+  }
+
+  /* Poster Image Wrapper */
+  .award-card-poster-image-wrapper {
+    width: 100%;
+    max-width: 480px;
+    flex-grow: 1;
+    border-color: rgba(255, 166, 115, 0.35);
+    box-shadow: 0 6px 18px rgba(255, 166, 115, 0.12);
+  }
+
+  @media (max-width: 768px) {
+    .award-card-poster-image-wrapper {
+      max-width: 220px;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-poster-image-wrapper {
+      max-width: 280px;
+    }
+  }
+
+  .award-card-poster:hover .award-card-poster-image-wrapper {
+    border-color: rgba(255, 166, 115, 0.55);
+    box-shadow: 0 16px 40px rgba(255, 166, 115, 0.28);
+  }
+
+  /* Shared Image Styles */
+  .award-card-image,
+  .award-card-poster-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .award-card-name {
+    @apply text-lg font-semibold;
+    color: rgba(11, 18, 32, 0.9);
+    line-height: 1.4;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-name {
+      @apply text-base;
+    }
+  }
+
+  /* Best Picture Poster Card */
+  .award-card-poster {
+    @apply w-full;
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 0;
+    height: 100%;
+  }
+
+  .award-card-poster-inner {
+    @apply flex flex-col items-center text-center gap-5 h-full;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-poster-inner {
+      @apply gap-3;
+    }
+  }
+
+  .award-card-poster .award-card-category {
+    @apply text-xl md:text-2xl;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-poster .award-card-category {
+      @apply text-lg;
+    }
+  }
+
+  .award-card-poster .award-card-name {
+    @apply text-xl md:text-2xl;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  @media (min-width: 769px) and (max-width: 1280px) {
+    .award-card-poster .award-card-name {
+      @apply text-lg;
+    }
+  }
+
+  /* ============================================
+     ENTERTAINMENT CARDS (Movies & Series)
+     ============================================ */
+
+  /* Shared Base Card Styles */
+  .movie-card,
+  .series-card {
+    position: relative;
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    backdrop-filter: blur(14px);
+    transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  .movie-card::before,
+  .series-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(500px circle at 50% 0%, currentColor, transparent 65%);
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .movie-card > *,
+  .series-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Movie Card Theming */
+  .movie-card {
+    background: linear-gradient(180deg, rgba(251, 253, 236, 0.50), rgba(230, 245, 250, 0.94));
+    border: 1px solid rgba(3, 166, 161, 0.25);
+    box-shadow:
+      0 6px 24px rgba(3, 166, 161, 0.12),
+      0 3px 12px rgba(3, 166, 161, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  }
+
+  .movie-card::before {
+    color: rgba(3, 166, 161, 0.10);
+  }
+
+  .movie-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    background: linear-gradient(180deg, rgba(251, 253, 236, 0.65), rgba(220, 242, 248, 0.96));
+    border-color: rgba(3, 166, 161, 0.40);
+    box-shadow:
+      0 12px 40px rgba(3, 166, 161, 0.18),
+      0 6px 20px rgba(3, 166, 161, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  }
+
+  /* Series Card Theming */
+  .series-card {
+    background: linear-gradient(180deg, rgba(251, 253, 236, 0.50), rgba(255, 245, 235, 0.94));
+    border: 1px solid rgba(255, 79, 15, 0.25);
+    box-shadow:
+      0 6px 24px rgba(255, 79, 15, 0.12),
+      0 3px 12px rgba(255, 79, 15, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  }
+
+  .series-card::before {
+    color: rgba(255, 79, 15, 0.10);
+  }
+
+  .series-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    background: linear-gradient(180deg, rgba(251, 253, 236, 0.65), rgba(255, 242, 230, 0.96));
+    border-color: rgba(255, 79, 15, 0.40);
+    box-shadow:
+      0 12px 40px rgba(255, 79, 15, 0.18),
+      0 6px 20px rgba(255, 79, 15, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  }
+
+  /* Shared Poster Styles */
+  .movie-card-poster-wrapper,
+  .series-card-poster-wrapper {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: rgba(255, 255, 255, 0.75);
+    border-radius: 0.875rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .movie-card-poster-wrapper {
+    box-shadow: 0 4px 16px rgba(3, 166, 161, 0.10);
+  }
+
+  .series-card-poster-wrapper {
+    box-shadow: 0 4px 16px rgba(255, 79, 15, 0.10);
+  }
+
+  .movie-card-poster,
+  .series-card-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 300ms ease;
+  }
+
+  .movie-card:hover .movie-card-poster,
+  .series-card:hover .series-card-poster {
+    transform: scale(1.05);
+  }
+
+  /* Shared Content Styles */
+  .movie-card-content,
+  .series-card-content {
+    @apply space-y-2;
+  }
+
+  .movie-card-title,
+  .series-card-title {
+    @apply font-semibold text-base leading-tight;
+    color: rgba(11, 18, 32, 0.9);
+  }
+
+  /* Movie-specific Styles */
+  .movie-card-votes-wrapper {
+    @apply shrink-0;
+    background: rgba(3, 166, 161, 0.12);
+    border: 1px solid rgba(3, 166, 161, 0.25);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .movie-card-votes {
+    @apply text-xs font-semibold;
+    color: rgba(3, 166, 161, 1);
+  }
+
+  .movie-card-date {
+    @apply text-sm;
+    color: rgba(3, 166, 161, 0.70);
+    font-weight: 500;
+  }
+
+  .movie-card-rating {
+    @apply text-sm font-medium;
+    color: rgba(3, 166, 161, 0.85);
+  }
+
+  /* Series-specific Styles */
+  .series-card-votes-wrapper {
+    @apply shrink-0;
+    background: rgba(255, 79, 15, 0.12);
+    border: 1px solid rgba(255, 79, 15, 0.25);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .series-card-votes {
+    @apply text-xs font-semibold;
+    color: rgba(255, 79, 15, 1);
+  }
+
+  .series-card-date {
+    @apply text-sm;
+    color: rgba(255, 79, 15, 0.70);
+    font-weight: 500;
+  }
+
+  .series-card-rating {
+    @apply text-sm font-medium;
+    color: rgba(255, 79, 15, 0.85);
+  }
+
+  /* ============================================
+     TIMELINE
+     ============================================ */
+
+  .timeline-wrap {
     position: relative;
   }
-  .timeline-line{
+
+  .timeline-line {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -287,7 +788,6 @@
     transform: translateX(-50%);
     width: 2px;
     border-radius: 9999px;
-
     background: linear-gradient(
       to bottom,
       rgba(3, 166, 161, 0),
@@ -297,15 +797,14 @@
       rgba(3, 166, 161, 0.55),
       rgba(3, 166, 161, 0)
     );
-
     box-shadow:
       0 0 26px rgba(3, 166, 161, 0.22),
       0 0 60px rgba(255, 166, 115, 0.18);
-
     pointer-events: none;
     z-index: 0;
   }
-  .timeline-line::after{
+
+  .timeline-line::after {
     content: "";
     position: absolute;
     inset: -18px;
@@ -315,11 +814,9 @@
     opacity: 0.22;
   }
 
-  /*kort position (över linjen) */
   .timeline-wrap .card,
   .timeline-wrap .component-card {
     position: relative;
     z-index: 1;
   }
-
 }

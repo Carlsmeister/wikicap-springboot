@@ -25,8 +25,8 @@ def get_year_page_source(year: int) -> str:
         timeout=10
     )
 
-    if response.status_code != 200:
-        raise Exception(f"Failed to connect to Wikipedia API: {response.status_code}")
+    response.raise_for_status()
+
 
     return response.json().get("source", "")
 
