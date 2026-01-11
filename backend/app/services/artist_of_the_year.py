@@ -1,7 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 from app.clients.billboard_artist_client import get_billboard_page
-
+from app.clients.artist_img_client import fetch_wiki_image
+from typing import Callable
 
 
 def find_artist_column(table_data: list[str]) -> int| None:
@@ -107,3 +108,48 @@ def get_artist_of_the_year(year: int) -> dict:
         "year": year, 
         "artists": unique_artists
     }
+    
+    
+def add_artist_images( year_data: dict, fetch_image: Callable[[str], str | None]) -> dict: 
+    """
+    Add image URLs to each artist in the year-data dictionary. 
+    
+    This function looks up an image for every artist using the `fetch_image`function. 
+    It also has a simple cache in-memory to avoid fetching the same artist image multiple times. 
+    
+    Args: 
+        year_data (dict):
+            A dicitionary that includes an "artist_list".
+        fetch_image(Callable[[str], str| None]):
+            Returns an image URL for an artist or None.
+             
+    Returns:
+        dict: 
+            A copy of `year_data` with an added "artists_with_images" list.
+    """
+    artist_list = year_data.get("artists", []) 
+    
+    image_cache = {}
+    
+    artists_with_images = []
+    
+    for artist_name in artist_list: 
+        if artist_name not in image_cache:
+           try:
+               image_cache[artist_name] = fetch_image(artist_name)
+           except Exception:
+               image_cache[artist_name] = None
+               
+        artists_with_images.append({
+                "name": artist_name,
+                "image": image_cache[artist_name]
+        })  
+        
+    result = dict(year_data)
+    result["artists_with_images"] = artists_with_images
+    
+    return result
+
+      
+    
+    

@@ -23,63 +23,6 @@ const ArtistGrid = document.querySelector("#ArtistGrid");
 const ArtistTpl = document.querySelector("#ArtistCardTpl");
 const statsEl = document.querySelector("#stats");
 
-//let cleanupArtistPin = null;
-
-// function setupArtistPinReveal() {
-// if (cleanupArtistPin) cleanupArtistPin();
-
-// const section = document.querySelector("#ArtistSection");
-// const spacer = document.querySelector("#ArtistPinSpacer");
-// const cards = Array.from(document.querySelectorAll("#ArtistGrid .pin-card"));
-
-// if (!section || !spacer || cards.length === 0) return; 
-
-// const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-// const pxPerCard = 140; // justera känslan: 100 snabbare, 200 långsammare
-
-// const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-
-// function showCard(card) {
-//   card.classList.remove("opacity-0", "translate-y-6", "blur-sm", "pointer-events-none");
-//   card.classList.add("opacity-100", "translate-y-0", "blur-0");
-// }
-
-// function hideCard(card) {
-//   card.classList.add("opacity-0", "translate-y-6", "blur-sm", "pointer-events-none");
-//   card.classList.remove("opacity-100", "translate-y-0", "blur-0");
-// }
-
-// function layout() {
-//   // Scroll-längd för hela pinned-upplevelsen
-//   spacer.style.height = `${window.innerHeight + cards.length * pxPerCard}px`;
-//   update();
-// }
-
-// function update() {
-//   const start = section.offsetTop;
-//   const end = start + spacer.offsetHeight - window.innerHeight;
-
-//   const y = window.scrollY;
-//   const progress = clamp((y - start) / (end - start || 1), 0, 1);
-
-//   const scrolledCount = prefersReduced
-//     ? cards.length
-//     : Math.floor(progress * (cards.length + 0.999));
-
-//   const initialVisible = 3;
-
-//   const visibleCount = Math.min(
-//     cards.length,
-//     Math.max(initialVisible, scrolledCount)
-//   ); 
-
-//   cards.forEach((card, index) => {
-//     if(index < visibleCount) showCard(card);
-//     else hideCard(card);
-
-//   });
-
-// }
 
 let cleanupArtistAutoReveal = null;
 
@@ -124,29 +67,8 @@ function setupArtistAutoReveal({
     clearInterval(timer);
     cleanupArtistAutoReveal = null;
   };
+
 }
-
-// let ticking = false;
-// function onScroll() {
-//   if (ticking) return;
-//   ticking = true;
-//   requestAnimationFrame(() => {
-//     update();
-//     ticking = false;
-//   });
-// }
-
-  //window.addEventListener("scroll", onScroll, { passive: true});
-  //window.addEventListener("resize", layout);
-
-  //layout();
-
-//   cleanupArtistPin = () => {
-//     window.removeEventListener("scroll", onScroll);
-//     window.removeEventListener("resize", layout);
-//     spacer.style.height = "0px";
-//     cleanupArtistPin = null;
-// };
 
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -185,7 +107,7 @@ const observer = new IntersectionObserver(entries => {
     return data ?? {};
   }
 
- async function renderTopArtist(artistData, year) {
+async function renderTopArtist(artistData, year) {
   clearTopArtist();
 
   if (!artistData || !ArtistTpl || !ArtistGrid || !ArtistSection) return;
@@ -198,16 +120,24 @@ const observer = new IntersectionObserver(entries => {
     topTracksByArtist = new Map(
       (topSongsData.artist ?? []).map(a => [a.artist, a.toptracks ?? []])
     );
-} catch (err) {
-  console.error("Top songs fecth failed:", err);
-}
+  } catch (err) {
+    console.error("Top songs fetch failed:", err);
+  }
+
+  const artistsList = artistData.artists_with_images ?? artistData.artists ?? [];
   const maxArtistsCards = 6;
 
-  for (let index = 0; index < Math.min( maxArtistsCards, artistData.artists.length); index++) {
-    const artistName = artistData.artists[index];
+  for (let index = 0; index < Math.min(maxArtistsCards, artistsList.length); index++) {
+    const artistEntry = artistsList[index];
+
+    const artistName =
+      typeof artistEntry === "string" ? artistEntry : (artistEntry?.name ?? "");
+
+    const imgUrl =
+      typeof artistEntry === "string" ? "" : (artistEntry?.image ?? "");
+
     const node = ArtistTpl.content.firstElementChild.cloneNode(true);
 
-    
     node.classList.add(
       "pin-card",
       "opacity-0",
@@ -221,13 +151,44 @@ const observer = new IntersectionObserver(entries => {
 
     node.querySelector(".name").textContent = artistName;
 
+
+  const img = node.querySelector("img");
+  const placeholder =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+        <rect width="100%" height="100%" rx="18" ry="18" fill="#E5E7EB"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Arial" font-size="14" fill="#111827">
+          No Image
+        </text>
+      </svg>
+    `);
+
+
+    if (img) {
+      img.loading = "lazy";
+      img.src = placeholder;
+      img.alt = `Portrait of ${artistName}`;
+
+      img.onerror = () => {
+        img.onerror = null; // undvik ev loop
+        img.src = placeholder;
+      };
+
+      const cleanUrl =
+        imgUrl && imgUrl !== "null" && imgUrl !== "None" ? imgUrl : "";
+
+      if (cleanUrl) img.src = cleanUrl;
+    }
+
+    
     const toptracks = topTracksByArtist.get(artistName) ?? [];
     renderTopSongs(toptracks, node);
 
     ArtistGrid.appendChild(node);
   }
 
-  //setupArtistPinReveal();
   setupArtistAutoReveal({
     initialVisible: 3,
     delayMs: 1000,
@@ -235,22 +196,12 @@ const observer = new IntersectionObserver(entries => {
   });
 
   requestAnimationFrame(() => {
-  const position = ArtistSection.getBoundingClientRect().top + window.scrollY;
-  const offset = 220;
-  window.scrollTo({ top: position - offset, behavior: "smooth"});
+    const position = ArtistSection.getBoundingClientRect().top + window.scrollY;
+    const offset = 220;
+    window.scrollTo({ top: position - offset, behavior: "smooth" });
   });
 }
 
-
-    //   const imgUrl = topArtist.image || "";
-    //   if (imgUrl) {
-    //     img.src = imgUrl;
-    //     img.alt = `Portrait of ${topArtist.name}`;
-    //   } else {
-    //     img.src = "https://www.billboard.com/lists/year-end-hot-100-number-one-songs/";
-    //     img.alt = "Billboard Top Songs by Year";
-    //   }
-      
   
   async function fetchBillboardTopSong(year, limit=5) {
     const res = await fetch(
@@ -266,11 +217,18 @@ const observer = new IntersectionObserver(entries => {
 
     const listOfSongs = container.querySelector(".songs") ?? container;
     listOfSongs.innerHTML = ""; 
-    
-    //container.querySelector(".top-songs")?.remove();
 
-    const ul = document.createElement("ul");
-    ul.className = "mt-2 text-sm list-disc pl-4";
+    const heading = document.createElement("p");
+    heading.className = "mt-2 text-xs font-semibold tracking-wide uppercase text-slate-900";
+    heading.textContent = "All-time Top Songs";
+    listOfSongs.appendChild(heading);
+
+    //container.querySelector(".top-songs")?.remove();
+    const ol = document.createElement("ol");
+    ol.className = "mt-2 text-sm list-decimal pl-5";
+
+    ol.style.listStyleType = "decimal";
+    ol.style.listStylePosition = "inside";
 
     songs.forEach(song => {
       const title = typeof song === "string" ? song : song?.title;
@@ -278,9 +236,9 @@ const observer = new IntersectionObserver(entries => {
 
       const li = document.createElement("li");
       li.textContent = title;
-      ul.appendChild(li);
+      ol.appendChild(li);
     });
-     listOfSongs.appendChild(ul);
+     listOfSongs.appendChild(ol);
   }
 
 
@@ -384,27 +342,9 @@ form.addEventListener("submit", async (e) => {
 
     console.log(ArtistData);
     
-
-
-  // const data = await fetchYear(year);
-
-  //   const eventsByMonth = data?.events_by_month ?? {};
-  //   const entries = Object.entries(eventsByMonth);
-  //   const hasEvents = Object.keys(eventsByMonth).length > 0;
-
-  //   if (!hasEvents) {
-  //     setStatus(`Found no events for ${year}.`, "error");
-  //     return;
-  //   }
-
-  //   // Update hero text
+     // Update hero text
       heroText.textContent = `Top artists of the year ${year}`;
   //   //const entries = Object.entries(eventsByMonth);
-
-
-  //   entries.forEach(([month, events], i) => {
-  //     renderMonthCard({ month, year, events, index: i });
-  //   });
 
     setStatus("");
   } catch (err) {
