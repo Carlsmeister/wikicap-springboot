@@ -62,13 +62,17 @@
 
       <template id="spotifyCardTpl">
         <div class="component-card shadow-glass-warm hover-lift flex gap-4 items-start">
-          <img class="w-25 h-25 rounded-2xl object-cover border border-slate-900/10" />
+          <a class="album-image" target="_blank">
+            <img class="w-25 h-25 rounded-2xl object-cover border border-slate-900/10 hover:w-26 hover:h-26" /></a>
           <div class="text-left space-y-1">
-            <p class="font-semibold text-slate-900 song-title"></p>
-            <p class="text-xs text-slate-500 song-artist"></p>
+            <p class="text-20 font-semibold text-slate-1000 song-title"></p>
+            <p class="text-base text-slate-900 song-artist"></p>
             <p class="text-sm text-slate-700 song-album"></p>
             <p class="text-sm text-slate-700 song-release-date"></p>
-            <a class="text-sm text-slate-700 song-link" target="_blank"></a>
+            <div class="flex items-center gap-2">
+              <img src="src/img/spotify_logo3.png" class="w-4 h-4" alt="">
+              <a class="text-sm text-slate-700 song-link" target="_blank">Listen on Spotify</a>
+            </div>
           </div>
         </div>
       </template>
@@ -101,7 +105,7 @@
 
 
     </main>
-    <script type="module" src="./src/js/mainAlex.js"></script>
     <script type="module" src="./src/components/SpotifySection.js"></script>
   </body>
-</html>
+  </html>
+  <script type="module" src="./src/js/mainAlex.js"></script>

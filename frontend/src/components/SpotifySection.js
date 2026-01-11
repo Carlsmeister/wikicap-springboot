@@ -12,12 +12,15 @@ async function fetchSpotifySongs(year) {
     return data.topSongs ?? [];
   }
 
-
 function clearSpotify() {
     spotifyGrid.innerHTML = "";
     spotifySection.classList.add("hidden");
 }
 
+/**
+ * Renders card for Spotify songs
+ * @param {Array} songs an array of song objects
+ */
 
 function renderSpotifySongs(songs) {
     clearSpotify();
@@ -30,16 +33,18 @@ function renderSpotifySongs(songs) {
 
         card.querySelector(".song-title").textContent = song.title;
         card.querySelector(".song-artist").textContent = song.artist;
-        card.querySelector(".song-album").textContent = song.album;
-        card.querySelector(".song-release-date").textContent = song.releaseDate;
+        card.querySelector(".song-album").textContent = "📀 Album: " + song.album;
+        card.querySelector(".song-release-date").textContent = "📅 Release Date: " + song.releaseDate;
 
         const songLink = card.querySelector(".song-link");
         songLink.href = song.spotifyUrl;
-        songLink.textContent = "Listen on Spotify";
+
+        const albumImage = card.querySelector(".album-image");
+        albumImage.href = song.spotifyUrl;
 
         const image = card.querySelector("img");
-        if(image) {
-            image.src = song.image || "frontend/src/img/spotify_logo.png";
+        if (image) {
+            image.src = song.image || "src/img/spotify_logo.png";
         }
 
         spotifyGrid.appendChild(card);

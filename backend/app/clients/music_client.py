@@ -11,7 +11,16 @@ SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
 spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-def get_spotify_token(): # Getter för att få en token från Spotify, den varar i 1 timme
+
+
+def get_spotify_token():
+    """
+    Retrieves an access token from the Spotify API using client credentials.
+    Token is required for making authorized requests to Spotify endpoints.
+    Token is valid for 1 hour.
+    Returns: json: Access token string.
+    """
+
     auth_string = f"{spotify_client_id}:{spotify_client_secret}"
     auth_base64 = base64.b64encode(auth_string.encode()).decode()
     
@@ -28,10 +37,27 @@ def get_spotify_token(): # Getter för att få en token från Spotify, den varar
     return response.json()["access_token"]
 
 def get_auth_header(token):
+    """
+    Constructs the authorization header for Spotify API requests.
+    Args:
+        token (str): The access token obtained from Spotify.
+    Returns:
+        Authorization header with Bearer token.
+    """
+
     spotify_token = token
     return {"Authorization": f"Bearer {spotify_token}"}
 
 def get_artists_by_year(year: int, token):
+    """
+    Fetches artists from Spotify released in a specific year.
+    Args:
+        year (int): The year to search for artists.
+        token (str): The access token for Spotify API.
+    Returns:
+        list: A list of artist items from Spotify.
+    """
+
     response = httpx.get(
         SPOTIFY_BASE_URL,
         headers=token,
@@ -45,6 +71,15 @@ def get_artists_by_year(year: int, token):
     return response.json()["artists"]["items"]
 
 def get_songs_by_year(year: int, token):
+    """
+    Fetches songs from Spotify released in a specific year.
+    Args:
+        year (int): The year to search for songs.
+        token (str): The access token for Spotify API.
+    Returns:
+        list: A list of song items from Spotify.
+    """
+
     response = httpx.get(
         SPOTIFY_BASE_URL,
         headers=token,
