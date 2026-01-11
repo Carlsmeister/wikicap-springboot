@@ -29,7 +29,7 @@ let cleanupArtistAutoReveal = null;
 function setupArtistAutoReveal({
   initialVisible = 3,
   delayMs = 1000, //styr att det blir 1 sekund mellan varje nytt kort. 
-  durationMs = 1200, //styr så att animationen tar 1,2 sek. (långsammare)
+  durationMs = 1100, //styr så att animationen tar 1,2 sek. (långsammare)
 
 } = {}) {
   if (cleanupArtistAutoReveal) cleanupArtistAutoReveal();
@@ -223,7 +223,6 @@ async function renderTopArtist(artistData, year) {
     heading.textContent = "All-time Top Songs";
     listOfSongs.appendChild(heading);
 
-    //container.querySelector(".top-songs")?.remove();
     const ol = document.createElement("ol");
     ol.className = "mt-2 text-sm list-decimal pl-5";
 
@@ -296,8 +295,6 @@ function renderMonthCard({ month, year, events, index }) {
   title.textContent = `${month} ${year}`;
   title.classList.add(isOdd ? "text-cyan-200" : "text-purple-200");
 
-
-
   for (const e of events) {
     const li = document.createElement("li");
     li.textContent = `• ${e}`;
@@ -343,8 +340,7 @@ form.addEventListener("submit", async (e) => {
     console.log(ArtistData);
     
      // Update hero text
-      heroText.textContent = `Top artists of the year ${year}`;
-  //   //const entries = Object.entries(eventsByMonth);
+      heroText.textContent = `Top artists of the year ${year}`
 
     setStatus("");
   } catch (err) {
