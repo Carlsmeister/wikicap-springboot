@@ -29,7 +29,7 @@ def find_artist_column(table_data: list[str]) -> int| None:
   
 def get_artist_of_the_year(year: int) -> dict:
     """
-    Extracts artist names from the Billboard Hot 100 Wikipedi Page for a given year.
+    Extracts artist names from the Billboard Hot 100 Wikipedia Page for a given year.
     
     The function fetches the page, finds the first table with an "Artist" column, 
     and extracts all artist names from that column removing duplicates while keeping the original order.
@@ -98,11 +98,11 @@ def get_artist_of_the_year(year: int) -> dict:
 
     # Ta bort dubbletter men behåll ordning
     unique_artists: list[str] = []
-    seen = set()
+    artists_seen = set()
     for artist in extracted_artists:
-        if artist not in seen:
+        if artist not in artists_seen:
             unique_artists.append(artist)
-            seen.add(artist)
+            artists_seen.add(artist)
 
     return {
         "year": year, 

@@ -6,8 +6,8 @@ from app.utils import validate_year
 
 router = APIRouter()
 
-@router.get("/year/{year}/movies")
-def get_movies(year: int):
+@router.get("/year/{year}/awards")
+def get_awards(year: int):
     validate_year(year)
 
     try:
@@ -41,4 +41,5 @@ def get_movies(year: int):
             detail = f"NOT FOUND: No Oscar data found for year {year}."
         )
     return highlights
+
 

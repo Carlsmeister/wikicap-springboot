@@ -1,0 +1,412 @@
+
+## Detta är endast filspecfik information
+openapi: 3.0.0
+info:
+  title: WikiCap API
+  description: API for year-based cultural and historical data
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+## Här under "paths" definieras alla endpoints och deras funktioner. Det är bara att följa strukturen som den är nu för varje ny endpoint.
+## Tänk på indenteringen då detta är i princip som JSON fast utan "{" och "}" där indenteringen gör jobbet istället.
+paths:
+  /api/v1/year/{year}:
+    get:
+      summary: Get aggregated data for a specific year
+      description: Returns comprehensive data for a given year including historical events by month, Nobel prize winners, Oscar highlights, top movies, and top series, top artists and top songs..
+      tags:
+        - Year Data
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve data for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Aggregated year data successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearResponse'
+        '400':
+          description: Invalid year parameter
+        '500':
+          description: Internal server error
+
+  /api/v1/year/{year}/movies:
+    get:
+      summary: Get top movies for a specific year
+      description: Returns the top 10 movies released in the specified year, sorted by rating and popularity from TMDb.
+      tags:
+        - Movies
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve movies for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Top movies successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoviesResponse'
+        '400':
+          description: Invalid year parameter
+        '500':
+          description: Internal server error
+
+  /api/v1/year/{year}/series:
+    get:
+      summary: Get top series for a specific year
+      description: Returns the top 10 TV series for the specified year, ranked by a custom score combining popularity, rating, and age penalty from TMDb.
+      tags:
+        - Series
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve series for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Top series successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeriesResponse'
+        '400':
+          description: Invalid year parameter
+        '500':
+          description: Internal server error
+
+  /api/v1/year/{year}/awards:
+    get:
+      summary: Get Oscar awards highlights for a specific year
+      description: Returns Oscar (Academy Awards) highlights for the specified year, including Best Picture, Best Actor, and Best Actress winners from The Awards API.
+      tags:
+        - Awards
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve Oscar awards for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Oscar awards successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AwardsResponse'
+        '400':
+          description: Invalid year parameter
+        '404':
+          description: No Oscar data found for the specified year
+        '500':
+          description: Internal server error
+
+  /api/v1/year/{year}/billboard/artist:   
+    get:
+      summary: Get Billboard Hot 100 top artist for a give year.
+      description: Based on year input, it will return a dictionary containing a list of top artist names for given year. 
+      tags: 
+        - Top Artists    
+      parameters:
+      - name: year
+        in: path
+        required: true
+        description:  Input to generate list of Top artists for given year.
+        schema:
+          type: integer
+          minimum: 1958
+          maximum: 2026
+          example: 1991
+        responses:
+          '200':
+          description: Top artists successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopArtistsResponse'
+          '400':
+            description: Invalid year parameter 
+          '404':  
+            description: No data found for that specified year 
+          '500':
+            description: Internal server error     
+
+  /api/v1/year/{year}/billboard/artist/top-songs:
+    get:
+      summary: Get Top artists of a given year with their hit songs.
+      description: Based on year and optional 'limit' (max top songs per artist), returns artists and their top songs.
+      tags:
+        - Top Songs
+      parameters: 
+      - name: year
+        in: path
+        required: true
+        description: (Year) input to fetch top songs.
+        schema:
+          type: integer
+          minimum: 1958
+          maximum: 2026
+          example: 1997
+      - name: limit
+        in: query 
+        required: false
+        description: Max number of songs to display per artist. Default is set at 5.
+        schema:
+          type: integer
+          default: 5
+      responses:
+        '200':
+          description: Top songs successfully retrieved
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopSongsResponse'
+        '400':  
+          description: Invalid year parameter
+        '404':
+          description: No data found for specified year 
+        '500':
+          description: Internal server error
+                         
+components:
+  schemas:
+    YearResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        events_by_month:
+          type: object
+          description: Historical events organized by month
+          additionalProperties:
+            type: array
+            items:
+              type: object
+        movie_highlights:
+          $ref: '#/components/schemas/AwardsResponse'
+        movies:
+          $ref: '#/components/schemas/MoviesResponse'
+        series:
+          $ref: '#/components/schemas/SeriesResponse'
+
+    MoviesResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        topMovies:
+          type: array
+          description: List of top 10 movies for the year
+          items:
+            $ref: '#/components/schemas/Movie'
+        source:
+          type: string
+          description: Data source
+          example: TMDb 
+
+    Movie:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Movie title
+          example: 'Avengers: Endgame'
+        rating:
+          type: number
+          format: float
+          description: Average vote rating (0-10)
+          example: 8.3
+        votes:
+          type: integer
+          description: Number of votes
+          example: 25000
+        poster:
+          type: string
+          description: Poster image path
+          example: /or06FN3Dka5tukK1e9sl16pB3iy.jpg
+        releaseDate:
+          type: string
+          format: date
+          description: Release date
+          example: 2019-04-24
+
+    SeriesResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        topSeries:
+          type: array
+          description: List of top 10 series for the year
+          items:
+            $ref: '#/components/schemas/Series'
+        source:
+          type: string
+          description: Data source
+          example: TMDb
+
+    Series:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Series title
+          example: Game of Thrones
+        rating:
+          type: number
+          format: float
+          description: Average vote rating (0-10)
+          example: 8.4
+        votes:
+          type: integer
+          description: Number of votes
+          example: 18000
+        poster:
+          type: string
+          description: Poster image path
+          example: /u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg
+        releaseDate:
+          type: string
+          format: date
+          description: First air date
+          example: 2011-04-17
+
+    AwardsResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        oscars:
+          type: object
+          description: Oscar award winners for the year
+          properties:
+            bestPicture:
+              $ref: '#/components/schemas/BestPictureWinner'
+            bestActor:
+              $ref: '#/components/schemas/ActorWinner'
+            bestActress:
+              $ref: '#/components/schemas/ActorWinner'
+        source:
+          type: string
+          description: Data source
+          example: The Awards API
+
+components:
+  schemas:
+    TopArtistsResponse:
+      type: object
+      properties:
+        year:
+        type: integer
+        description: The requested year
+        example: 2012
+      artists:
+        type: array
+        description: List of top artist for given year. 
+        example: ["Mariah Carey", "Janet Jackson"]
+      artists_with_images:
+        type: array  
+        items: 
+          $ref: '#/components/schemas/ArtistWithImage'
+        description: List of artists with image URLs
+      source: 
+        type: string
+        description: Data source
+        example: Billboard          
+
+    BestPictureWinner:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the winning movie
+          example: Parasite
+
+    ActorWinner:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the winning actor/actress
+          example: Joaquin Phoenix
+        movie:
+          type: string
+          description: Movie for which the award was won
+          example: Joker
+
+    ArtistWithImage:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Artist name
+          example: Shakira
+        image: 
+          type: string
+          format: uri
+          description: URL to an artist image
+          example: "https://upload,wikimedia.org/..."      
+      required: [name, image]
+
+    TopSongsResponse:
+      type: object
+      properties:
+        year: 
+          type: integer
+          example: 1995
+        artist:
+          type: array
+          description: List of artists with their hit songs.
+          items: 
+            $ref: '#/components/schemas/ArtistWithTopSongs'
+
+    ArtistWithTopSongs:
+      type: object
+      properties:
+        artist:
+          type: string
+          example: "Prince"
+        toptracks:
+          type: array
+          items: 
+            type: object
+      properties: 
+        title: 
+          type: string
+          example: "Purple rain"
+      required: [artist, toptracks]        
+
+
