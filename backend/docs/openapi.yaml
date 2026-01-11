@@ -158,6 +158,41 @@ paths:
         '500':
           description: Internal server error
 
+  /api/v1/year/{year}/wiki:
+    get:
+      summary: Get Wikipedia events summary for a specific year
+      description: Returns a summarized list of notable events for each month in the specified year, extracted and cleaned from Wikipedia.
+      tags:
+        - Wikipedia
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve Wikipedia events for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Wikipedia year summary successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WikiSummaryResponse'
+        '400':
+          description: Invalid year parameter
+        '404':
+          description: Wikipedia page for the year not found OR no events found
+        '429':
+          description: Rate limit exceeded when accessing Wikipedia
+        '502':
+          description: Bad gateway (Wikipedia returned an unexpected status)
+        '500':
+          description: Internal server error
+
+
 components:
   schemas:
     YearResponse:
@@ -346,3 +381,22 @@ components:
           description: Laureate image URL (if available)
           example: "https://upload.wikimedia.org/wikipedia/commons/.../Olga_Tokarczuk.jpg"
 
+
+    WikiSummaryResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        events_by_month:
+          $ref: '#/components/schemas/EventsByMonth'
+
+    EventsByMonth:
+      type: object
+      description: Events grouped by month (January-December)
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          description: A cleaned event line
