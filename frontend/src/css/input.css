@@ -595,6 +595,30 @@
     }
   }
 
+  /* 
+    ============================================
+     SPOTIFY SONG CARDS
+     ============================================
+  */
+
+  .popular-songs-label {
+    @apply text-4xl font-semibold tracking-tight;
+    color: var(--apricot);
+  }
+
+  .spotify-card-label {
+    @apply text-4xl font-semibold tracking-tight;
+    color: var(--primary);
+  }
+
+  .spotify-album-image:hover {
+    transform: scale(1.08);
+  }
+
+  .spotify-component-card {
+    border: var(--cream) 1px solid;
+  }
+
   /* ============================================
      ENTERTAINMENT CARDS (Movies & Series)
      ============================================ */

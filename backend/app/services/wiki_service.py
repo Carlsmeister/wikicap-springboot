@@ -1,7 +1,7 @@
 import asyncio
 import httpx
+from app.clients.wiki_client import get_year_page_source
 from app.utils.wiki_cleaner import CLEANER
-
 
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
@@ -62,7 +62,7 @@ async def fetch_year_toc(client: httpx.AsyncClient, year: int) -> str:
         "format": "json",
         "formatversion": "2",
     }
-    request_response = await client.get(WIKI_API, params=params)
+    request_response = httpx.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
     request_response.raise_for_status()
 
     return request_response.json().get("parse", {}).get("tocdata", [])
@@ -114,7 +114,7 @@ async def get_month_wikitext(client: httpx.AsyncClient, year: int, month_index: 
         "formatversion": "2",
     }
 
-    request_response = await client.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
+    request_response = httpx.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
     request_response.raise_for_status()
 
     return request_response.json().get("parse", {}).get("wikitext", "")

@@ -17,6 +17,7 @@ const wikiTpl = document.querySelector("#wikiCardTpl");
 const heroText = document.querySelector("#heroText");
 const tpl = wikiTpl;
 
+
 const recapHeader = document.querySelector("#recapHeader");
 const yearBadge = document.querySelector("#yearBadge");
 const submitBtn = document.querySelector("#submitBtn");
