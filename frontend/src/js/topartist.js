@@ -1,31 +1,102 @@
 import { renderHighlights, renderMovies, renderSeries } from "../components/MediaSection.js";
 import { renderWikiSection } from "../components/WikiSection.js";
 
+/** Base URL for the backend API */
 const API_BASE = "http://127.0.0.1:8000";
 
+/** The form used to submit a year for lookup 
+ * @type {HTMLFormElement}
+ */
 const form = document.querySelector("#yearForm");
+
+/** Input field where the user enters a year
+ * @type {HTMLInputElement}
+ */
 const input = document.querySelector("#yearInput");
+
+/** Element used to display loading or status messages 
+ * @type {HTMLElement}
+*/
 const statusEl = document.querySelector("#status");
+
+/** Container for all generated results.
+ * @type {HTMLElement}
+ */
 const resultsEl = document.querySelector("#results");
+
+/** Section showing the year's highlights.
+ * @type {HTMLElement}
+ */
 const highlightsSection = document.querySelector("#highlightsSection");
+
+/** Section containing movie results.
+ * @type {HTMLElement}
+ */
 const movieSection = document.querySelector("#movieSection");
+
+/** Section containing series results.
+ * @type {HTMLElement}
+ */
 const seriesSection = document.querySelector("#seriesSection");
+
+/** Template element for Wikipedia-style cards.
+ * @type {HTMLTemplateElement}
+ */
 const wikiTpl = document.querySelector("#wikiCardTpl");
+
+/** Main hero text element at the top of the page.
+ * @type {HTMLElement}
+ */
 const heroText = document.querySelector("#heroText");
+
+/** Alias for the wiki card template.
+ * @type {HTMLTemplateElement}
+ */
 const tpl = wikiTpl;
 
+/** Header element for the recap section.
+ * @type {HTMLElement}
+ */
 const recapHeader = document.querySelector("#recapHeader");
+
+/** Badge displaying tyhe selected year. 
+ * @type {HTMLElement}
+ */
 const yearBadge = document.querySelector("#yearBadge");
+
+/** Submit button for triggering the year lookup.
+ * @type {HTMLButtonElement}
+ */
 const submitBtn = document.querySelector("#submitBtn");
 
+/** Section containing artist-related content.
+ * @type {HTMLElement}
+ */
 const ArtistSection = document.querySelector("#ArtistSection");
+
+/** Grid container for artist cards.
+ * @type {HTMLElement}
+ */
 const ArtistGrid = document.querySelector("#ArtistGrid");
+
+/** Template for rendering individual artist cards.
+ * @type {HTMLTemplateElement}
+ */
 const ArtistTpl = document.querySelector("#ArtistCardTpl");
+
+/** Element displaying statistics for the selected year.
+ * @type {HTMLElement}
+ */
 const statsEl = document.querySelector("#stats");
 
-
+/** Cleanup function for the auto-reveal animation of artist cards.
+ * If this variable holds a function (not null), calling it will stop the animation.
+ */
 let cleanupArtistAutoReveal = null;
 
+/** Sets up the auto‑reveal animation for artist cards.
+ * Shows a few cards immediately, then reveals the rest one by one.
+ * Replaces any previous auto‑reveal setup by running its cleanup function. */
 function setupArtistAutoReveal({
   initialVisible = 3,
   delayMs = 1000, //styr att det blir 1 sekund mellan varje nytt kort. 
@@ -70,6 +141,14 @@ function setupArtistAutoReveal({
 
 }
 
+/** IntersectionObserver that reveals elements,
+ *  when they become visible on the screen. 
+ *  
+ * When at least 15% of an element is in view,
+ * the observer removes the "hidden" classes and adds a "visible" class.
+ * After an element has been revealed, it is no longer observed.
+ *
+ * This makes sure each element only animates once when the user scrolls. */
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (!entry.isIntersecting) return;
@@ -91,6 +170,10 @@ const observer = new IntersectionObserver(entries => {
 
     );
 
+/** Clears the current "Top Artist" view.
+ * Removes any running auto‑reveal animation, empties the artist grid,
+ * hides the artist section, and resets the stats text.
+ */  
   function clearTopArtist() {
   //if (cleanupArtistPin) cleanupArtistPin();  
   if (cleanupArtistAutoReveal) cleanupArtistAutoReveal();
@@ -99,14 +182,35 @@ const observer = new IntersectionObserver(entries => {
   if (statsEl) statsEl.textContent = "";
 }
 
-  // Fetch top artist of the year.
+/** Fetches the top artist for a given year from the API.
+ *
+ * Sends a request to the backend and returns the parsed JSON data.
+ * If the request fails (for example due to a network error or a 404),
+ * the function returns an empty object instead of throwing an error.
+ *
+ * @param {number} year - The year to fetch artist data for.
+ * @returns {Promise<Object>} The artist data, or an empty object if the request fails. 
+ * */
   async function fetchArtistOfTheYear(year) {
     const res = await fetch(`${API_BASE}/api/v1/year/${year}/billboard/artist`);
     if (!res.ok) return {};
     const data = await res.json();
     return data ?? {};
   }
-
+/**
+ * Renders the "Top Artist" section for a given year.
+ *
+ * Clears any previous artist view, fetches top tracks for each artist,
+ * builds up to six artist cards from the template, and inserts them
+ * into the artist grid. Each card gets a placeholder image until the
+ * real image loads. If an image fails to load, the placeholder remains.
+ *
+ * After rendering, the cards are revealed with an auto‑reveal animation,
+ * and the page scrolls smoothly to the artist section.
+ *
+ * @param {Object} artistData - Data containing artists and optional images.
+ * @param {number} year - The selected year to fetch top songs for.
+ */  
 async function renderTopArtist(artistData, year) {
   clearTopArtist();
 
@@ -202,7 +306,11 @@ async function renderTopArtist(artistData, year) {
   });
 }
 
-  
+  /** Fetches the top songs for a given year from the Billboard API.
+   *
+   * Sends a request to the backend and returns the parsed JSON response.
+   * If the request fails, the function throws an error instead of returning fallback data.
+  */  
   async function fetchBillboardTopSong(year, limit=5) {
     const res = await fetch(
       `${API_BASE}/api/v1/year/${year}/billboard/artist/top-songs?limit=${limit}`);
@@ -212,6 +320,17 @@ async function renderTopArtist(artistData, year) {
       return await res.json();
   }
 
+  /**
+   * Renders a list of songs inside a given container.
+   * The function clears any previous content,
+   * adds a heading, and creates a numbered list of song titles.
+   *
+   * Each item in `songs` can be either a string or an object with a `title` property.
+   * Empty or invalid entries are skipped.
+   *
+   * @param {Array<string|Object>} songs - The songs to display.
+   * @param {HTMLElement} container - The element where the list should be rendered.
+   */  
   function renderTopSongs(songs, container) {
     if (!songs || songs.length === 0) return;
 
@@ -224,7 +343,7 @@ async function renderTopArtist(artistData, year) {
     listOfSongs.appendChild(heading);
 
     const ol = document.createElement("ol");
-    ol.className = "mt-2 text-sm list-decimal pl-5";
+    ol.className = "mt-2 text-sm list-decimal pl-0 m-0";
 
     ol.style.listStyleType = "decimal";
     ol.style.listStylePosition = "inside";
@@ -240,7 +359,19 @@ async function renderTopArtist(artistData, year) {
      listOfSongs.appendChild(ol);
   }
 
-
+/**
+ * Updates the status element with a message and a visual style.
+ *
+ * Clears any previous status content and then displays a new message
+ * based on the given status type. Supports three kinds of messages:
+ * - "loading": shows a spinner and a loading text
+ * - "error": shows the text in a red tone
+ * - "success": shows the text in a green tone
+ * - "info" (default): shows the text in a neutral color
+ *
+ * @param {string} text - The message to display.
+ * @param {"info"|"loading"|"error"|"success"} [kind="info"] - The type of status message.
+ */
 function setStatus(text, kind = "info") {
   statusEl.className = "text-center";
   statusEl.innerHTML = "";
@@ -266,6 +397,13 @@ function setStatus(text, kind = "info") {
   statusEl.appendChild(span);
 }
 
+/**
+ * Clears all result sections from the page.
+ *
+ * Empties the main results area, highlights, movie and series sections,
+ * hides the recap header, and resets the year badge. Used before rendering
+ * new data to ensure the UI starts from a clean state.
+ */
 function clearResults() {
   resultsEl.innerHTML = "";
   highlightsSection.innerHTML = "";
@@ -275,6 +413,23 @@ function clearResults() {
   yearBadge.textContent = "";
 }
 
+/**
+ * Renders a single month card and adds it to the results section.
+ *
+ * The card is cloned from a template, styled based on its index
+ * (alternating left/right reveal animations), and filled with the
+ * month title and its list of events. Each event becomes a list item.
+ *
+ * A small transition delay is applied based on the card’s position
+ * to create a staggered reveal effect. The card is then observed by
+ * the IntersectionObserver so it animates when scrolled into view.
+ *
+ * @param {Object} params - Data used to build the month card.
+ * @param {string} params.month - The month name (e.g., "January").
+ * @param {number} params.year - The year the month belongs to.
+ * @param {string[]} params.events - List of event descriptions.
+ * @param {number} params.index - Position of the card in the sequence.
+ */
 function renderMonthCard({ month, year, events, index }) {
   const node = tpl.content.firstElementChild.cloneNode(true);
 
@@ -306,6 +461,17 @@ function renderMonthCard({ month, year, events, index }) {
   observer.observe(card);
 }
 
+/**
+ * Fetches all data for a given year from the API.
+ *
+ * Builds the request URL, sends the fetch call, and returns the parsed
+ * JSON response. If the server responds with a non‑OK status, the function
+ * throws an error so the caller can handle it.
+ *
+ * @param {number|string} year - The year to request data for.
+ * @returns {Promise<Object>} The parsed year data from the API.
+ * @throws {Error} If the API responds with a non‑OK status.
+ */
 async function fetchYear(year) {
   const url = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
 
