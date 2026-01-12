@@ -34,3 +34,36 @@ def get_top_series_by_year(year: int):
         }
     )
     return response.json()
+
+
+def search_movie_by_title(title: str, year: int | None = None):
+    """Search for a movie by title and optionally year to get its details including poster"""
+    params = {
+        "query": title,
+        "include_adult": False,
+    }
+    if year:
+        params["year"] = year
+
+    response = httpx.get(
+        f"{BASE_URL}/search/movie",
+        headers=HEADERS,
+        params=params,
+    )
+    results = response.json().get("results", [])
+    return results[0] if results else None
+
+
+def search_person_by_name(name: str):
+    """Search for a person by name to get their profile image"""
+    response = httpx.get(
+        f"{BASE_URL}/search/person",
+        headers=HEADERS,
+        params={
+            "query": name,
+            "include_adult": False,
+        }
+    )
+    results = response.json().get("results", [])
+    return results[0] if results else None
+

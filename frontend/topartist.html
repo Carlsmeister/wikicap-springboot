@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <link rel="stylesheet" href="dist/output.css" />
+  </head>
+  <body class="page-shell">
+    <main class="page-main">
+      <header class="space-y-2 pt-3 ml-5">
+        <div class="flex items-center justify-center gap-2 pr-3">
+          <img src="https://img.icons8.com/?size=100&id=48164&format=png&color=000000" class="w-8 h-8 md:w-20 md:h-20 translate-y-[1px] opacity-80 hover:opacity-100 hover:drop-shadow-[0_0_6px_rgba(99,102,241,0.8)] transition" />
+          <h1 class="text-4xl md:text-5xl font-semibold tracking-tight uppercase">WikiCap</h1>
+        </div>
+      </header>
+
+      <form id="yearForm" class="year-form">
+        <input id="yearInput" type="text" name="year" placeholder="For example 1997" class="year-input" />
+        <button id="submitBtn" type="submit" class="btn-primary shadow-cta-teal hover-lift">Get year</button>
+      </form>
+      <div id="status" class="status-text"></div>
+      <h1 class="year-title"><span> </span><span id="heroText"></span></h1>
+
+      <section class="space-y-4">
+        <div id="recapHeader" class="hidden items-center justify-between">
+          <p class="section-label">Recap</p>
+          <span id="yearBadge" class="timeline-node"></span>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-line"></div>
+
+          <div id="results" class="space-y-10 py-6"></div>
+        </div>
+      </section>
+
+      <section>
+        <div id="highlightsSection"></div>
+        <div id="movieSection"></div>
+        <div id="seriesSection"></div>
+      </section>
+
+      <template id="ArtistCardTpl">
+        <div class="component-card shadow-glass-warm hover-lift flex flex-col gap-3">
+          <div class="flex gap-4 items-start">
+          <img class="w-16 h-16 rounded-2xl object-cover border border-slate-900/10" />
+          <div class="text-left space-y-1">
+            <p class="font-semibold text-slate-900 name"></p>
+            <p class="text-xs text-slate-500 song"></p>
+            <p class="text-sm text-slate-700 motivation"></p>
+          </div>
+        </div>
+
+        <div class="songs"></div>
+      </div>
+      </template>
+
+      <section id="ArtistSection" class="hidden relative">
+        <!-- Sticky viewport -->
+        <div class="sticky top-0 h-screen flex items-start pt-8">
+          <div class="mx-auto w-full max-w-9xl px-4">
+            <div class="flex items-center justify-between mb-6">
+              <p class="section-label">Artist of the year</p>
+              <span id="stats">Top Artist</span>
+            </div>
+
+            <div id="ArtistGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-stretch"></div>
+          </div>
+        </div>
+
+        <!-- Scroll-längden som gör att sektionen kan vara pinned en stund -->
+        <div id="ArtistPinSpacer" aria-hidden="true"></div>
+      </section>
+    </main>
+    <script type="module" src="./src/js/topartist.js"></script>
+  </body>
+</html>

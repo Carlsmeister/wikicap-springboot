@@ -5,7 +5,7 @@ def fetch_movies_for_year(year: int):
     raw = get_top_movies_by_year(year)
 
     movies = []
-    for item in raw.get("results", [])[:10]:
+    for item in raw.get("results", [])[:8]:
         movies.append({
             "title": item["title"],
             "rating": round(item["vote_average"], 1),
@@ -31,7 +31,7 @@ def fetch_series_for_year(year: int):
     )
 
     series = []
-    for item in ranked[:10]:
+    for item in ranked[:8]:
         series.append({
             "title": item["name"],
             "rating": round(item["vote_average"], 1),
