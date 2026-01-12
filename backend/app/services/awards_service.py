@@ -111,7 +111,6 @@ async def fetch_oscar_highlights(year: int):
         if cat.get("name") in OSCAR_CATEGORY_MAP
     ]
 
-    # FIXED: Fetch all category details concurrently
     category_details = await asyncio.gather(
         *[get_oscar_category_details(edition_id, cat["id"]) for cat in relevant_categories],
         return_exceptions=True

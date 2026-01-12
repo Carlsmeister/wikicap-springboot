@@ -13,7 +13,7 @@ export function renderHighlights(highlights, year) {
     Storlekar för posters. Mer info på tmbd
     w185 - Small thumbnail
     w342 - Medium size
-    w500 - Large (recommended)
+    w500 - Large
     w780 - Extra large
     original - Full resolution
     */
