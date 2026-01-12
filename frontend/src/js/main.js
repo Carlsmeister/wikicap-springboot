@@ -1,5 +1,6 @@
 import { renderHighlights, renderMovies, renderSeries } from "../components/MediaSection.js";
 import { renderWikiSection } from "../components/WikiSection.js";
+import { renderNobel, clearNobel } from "../components/NobelSection.js";
 
 const API_BASE = "http://127.0.0.1:8000";
 
@@ -14,8 +15,10 @@ const movieSection = document.querySelector("#movieSection");
 const seriesSection = document.querySelector("#seriesSection");
 
 const wikiTpl = document.querySelector("#wikiCardTpl");
+const wikiSection = document.querySelector("#wikiSection");
+const wikiStatsEl = document.querySelector("#wikiStats");
 const heroText = document.querySelector("#heroText");
-const tpl = wikiTpl;
+
 
 
 const recapHeader = document.querySelector("#recapHeader");
@@ -47,65 +50,6 @@ const observer = new IntersectionObserver(entries => {
 {  threshold: 0.15}
 
     );
-
-  function clearNobel() {
-  if (nobelGrid) nobelGrid.innerHTML = "";
-  if (nobelSection) nobelSection.classList.add("hidden");
-  if (statsEl) statsEl.textContent = "";
-}
-
-  function renderNobel(nobelData) {
-    clearNobel();
-
-
-    if (!nobelData || !nobelTpl || !nobelGrid || !nobelSection) return;
-
-    const winners = Object.entries(nobelData).flatMap(
-      ([category, people]) =>
-        people.map(p => ({...p, category}))
-    );
-
-    if (winners.length === 0) return;
-
-    nobelSection.classList.remove("hidden");
-
-    winners.forEach((winner, index) => {
-      const node = nobelTpl.content.firstElementChild.cloneNode(true);
-
-
-      const isLeft = index % 2 === 0;
-      node.classList.add("reveal",
-        "opacity-0",
-        "transition-all",
-        "duration-700",
-        "ease-out",
-        "blur-sm",
-        isLeft ? "-translate-x-10" : "translate-x-10"
-      );
-
-      node.dataset.reveal = isLeft ? "left" : "right";
-
-      const img = node.querySelector("img");
-      const nameEl = node.querySelector(".name");
-      const categoryEl = node.querySelector(".category");
-      const motivationEl = node.querySelector(".motivation");
-
-      nameEl.textContent = winner.name ?? "Unknown";
-      categoryEl.textContent = winner.category ?? "Unknown Category";
-      motivationEl.textContent = winner.motivation ?? "";
-
-      const imgUrl = winner.image || "";
-      if (imgUrl) {
-        img.src = imgUrl;
-        img.alt = `Portrait of ${winner.name}`;
-      } else {
-        img.src = "https://upload.wikimedia.org/wikipedia/en/e/ed/Nobel_Prize.png";
-        img.alt = "Nobel Prize Medal";
-      }
-      nobelGrid.appendChild(node);
-      observer.observe(node);
-    });
-  }
 
 function setStatus(text, kind = "info") {
   statusEl.className = "text-center";
@@ -154,37 +98,6 @@ function clearResults() {
   yearBadge.textContent = "";
 }
 
-function renderMonthCard({ month, year, events, index }) {
-  const node = tpl.content.firstElementChild.cloneNode(true);
-
-  const isOdd = index % 2 === 0;
-  node.classList.add(isOdd ? "justify-start" : "justify-end");
-
-  const card = node.querySelector(".component-card");
-
-  card.classList.add(isOdd ? "reveal-left" : "reveal-right");
-
-  card.style.transitionDelay = `${index * 80}ms`;
-  card.dataset.reveal = isOdd ? "left" : "right";
-
-  const title = node.querySelector(".monthTitle");
-  const list = node.querySelector(".monthList");
-
-  title.textContent = `${month} ${year}`;
-  title.classList.add(isOdd ? "text-amber-200" : "text-amber-400");
-
-
-
-  for (const e of events) {
-    const li = document.createElement("li");
-    li.textContent = `• ${e}`;
-    li.className = "leading-relaxed";
-    list.appendChild(li);
-  }
-
-  resultsEl.appendChild(node);
-  observer.observe(card);
-}
 
 async function fetchYear(year) {
   const url = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
@@ -205,7 +118,7 @@ form.addEventListener("submit", async (e) => {
   const raw = input.value.trim();
   const year = Number(raw);
 
-  clearNobel();
+  clearNobel({ nobelGrid, nobelSection, statsEl});
   clearResults();
   setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
@@ -214,8 +127,12 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await fetchYear(year);
 
-    if (data.nobel_prizes) {
-      renderNobel(data.nobel_prizes.prizes);
+    if (data?.nobel_prizes) {
+      renderNobel(
+        data.nobel_prizes,
+        { nobelSection, nobelGrid, nobelTpl, statsEl },
+        observer
+      );
     }
 
     const eventsByMonth = data?.events_by_month ?? {};
@@ -229,9 +146,12 @@ form.addEventListener("submit", async (e) => {
 
     heroText.textContent = `The year was ${year}`;
 
-    entries.forEach(([month, events], i) => {
-      renderMonthCard({ month, year, events, index: i });
-    });
+    const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
+    resultsEl.appendChild(wikiFragment);
+
+    resultsEl
+      .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
+      .forEach(el => observer.observe(el));
 
     if (data.movie_highlights && data.movies?.top_movies && data.series?.top_series) {
 

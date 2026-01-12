@@ -35,7 +35,6 @@
         </div>
       </section>
 
-
       <!-- Wikipedia recap del -->
       <template id="wikiCardTpl">
         <div class="flex mt-6">
@@ -57,35 +56,32 @@
           <div class="grow h-1 rounded-full bg-linear-to-r from-[#03A6A1]/40 to-transparent"></div>
         </div>
 
-      <template id="spotifyCardTpl">
+        <template id="spotifyCardTpl">
           <div class="spotify-card-wrapper opacity-0 transition-opacity duration-1000 ease-in-out">
             <div class="component-card spotify-component-card shadow-glass-warm hover-lift flex gap-4 items-start">
-              <a class="spotify-album-image" target="_blank">
-                <img class="w-25 h-25 rounded-2xl object-cover border border-slate-900/10"/></a>
-                <div class="text-left space-y-1">
-                  <p class="text-20 font-semibold text-slate-1000 song-title"></p>
-                  <p class="text-base text-slate-900 song-artist"></p>
-                  <p class="text-sm text-slate-700 song-album"></p>
-                  <p class="text-sm text-slate-700 song-release-date"></p>
-                  <div class="flex items-center gap-2">
-                    <img src="src/img/spotify_logo3.png" class="w-4 h-4" alt="">
-                    <a class="text-sm text-slate-700 song-link" target="_blank">Listen on Spotify</a>
-                  </div>
+              <a class="spotify-album-image" target="_blank"> <img class="w-25 h-25 rounded-2xl object-cover border border-slate-900/10" /></a>
+              <div class="text-left space-y-1">
+                <p class="text-20 font-semibold text-slate-1000 song-title"></p>
+                <p class="text-base text-slate-900 song-artist"></p>
+                <p class="text-sm text-slate-700 song-album"></p>
+                <p class="text-sm text-slate-700 song-release-date"></p>
+                <div class="flex items-center gap-2">
+                  <img src="src/img/spotify_logo3.png" class="w-4 h-4" alt="" />
+                  <a class="text-sm text-slate-700 song-link" target="_blank">Listen on Spotify</a>
+                </div>
               </div>
             </div>
-        </div>
-
-      </template>
+          </div>
+        </template>
         <div id="spotifyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
       </section>
-    </section>
-
 
       <!-- Nobel prize del -->
-      <section class="hidden space-y-6 pt-10" id="nobelSection">
-        <div class="flex items-center justify-between">
-          <p class="section-label">Nobel Prize Winners Of The Year</p>
-          <span id="stats">Nobel Prize</span>
+      <section id="nobelSection" class="hidden">
+        <div class="flex items-center gap-2">
+          <p class="spotify-card-label">Nobel Prize Winners:</p>
+          <p id="stats" class="popular-songs-label"></p>
+          <div class="grow h-1 rounded-full bg-linear-to-r from-[#03A6A1]/40 to-transparent"></div>
         </div>
 
         <div id="nobelGrid" class="nobel-grid"></div>
@@ -94,7 +90,9 @@
             <h3 class="nobel-name name"></h3>
             <img class="nobel-img" />
             <div class="space-y-2">
-              <p class="nobel-category category"></p>
+              <p class="nobel-category category">
+                <span class="inline-flex items-center rounded-md bg-yellow-400/10 px-2 py-1 text-xs font-medium text-yellow-500 inset-ring inset-ring-yellow-400/20"></span>
+              </p>
               <p class="nobel-motivation motivation"></p>
             </div>
           </div>
@@ -110,6 +108,5 @@
 
     <script type="module" src="./src/js/main.js"></script>
     <script type="module" src="./src/components/SpotifySection.js"></script>
-
   </body>
-  </html>
+</html>
