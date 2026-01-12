@@ -4,10 +4,29 @@ from bs4 import BeautifulSoup
 
 def extract_nobel(html: str) -> dict:
     """
-    This function extracts Nobel Prize laureates from the wikitext of a Wikipedia page.
-    args:
-        wikitext (str): The wikitext content of the Wikipedia page.
-    returns: dict:x A dictionary containing Nobel Prize categories and their laureates.
+    Extract Nobel Prize laureates from the HTML of a Wikipedia Nobel Prize page.
+
+    The function looks for headings matching standard Nobel categories and
+    then parses the following wikitable to extract:
+    - Laureate names
+    - Motivations
+    - Image URLs (if available)
+
+    Args:
+        html (str): The HTML string from the wikipedia API ("prop=text")
+
+    Returns:
+        A mapping of nobel category -> list of laureate dicts
+
+        Example:
+            {
+            "Physics": [
+                {"name": "Name", "motivation": "…", "image": "https://…"}
+            ],
+            "Peace": [...]
+            }
+
+
     """
 
     soup = BeautifulSoup(html, "html.parser")

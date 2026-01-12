@@ -5,7 +5,21 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class WikiCleaner():
     """
-    A class for cleaning and processing Wikipedia year summary text.
+    Utility for cleaning and normalizing event lines extracted from Wikipedia wikitext.
+
+    The cleaner removes references, HTML, templates, file links and formatting,
+    and converts wiki links (e.g. [[Page|label]]) into human-readable text.
+
+    Attributes:
+        ref_tag: Regex for <ref> ... </ref> tags.
+        ref_self: Regex for self-closing <ref/> tags.
+        html_tag: Regex for HTML tags.
+        comments: Regex for HTML comments <!-- ... -->.
+        templates: Regex for template blocks {{ ... }}.
+        files: Regex for [[File:...]] / [[Image:...]] links.
+        wiki_link: Regex for wiki links [[...]].
+        quotes: Regex for wiki bold/italic markers ('' and ''').
+        date_prefix: Regex used to detect and optionally preserve "Month day - " prefix.
     """
     ref_tag: re.Pattern
     ref_self: re.Pattern
@@ -20,7 +34,10 @@ class WikiCleaner():
     @staticmethod
     def build() -> "WikiCleaner":
         """
-        Factory method to create a WikiCleaner instance with predefined regex patterns.
+        Create a WikiCleaner instance with precompiled regex patterns.
+
+        Returns:
+            WikiCleaner: An instance of WikiCleaner with compiled regex patterns.
         """
 
         months_pattern = r"==\s*(January|February|March|April|May|June|July|August|September|October|November|December)"
@@ -41,9 +58,19 @@ class WikiCleaner():
 
     def replace_wiki_link(self, match: re.Match) -> str:
         """
-        Replacement function to extract the display text from a Wikipedia link.
-        args:
-            match (re.Match): The regex match object.
+    Convert a wiki link match into display text.
+
+    Examples:
+        [[Stockholm]] -> "Stockholm"
+        [[Stockholm|the capital]] -> "the capital"
+        [[Category:Something]] -> "" (filtered out)
+
+    Args:
+        match: A regex match object from `self.wiki_link`.
+
+    Returns:
+        The cleaned display text for the link, or an empty string if the link
+        points to a filtered namespace (Category/Help/Portal/Special).
         """
         inner = (match.group(1) or "").strip()
         if not inner:
@@ -62,11 +89,23 @@ class WikiCleaner():
 
     def clean_event_line(self, line: str, *, max_len: int = 200, keep_date_prefix: bool = True) -> str:
         """
-        Cleans a single event line by removing unwanted patterns and truncating if necessary.
-        args:
-            line (str): The event line to clean.
-            max_len (int): Maximum length of the cleaned line.
-        returns: str: The cleaned event line.
+        Clean a single bullet-point event line from wikipedia wikitext.
+
+        This function expects Wikipedia-style bullet lines (starting with `*`).
+        It optionally preserves a shortened date prefix (e.g. "Jan 12 - "),
+        removes references/templates/markup, resolves wiki links to plain text,
+        normalizes whitespace, and truncates overly long lines.
+
+        Args:
+            Line (str): The raw wikitext line to clean (typically starting with "*")
+            max_len (int): Maximum length of the cleaned line (including prefix)
+            keep_date_prefix (bool): Whether to preserve the "Mon DD - " date prefix if present
+
+        Returns:
+        A cleaned event string, or an empty string if:
+        - the input is not a bullet line,
+        - the cleaned result is too short / empty after filtering.
+
         """
 
         stripped = line.strip()
