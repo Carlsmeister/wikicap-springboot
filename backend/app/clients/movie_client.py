@@ -8,6 +8,7 @@ HEADERS = {
 }
 
 def get_top_movies_by_year(year: int):
+    """Fetch top movies for a given year from TMDb discover endpoint."""
     response = httpx.get(
         f"{BASE_URL}/discover/movie",
         headers=HEADERS,
@@ -20,7 +21,9 @@ def get_top_movies_by_year(year: int):
     )
     return response.json()
 
+
 def get_top_series_by_year(year: int):
+    """Fetch top TV series for a given year from TMDb discover endpoint."""
     response = httpx.get(
         f"{BASE_URL}/discover/tv",
         headers=HEADERS,
@@ -37,7 +40,7 @@ def get_top_series_by_year(year: int):
 
 
 def search_movie_by_title(title: str, year: int | None = None):
-    """Search for a movie by title and optionally year to get its details including poster"""
+    """Search TMDb for a movie title (optionally filtered by year) to retrieve details like poster path."""
     params = {
         "query": title,
         "include_adult": False,
@@ -55,7 +58,7 @@ def search_movie_by_title(title: str, year: int | None = None):
 
 
 def search_person_by_name(name: str):
-    """Search for a person by name to get their profile image"""
+    """Search TMDb for a person to retrieve their profile image and metadata."""
     response = httpx.get(
         f"{BASE_URL}/search/person",
         headers=HEADERS,
@@ -66,4 +69,3 @@ def search_person_by_name(name: str):
     )
     results = response.json().get("results", [])
     return results[0] if results else None
-

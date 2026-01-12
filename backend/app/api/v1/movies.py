@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.get("/year/{year}/movies")
 def get_movies(year: int):
+    """Return top movies for the given year from TMDb, with validation and error mapping."""
     validate_year(year)
 
     try:
@@ -46,6 +47,7 @@ def get_movies(year: int):
 
 @router.get("/year/{year}/series")
 def get_series(year: int):
+    """Return top TV series for the given year from TMDb, with validation and error mapping."""
 
     validate_year(year)
 

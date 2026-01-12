@@ -8,6 +8,7 @@ router = APIRouter()
 
 @router.get("/year/{year}/awards")
 def get_awards(year: int):
+    """Return Oscar highlights (Best Picture, Actor, Actress) for the given year with validation and error mapping."""
     validate_year(year)
 
     try:
@@ -41,5 +42,3 @@ def get_awards(year: int):
             detail = f"NOT FOUND: No Oscar data found for year {year}."
         )
     return highlights
-
-

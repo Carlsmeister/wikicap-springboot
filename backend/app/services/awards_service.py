@@ -13,6 +13,7 @@ OSCAR_CATEGORY_MAP = {
 }
 # Extract movie title and character name from "more" field
 def extract_movie_title(more_field: str) -> str:
+    """Extract movie title from the 'more' field, stripping any character names in braces."""
     if not more_field:
         return ""
     # Remove character name in curly braces
@@ -21,6 +22,7 @@ def extract_movie_title(more_field: str) -> str:
 
 
 def fetch_oscar_highlights(year: int):
+    """Aggregate Oscar highlights (Best Picture/Actor/Actress) for a year using The Awards API and TMDb lookups."""
     editions = get_oscar_edition_by_year(year)
     if not editions:
         return None
@@ -73,4 +75,3 @@ def fetch_oscar_highlights(year: int):
         "oscars": oscars,
         "source": "The Awards API",
     }
-

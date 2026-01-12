@@ -1,3 +1,10 @@
+"""Application configuration loader for external API credentials.
+
+Loads environment variables from the project .env file (two directories up) and
+raises clear errors when required keys are missing. Exposes TMDB, LastFM, and
+Spotify credentials as module-level constants for import by clients/services.
+"""
+
 import os
 from dotenv import load_dotenv
 from pathlib import Path

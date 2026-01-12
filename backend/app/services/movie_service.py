@@ -2,6 +2,7 @@ from app.clients.movie_client import get_top_movies_by_year
 from app.clients.movie_client import get_top_series_by_year
 
 def fetch_movies_for_year(year: int):
+    """Fetch top movies for a given year from TMDb and normalize to our payload shape."""
     raw = get_top_movies_by_year(year)
 
     movies = []
@@ -21,6 +22,7 @@ def fetch_movies_for_year(year: int):
     }
 
 def fetch_series_for_year(year: int):
+    """Fetch top series for a given year from TMDb, rank them, and normalize the payload."""
     raw = get_top_series_by_year(year)
     results = raw.get("results", [])
 
@@ -47,6 +49,7 @@ def fetch_series_for_year(year: int):
     }
 
 def series_score(item: dict, year: int) -> float:
+    """Compute a ranking score using popularity, rating, and an age penalty for a show."""
     popularity = item.get("popularity", 0)
     rating = item.get("vote_average", 0) / 10
 
@@ -55,6 +58,7 @@ def series_score(item: dict, year: int) -> float:
 
 
 def age_penalty(first_air_date: str | None, year: int) -> float:
+    """Reduce score for older series; recent shows get no penalty."""
     if not first_air_date:
         return 1.0
 
