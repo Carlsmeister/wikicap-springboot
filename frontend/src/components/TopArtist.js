@@ -227,9 +227,9 @@ async function renderTopArtist(artistData, year) {
    * @param {number} [limit=5] - Maximum number of songs to return.
    * @returns {Promise<Object>} Parsed JSON response from the API.
   */  
-  async function fetchBillboardTopSong(year, limit=5) {
+  async function fetchBillboardTopSong(year) {
     const res = await fetch(
-      `${API_BASE}/api/v1/year/${year}/billboard/artist/top-songs?limit=${limit}`);
+      `${API_BASE}/api/v1/year/${year}/billboard/artist/top-songs`);
     if (!res.ok) {
       throw new Error("Failed to fetch top songs");
     }

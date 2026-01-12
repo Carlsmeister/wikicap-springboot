@@ -122,8 +122,8 @@ async def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         response.raise_for_status()
         
     data = response.json()
-        
-    top_tracks = data.get("topTracks")
+
+    top_tracks = data.get("toptracks")
     if not top_tracks:
         return []
             
@@ -139,4 +139,3 @@ async def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         for track in tracks
         if track.get("name")
     ]
-
