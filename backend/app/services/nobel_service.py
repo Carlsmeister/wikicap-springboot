@@ -9,7 +9,7 @@ HEADERS = {
     "Accept-Language": "en",
 }
 
-def get_nobel_prizes(year: int) -> dict:
+async def get_nobel_prizes(year: int) -> dict:
     """
     Fetch Nobel Prize laureates for a given year from Wikipedia.
     This function fetches the wikipedia page dedicated
@@ -31,14 +31,15 @@ def get_nobel_prizes(year: int) -> dict:
         "formatversion": "2",
     }
 
-    r = httpx.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
-    r.raise_for_status()
-    data = r.json()
+    async with httpx.AsyncClient() as client:
+        r = await client.get(WIKI_API, params=params, headers=HEADERS, timeout=20)
+        r.raise_for_status()
+        data = r.json()
 
     html = (data.get("parse", {}).get("text") or "")
 
     prizes = extract_nobel(html)
     return {
         "year": year,
-        "nobel_prizes": prizes,
+        "prizes": prizes,
     }

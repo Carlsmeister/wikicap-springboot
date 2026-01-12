@@ -1,3 +1,11 @@
+"""
+Awards service module.
+
+This module provides business logic for fetching and processing Oscar (Academy Awards)
+data from The Awards API, enriched with images from The Movie Database (TMDb).
+Focuses on the three major categories: Best Picture, Best Actor, and Best Actress.
+"""
+
 from app.clients.awards_client import (
     get_oscar_edition_by_year,
     get_oscar_categories,
@@ -11,9 +19,29 @@ OSCAR_CATEGORY_MAP = {
     "Actor In A Leading Role": "bestActor",
     "Actress In A Leading Role": "bestActress",
 }
-# Extract movie title and character name from "more" field
+
 def extract_movie_title(more_field: str) -> str:
-    """Extract movie title from the 'more' field, stripping any character names in braces."""
+    """
+    Extract clean movie title from The Awards API 'more' field.
+
+    The Awards API sometimes includes character names in curly braces within
+    the 'more' field (e.g., "Joker {Arthur Fleck}"). This function strips
+    those annotations to return a clean movie title.
+
+    Args:
+        more_field (str): The 'more' field from The Awards API nominee data.
+
+    Returns:
+        str: Clean movie title with character annotations removed.
+
+    Example:
+        extract_movie_title("Joker {Arthur Fleck}")
+        -->    "Joker"
+        extract_movie_title("The Irishman")
+        -->    "The Irishman"
+        extract_movie_title("")
+        -->    ""
+    """
     if not more_field:
         return ""
     # Remove character name in curly braces
@@ -21,14 +49,61 @@ def extract_movie_title(more_field: str) -> str:
     return title.strip()
 
 
-def fetch_oscar_highlights(year: int):
-    """Aggregate Oscar highlights (Best Picture/Actor/Actress) for a year using The Awards API and TMDb lookups."""
-    editions = get_oscar_edition_by_year(year)
+async def fetch_oscar_highlights(year: int):
+    """
+    Fetch Oscar winners for major categories and enrich with TMDb images.
+
+    Retrieves the Oscar edition for the specified year from The Awards API,
+    then fetches winners for Best Picture, Best Actor (Leading Role), and
+    Best Actress (Leading Role). Movie posters and actor profile images are
+    retrieved from TMDb to enhance the response data.
+
+    Args:
+        year (int): The Oscar ceremony year (e.g., 2020 for the 92nd Academy Awards).
+
+    Returns:
+        dict | None: A dictionary containing:
+            - year (int): The requested year
+            - oscars (dict): Dictionary with up to three keys:
+                - bestPicture (dict, optional):
+                    - title (str): Winning movie title
+                    - poster (str | None): TMDb poster path
+                - bestActor (dict, optional):
+                    - name (str): Winning actor's name
+                    - movie (str): Movie they won for
+                    - image (str | None): TMDb profile image path
+                - bestActress (dict, optional):
+                    - name (str): Winning actress's name
+                    - movie (str): Movie they won for
+                    - image (str | None): TMDb profile image path
+            - source (str): Always "The Awards API"
+
+        Returns None if no Oscar edition found for the year.
+
+    Note:
+        - Not all categories may be present if no winner is found
+        - Image paths may be None if TMDb lookup fails
+        - Categories are fetched concurrently but processed sequentially
+          to maintain proper error handling for each TMDb lookup
+
+    Example:
+        await fetch_oscar_highlights(2020)
+        {
+            "year": 2020,
+            "oscars": {
+                "bestPicture": {"title": "Parasite", "poster": "/path.jpg"},
+                "bestActor": {"name": "Joaquin Phoenix", "movie": "Joker", "image": "/path.jpg"},
+                "bestActress": {"name": "Renée Zellweger", "movie": "Judy", "image": "/path.jpg"}
+            },
+            "source": "The Awards API"
+        }
+    """
+    editions = await get_oscar_edition_by_year(year)
     if not editions:
         return None
 
     edition_id = editions[0]["id"]
-    categories = get_oscar_categories(edition_id)
+    categories = await get_oscar_categories(edition_id)
 
     oscars = {}
 
@@ -39,7 +114,7 @@ def fetch_oscar_highlights(year: int):
             continue
 
         key = OSCAR_CATEGORY_MAP[category_name]
-        nominees = get_oscar_category_details(edition_id, category["id"])
+        nominees = await get_oscar_category_details(edition_id, category["id"])
 
         winner = None
 
@@ -53,7 +128,7 @@ def fetch_oscar_highlights(year: int):
 
         if key == "bestPicture":
             movie_title = winner.get("name")
-            movie_data = search_movie_by_title(movie_title, year)
+            movie_data = await search_movie_by_title(movie_title, year)
 
             oscars[key] = {
                 "title": movie_title,
@@ -62,7 +137,7 @@ def fetch_oscar_highlights(year: int):
         else:
             person_name = winner.get("name")
             movie_title = extract_movie_title(winner.get("more", ""))
-            person_data = search_person_by_name(person_name)
+            person_data = await search_person_by_name(person_name)
 
             oscars[key] = {
                 "name": person_name,

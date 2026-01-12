@@ -54,14 +54,6 @@ const observer = new IntersectionObserver(entries => {
   if (statsEl) statsEl.textContent = "";
 }
 
-  // Start of nobel prize winners fetch
-  async function fetchNobel(year) {
-    const res = await fetch(`${API_BASE}/api/v1/year/${year}/nobel`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data.nobel_prizes ?? {};
-  }
-
   function renderNobel(nobelData) {
     clearNobel();
 
@@ -210,28 +202,21 @@ async function fetchYear(year) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-
   const raw = input.value.trim();
   const year = Number(raw);
 
-
   clearNobel();
   clearResults();
-  setStatus("", "loading");
+  setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
   try {
-    const nobelData = await fetchNobel(year);
-    renderNobel(nobelData);
-  } catch (err) {
-    console.error(err);
-    setStatus("Kunde inte hämta Nobel-data.", "error");
-    clearNobel();
-  }
-
-  try {
     const data = await fetchYear(year);
+
+    if (data.nobel_prizes) {
+      renderNobel(data.nobel_prizes.prizes);
+    }
 
     const eventsByMonth = data?.events_by_month ?? {};
     const entries = Object.entries(eventsByMonth);
@@ -242,11 +227,7 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    // Update hero text
     heroText.textContent = `The year was ${year}`;
-    //const entries = Object.entries(eventsByMonth);
-
-
 
     entries.forEach(([month, events], i) => {
       renderMonthCard({ month, year, events, index: i });
