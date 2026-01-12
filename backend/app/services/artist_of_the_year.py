@@ -44,14 +44,6 @@ async def get_artist_of_the_year(year: int) -> dict:
     """
     html = await get_billboard_page(year)
 
-    # Fel: kunde inte hämta html eller html var tom
-    if html is None or html.strip() == "":
-        return {
-            "year": year, 
-            "artists": [], 
-            "error": "Could not fetch Billboard page"
-        }
-
     soup = BeautifulSoup(html, "html.parser")
 
     # Wikipedia har ofta flera wikitable — vi letar efter en tabell vars header innehåller "Artist"
@@ -77,8 +69,7 @@ async def get_artist_of_the_year(year: int) -> dict:
     if selected_table is None or artist_column_index is None:
         return {
             "year": year, 
-            "artists": [], 
-            "error": "Could not find a table with an Artist column"
+            "artists": []
         }
 
     # Plocka ut artister från rätt kolumn

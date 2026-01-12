@@ -19,14 +19,6 @@ async def get_year_with_hit_songs(year: int) -> dict:
    
     artists_payload = await get_artist_of_the_year(year)
 
-    # Om get_artist_of_the_year returnerar felobjekt
-    if isinstance(artists_payload, dict) and artists_payload.get("error"):
-        return {
-            "year": year,
-            "artists": [],
-            "error": artists_payload.get("error")
-        }
-
     # Plocka ut själva listan med artistnamn
     artist_names = artists_payload.get("artists", []) if isinstance(artists_payload, dict) else artists_payload
 

@@ -1,8 +1,5 @@
 import httpx
-from dotenv import load_dotenv
 import os
-from pathlib import Path
-
 
 HEADERS = {
     "User-Agent": "WikiCap/1.0 (https://github.com/WikiCap/year-overview)"
@@ -31,19 +28,12 @@ async def get_billboard_page(year: int) -> str | None:
     else: 
         url = ( f"https://en.wikipedia.org/wiki/List_of_Billboard_Hot_100_number-one_singles_of_{year}")
     
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=HEADERS, timeout=20.0, follow_redirects=True)
-    except Exception as e:
-        print("DEBUG fetch exception", e)
-        return None 
-    print("DEBUG fetch:", year, "status:", response.status_code, "url:", str(response.url))   
-    
-    if response.status_code != 200:
-        return None
-    
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=HEADERS, timeout=20.0, follow_redirects=True)
+        response.raise_for_status()
+
     return response.text
-    
+
 URL = "https://ws.audioscrobbler.com/2.0/"
 LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
@@ -73,14 +63,9 @@ async def get_artist_lastfm(artist_name: str, limit: int=9) ->list[str]:
         "limit": limit,
     }
     
-    try: 
-        async with httpx.AsyncClient() as client:
-            response = await client.get(URL, params=params, timeout=15)
-    except httpx.ReadTimeout:
-        return []
-    
-    if response.status_code != 200:
-        return []
+    async with httpx.AsyncClient() as client:
+        response = await client.get(URL, params=params, timeout=15)
+        response.raise_for_status()
     
     api_data = response.json()
     
@@ -132,18 +117,9 @@ async def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         "autocorrect": 1,
     }
         
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(URL, params=params, timeout=15)
-    except httpx.ReadTimeout:
-        return []
-    
-    print("STATUS:", response.status_code)
-    print("URL:", response.url)
-    print("RAW RESPONSE:", response.text[:500])
-        
-    if response.status_code != 200:
-        return []
+    async with httpx.AsyncClient() as client:
+        response = await client.get(URL, params=params, timeout=15)
+        response.raise_for_status()
         
     data = response.json()
         
