@@ -1,14 +1,13 @@
 import base64
 import json
-import os
 from app.core import config
 import httpx
 
 SPOTIFY_BASE_URL = "https://api.spotify.com/v1/search"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 
-spotify_client_id = os.getenv("SPOTIFY_CLIENT_ID")
-spotify_client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+spotify_client_id = config.SPOTIFY_CLIENT_ID
+spotify_client_secret = config.SPOTIFY_CLIENT_SECRET
 
 def get_spotify_token():
     """

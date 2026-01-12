@@ -1,8 +1,9 @@
 from app.services.artist_of_the_year import get_artist_of_the_year
 from app.clients.billboard_artist_client import get_hit_song
+import asyncio
 
           
-def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
+async def get_year_with_hit_songs(year: int) -> dict:
     """
     Combines artists of a given year with their hit songs. 
     
@@ -11,19 +12,18 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
     
     Args:
         year (int): The year for which artists and songs to be retrieved.
-        limit (int): Maximum number of top songs to return for each artist. Defaults at 5.
-    
+
     :Returns: 
         dict: A dictionary containing the year, artist names and their top songs.
     """   
    
-    artists_payload = get_artist_of_the_year(year)
+    artists_payload = await get_artist_of_the_year(year)
 
     # Om get_artist_of_the_year returnerar felobjekt
     if isinstance(artists_payload, dict) and artists_payload.get("error"):
         return {
             "year": year,
-            "artist": [],
+            "artists": [],
             "error": artists_payload.get("error")
         }
 
@@ -32,19 +32,25 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
 
     result = {
         "year": year,
-        "artist": []
+        "artists": []
     }
 
-    for name in artist_names:
-        top_songs = get_hit_song(name, limit)
+    async def fetch_artist_songs(name: str):
+        top_songs = await get_hit_song(name, 5)
         if not top_songs:
-            continue
-
-        result["artist"].append({
+            return None
+        return {
             "artist": name,
-            "toptracks": top_songs
-        })
+            "top_tracks": top_songs
+        }
+
+    artist_results = await asyncio.gather(
+        *[fetch_artist_songs(name) for name in artist_names],
+        return_exceptions=True
+    )
+
+    for artist_data in artist_results:
+        if artist_data and not isinstance(artist_data, Exception):
+            result["artists"].append(artist_data)
 
     return result
-
-   

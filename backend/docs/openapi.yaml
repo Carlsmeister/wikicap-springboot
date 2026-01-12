@@ -1,4 +1,3 @@
-
 ## Detta är endast filspecfik information
 openapi: 3.0.0
 info:
@@ -126,35 +125,35 @@ paths:
         '500':
           description: Internal server error
 
-  /api/v1/year/{year}/billboard/artist:   
+  /api/v1/year/{year}/billboard/artist:
     get:
       summary: Get Billboard Hot 100 top artist for a give year.
-      description: Based on year input, it will return a dictionary containing a list of top artist names for given year. 
-      tags: 
-        - Top Artists    
+      description: Based on year input, it will return a dictionary containing a list of top artist names for given year.
+      tags:
+        - Top Artists
       parameters:
-      - name: year
-        in: path
-        required: true
-        description:  Input to generate list of Top artists for given year.
-        schema:
-          type: integer
-          minimum: 1958
-          maximum: 2026
+        - name: year
+          in: path
+          required: true
+          description:  Input to generate list of Top artists for given year.
+          schema:
+            type: integer
+            minimum: 1958
+            maximum: 2026
           example: 1991
-        responses:
-          '200':
+      responses:
+        '200':
           description: Top artists successfully retrieved
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TopArtistsResponse'
-          '400':
-            description: Invalid year parameter 
-          '404':  
-            description: No data found for that specified year 
-          '500':
-            description: Internal server error     
+        '400':
+          description: Invalid year parameter
+        '404':
+          description: No data found for that specified year
+        '500':
+          description: Internal server error
 
   /api/v1/year/{year}/billboard/artist/top-songs:
     get:
@@ -162,37 +161,103 @@ paths:
       description: Based on year and optional 'limit' (max top songs per artist), returns artists and their top songs.
       tags:
         - Top Songs
-      parameters: 
-      - name: year
-        in: path
-        required: true
-        description: (Year) input to fetch top songs.
-        schema:
-          type: integer
-          minimum: 1958
-          maximum: 2026
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: (Year) input to fetch top songs.
+          schema:
+            type: integer
+            minimum: 1958
+            maximum: 2026
           example: 1997
-      - name: limit
-        in: query 
-        required: false
-        description: Max number of songs to display per artist. Default is set at 5.
-        schema:
-          type: integer
-          default: 5
+        - name: limit
+          in: query
+          required: false
+          description: Max number of songs to display per artist. Default is set at 5.
+          schema:
+            type: integer
+            default: 5
       responses:
         '200':
           description: Top songs successfully retrieved
-          content: 
+          content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TopSongsResponse'
-        '400':  
+        '400':
           description: Invalid year parameter
         '404':
-          description: No data found for specified year 
+          description: No data found for specified year
         '500':
           description: Internal server error
-                         
+
+  /api/v1/year/{year}/nobel:
+    get:
+      summary: Get Nobel Prize laureates for a specific year
+      description: Returns Nobel Prize laureates for the specified year, grouped by category (name, motivation, and image URL when available).
+      tags:
+        - Nobel
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve Nobel Prize laureates for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Nobel Prize laureates successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NobelResponse'
+        '400':
+          description: Invalid year parameter
+        '404':
+          description: No Nobel Prize data found for the specified year
+        '429':
+          description: Rate limit exceeded when accessing Nobel Prize data
+        '500':
+          description: Internal server error
+
+  /api/v1/year/{year}/wiki:
+    get:
+      summary: Get Wikipedia events summary for a specific year
+      description: Returns a summarized list of notable events for each month in the specified year, extracted and cleaned from Wikipedia.
+      tags:
+        - Wikipedia
+      parameters:
+        - name: year
+          in: path
+          required: true
+          description: The year to retrieve Wikipedia events for
+          schema:
+            type: integer
+            minimum: 1900
+            maximum: 2100
+          example: 2019
+      responses:
+        '200':
+          description: Wikipedia year summary successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WikiSummaryResponse'
+        '400':
+          description: Invalid year parameter
+        '404':
+          description: Wikipedia page for the year not found OR no events found
+        '429':
+          description: Rate limit exceeded when accessing Wikipedia
+        '502':
+          description: Bad gateway (Wikipedia returned an unexpected status)
+        '500':
+          description: Internal server error
+
 components:
   schemas:
     YearResponse:
@@ -215,6 +280,10 @@ components:
           $ref: '#/components/schemas/MoviesResponse'
         series:
           $ref: '#/components/schemas/SeriesResponse'
+        billboard_top_artists:
+          $ref: '#/components/schemas/TopArtistsResponse'
+        billboard_artist_top_songs:
+          $ref: '#/components/schemas/TopSongsResponse'
 
     MoviesResponse:
       type: object
@@ -223,7 +292,7 @@ components:
           type: integer
           description: The requested year
           example: 2019
-        topMovies:
+        top_movies:
           type: array
           description: List of top 10 movies for the year
           items:
@@ -231,7 +300,7 @@ components:
         source:
           type: string
           description: Data source
-          example: TMDb 
+          example: TMDb
 
     Movie:
       type: object
@@ -253,7 +322,7 @@ components:
           type: string
           description: Poster image path
           example: /or06FN3Dka5tukK1e9sl16pB3iy.jpg
-        releaseDate:
+        release_date:
           type: string
           format: date
           description: Release date
@@ -266,7 +335,7 @@ components:
           type: integer
           description: The requested year
           example: 2019
-        topSeries:
+        top_series:
           type: array
           description: List of top 10 series for the year
           items:
@@ -296,7 +365,7 @@ components:
           type: string
           description: Poster image path
           example: /u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg
-        releaseDate:
+        release_date:
           type: string
           format: date
           description: First air date
@@ -324,29 +393,6 @@ components:
           description: Data source
           example: The Awards API
 
-components:
-  schemas:
-    TopArtistsResponse:
-      type: object
-      properties:
-        year:
-        type: integer
-        description: The requested year
-        example: 2012
-      artists:
-        type: array
-        description: List of top artist for given year. 
-        example: ["Mariah Carey", "Janet Jackson"]
-      artists_with_images:
-        type: array  
-        items: 
-          $ref: '#/components/schemas/ArtistWithImage'
-        description: List of artists with image URLs
-      source: 
-        type: string
-        description: Data source
-        example: Billboard          
-
     BestPictureWinner:
       type: object
       properties:
@@ -367,6 +413,33 @@ components:
           description: Movie for which the award was won
           example: Joker
 
+    TopArtistsResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2012
+        artists:
+          type: array
+          description: List of top artist for given year.
+          items:
+            type: string
+          example: ["Mariah Carey", "Janet Jackson"]
+        artists_with_images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtistWithImage'
+          description: List of artists with image URLs
+        error:
+          type: string
+          nullable: true
+          description: Error message when artist extraction fails
+        source:
+          type: string
+          description: Data source
+          example: Billboard
+
     ArtistWithImage:
       type: object
       properties:
@@ -374,24 +447,28 @@ components:
           type: string
           description: Artist name
           example: Shakira
-        image: 
+        image:
           type: string
           format: uri
           description: URL to an artist image
-          example: "https://upload,wikimedia.org/..."      
+          example: "https://upload,wikimedia.org/..."
       required: [name, image]
 
     TopSongsResponse:
       type: object
       properties:
-        year: 
+        year:
           type: integer
           example: 1995
-        artist:
+        artists:
           type: array
           description: List of artists with their hit songs.
-          items: 
+          items:
             $ref: '#/components/schemas/ArtistWithTopSongs'
+        error:
+          type: string
+          nullable: true
+          description: Error message when song lookup fails
 
     ArtistWithTopSongs:
       type: object
@@ -399,52 +476,77 @@ components:
         artist:
           type: string
           example: "Prince"
-        toptracks:
+        top_tracks:
           type: array
-          items: 
+          items:
             type: object
-      properties: 
-        title: 
+            properties:
+              title:
+                type: string
+                example: "Purple Rain"
+              url:
+                type: string
+                description: External link to the song (if available)
+                nullable: true
+          description: Hit songs for the artist
+      required: [artist, top_tracks]
+
+    NobelResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        nobel_prizes:
+          $ref: '#/components/schemas/NobelPrizes'
+
+    NobelPrizes:
+      type: object
+      description: Nobel Prize categories mapped to a list of laureates
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/Laureate'
+
+    Laureate:
+      type: object
+      properties:
+        name:
           type: string
-          example: "Purple rain"
-      required: [artist, toptracks]
+          description: Laureate name
+          example: "Olga Tokarczuk"
+        motivation:
+          type: string
+          nullable: true
+          description: Prize motivation/justification (if available)
+          example: "for a narrative imagination..."
+        image:
+          type: string
+          nullable: true
+          description: Laureate image URL (if available)
+          example: "https://upload.wikimedia.org/wikipedia/commons/.../Olga_Tokarczuk.jpg"
 
-  /api/v1/year/{year}/songs:
-    get:
-      summary: Get popular songs for a specific year from Spotify
-      description: Returns popular songs for the specified year, ranked by popularity from Spotify
-        and based on limit how many songs to retrieve.
-      tags:
-        - Songs
-      parameters:
-        - name: year
-          in: path
-          required: true
-          description: The year to retrieve songs for
-          schema:
-            type: integer
-            minimum: 1900
-            maximum: 2026
-          example: 1987
-      responses:
-        '200':
-          description: Top songs successfully retrieved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SongsResponse'
-        '400':
-          description: Invalid year parameter
-        '404':
-          description: No songs found for the specified year
-        '500':
-          description: Internal server error
-        '502':
-          description: Bad gateway error when accessing Spotify
-        '503':
-          description: Spotify service is currently unavailable. Please try again later.
 
-  components:
+    WikiSummaryResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+          description: The requested year
+          example: 2019
+        events_by_month:
+          $ref: '#/components/schemas/EventsByMonth'
+
+    EventsByMonth:
+      type: object
+      description: Events grouped by month (January-December)
+      additionalProperties:
+        type: array
+        items:
+          type: string
+          description: A cleaned event line
+
     SongsResponse:
       type: object
       properties:

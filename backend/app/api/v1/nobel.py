@@ -6,11 +6,11 @@ from app.utils.validate_year import validate_year
 router = APIRouter()
 
 @router.get("/year/{year}/nobel")
-def year_nobel(year: int):
+async def year_nobel(year: int):
     validate_year(year)
 
     try:
-        nobel_prize = get_nobel_prizes(year)
+        nobel_prize = await get_nobel_prizes(year)
 
     except HTTPException as e:
         code = e.status_code
@@ -36,7 +36,6 @@ def year_nobel(year: int):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Nobel Prize service."
         )
-
 
 
     if not nobel_prize:

@@ -13,7 +13,7 @@ export function renderHighlights(highlights, year) {
     Storlekar för posters. Mer info på tmbd
     w185 - Small thumbnail
     w342 - Medium size
-    w500 - Large (recommended)
+    w500 - Large
     w780 - Extra large
     original - Full resolution
     */
@@ -126,7 +126,7 @@ export function renderMovies(movies) {
                 </div>
               </div>
               <div class="flex items-start justify-between gap-2 mb-2">
-                <p class="movie-card-date">${new Date(movie.releaseDate).toLocaleDateString('en-EN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p class="movie-card-date">${new Date(movie.release_date).toLocaleDateString('en-EN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 <p class="movie-card-votes">${formatVotes(movie.votes)} votes</p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export function renderSeries(series) {
               </div>
               <div class="flex items-start justify-between gap-2 mb-2">
                 <p class="series-card-votes">${formatVotes(serie.votes)} votes</p>
-                <p class="series-card-date text-right">${new Date(serie.releaseDate).toLocaleDateString('en-EN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p class="series-card-date text-right">${new Date(serie.release_date).toLocaleDateString('en-EN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
               </div>
             </div>
           </div>
@@ -180,6 +180,8 @@ export function renderSeries(series) {
     </section>
   `;
 }
+
+
 
 
 

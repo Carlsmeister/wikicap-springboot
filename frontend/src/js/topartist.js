@@ -118,7 +118,7 @@ async function renderTopArtist(artistData, year) {
   try {
     const topSongsData = await fetchBillboardTopSong(year, 5);
     topTracksByArtist = new Map(
-      (topSongsData.artist ?? []).map(a => [a.artist, a.toptracks ?? []])
+      (topSongsData.artists ?? []).map(a => [a.artist, a.top_tracks ?? []])
     );
   } catch (err) {
     console.error("Top songs fetch failed:", err);
@@ -183,8 +183,8 @@ async function renderTopArtist(artistData, year) {
     }
 
     
-    const toptracks = topTracksByArtist.get(artistName) ?? [];
-    renderTopSongs(toptracks, node);
+    const topTracks = topTracksByArtist.get(artistName) ?? [];
+    renderTopSongs(topTracks, node);
 
     ArtistGrid.appendChild(node);
   }

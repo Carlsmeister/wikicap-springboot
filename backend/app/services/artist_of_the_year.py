@@ -27,7 +27,7 @@ def find_artist_column(table_data: list[str]) -> int| None:
     return None    
         
   
-def get_artist_of_the_year(year: int) -> dict:
+async def get_artist_of_the_year(year: int) -> dict:
     """
     Extracts artist names from the Billboard Hot 100 Wikipedia Page for a given year.
     
@@ -42,7 +42,7 @@ def get_artist_of_the_year(year: int) -> dict:
         dict: A dictionary containing the year, a list of artist names,
         and optionally an error message if parsing fails.
     """
-    html = get_billboard_page(year)
+    html = await get_billboard_page(year)
 
     # Fel: kunde inte hämta html eller html var tom
     if html is None or html.strip() == "":
@@ -147,9 +147,5 @@ def add_artist_images( year_data: dict, fetch_image: Callable[[str], str | None]
         
     result = dict(year_data)
     result["artists_with_images"] = artists_with_images
-    
-    return result
 
-      
-    
-    
+    return result

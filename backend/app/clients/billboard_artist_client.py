@@ -8,7 +8,7 @@ HEADERS = {
     "User-Agent": "WikiCap/1.0 (https://github.com/WikiCap/year-overview)"
 }
 
-def get_billboard_page(year: int) -> str | None:
+async def get_billboard_page(year: int) -> str | None:
     """
     Retrieves the HTML Billboard Hot 100 Wikipedia page for a given year.
 
@@ -32,7 +32,8 @@ def get_billboard_page(year: int) -> str | None:
         url = ( f"https://en.wikipedia.org/wiki/List_of_Billboard_Hot_100_number-one_singles_of_{year}")
     
     try:
-        response = httpx.get(url, headers=HEADERS, timeout=20.0, follow_redirects=True)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, headers=HEADERS, timeout=20.0, follow_redirects=True)
     except Exception as e:
         print("DEBUG fetch exception", e)
         return None 
@@ -47,7 +48,7 @@ URL = "https://ws.audioscrobbler.com/2.0/"
 LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
 
-def get_artist_lastfm(artist_name: str, limit: int=9) ->list[str]:
+async def get_artist_lastfm(artist_name: str, limit: int=9) ->list[str]:
     """
     Search for artists by name using the Last.fm API.
 
@@ -73,7 +74,8 @@ def get_artist_lastfm(artist_name: str, limit: int=9) ->list[str]:
     }
     
     try: 
-        response = httpx.get(URL, params=params, timeout=15)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(URL, params=params, timeout=15)
     except httpx.ReadTimeout:
         return []
     
@@ -104,7 +106,7 @@ def get_artist_lastfm(artist_name: str, limit: int=9) ->list[str]:
     return artist_list        
 
 
-def get_hit_song(artist: str, limit: int=5) -> list[dict]:
+async def get_hit_song(artist: str, limit: int=5) -> list[dict]:
     """
     Retrive an artist's hit songs from the Last.fm API. 
     
@@ -131,7 +133,8 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
     }
         
     try:
-        response = httpx.get(URL, params=params, timeout=15)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(URL, params=params, timeout=15)
     except httpx.ReadTimeout:
         return []
     
@@ -144,11 +147,11 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         
     data = response.json()
         
-    toptracks = data.get("toptracks")
-    if not toptracks:
+    top_tracks = data.get("topTracks")
+    if not top_tracks:
         return []
             
-    tracks = toptracks.get("track")
+    tracks = top_tracks.get("track")
     if not tracks:
         return []
     
@@ -159,5 +162,5 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         {"title": track.get("name")}
         for track in tracks
         if track.get("name")
-    ]  
-    
+    ]
+

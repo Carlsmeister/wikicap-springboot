@@ -24,7 +24,7 @@ const submitBtn = document.querySelector("#submitBtn");
 
 const nobelSection = document.querySelector("#nobelSection");
 const nobelGrid = document.querySelector("#nobelGrid");
-const nobelTpl = document.querySelector("#nobelCardTpl");
+const nobelTpl = document.querySelector("#nobelSection template#nobelCardTpl");
 const statsEl = document.querySelector("#stats");
 
 const observer = new IntersectionObserver(entries => {
@@ -53,14 +53,6 @@ const observer = new IntersectionObserver(entries => {
   if (nobelSection) nobelSection.classList.add("hidden");
   if (statsEl) statsEl.textContent = "";
 }
-
-  // Start of nobel prize winners fetch
-  async function fetchNobel(year) {
-    const res = await fetch(`${API_BASE}/api/v1/year/${year}/nobel`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data.nobel_prizes ?? {};
-  }
 
   function renderNobel(nobelData) {
     clearNobel();
@@ -176,7 +168,6 @@ function renderMonthCard({ month, year, events, index }) {
   card.dataset.reveal = isOdd ? "left" : "right";
 
   const title = node.querySelector(".monthTitle");
-  const chip = node.querySelector(".monthChip");
   const list = node.querySelector(".monthList");
 
   title.textContent = `${month} ${year}`;
@@ -211,28 +202,21 @@ async function fetchYear(year) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-
   const raw = input.value.trim();
   const year = Number(raw);
 
-
   clearNobel();
   clearResults();
-  setStatus("", "loading");
+  setStatus("Fetching data...", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
   try {
-    const nobelData = await fetchNobel(year);
-    renderNobel(nobelData);
-  } catch (err) {
-    console.error(err);
-    setStatus("Kunde inte hämta Nobel-data.", "error");
-    clearNobel();
-  }
-
-  try {
     const data = await fetchYear(year);
+
+    if (data.nobel_prizes) {
+      renderNobel(data.nobel_prizes.prizes);
+    }
 
     const eventsByMonth = data?.events_by_month ?? {};
     const entries = Object.entries(eventsByMonth);
@@ -243,28 +227,24 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    // Update hero text
     heroText.textContent = `The year was ${year}`;
-    //const entries = Object.entries(eventsByMonth);
-
-
 
     entries.forEach(([month, events], i) => {
       renderMonthCard({ month, year, events, index: i });
     });
 
-    if (data.movie_highlights && data.movies?.topMovies && data.series?.topSeries) {
+    if (data.movie_highlights && data.movies?.top_movies && data.series?.top_series) {
 
       entertainmentSection.classList.remove("hidden");
 
       highlightsSection.innerHTML = renderHighlights(data.movie_highlights, year);
-      movieSection.innerHTML = renderMovies(listSorter(data.movies.topMovies, "rating"));
-      seriesSection.innerHTML = renderSeries(listSorter(data.series.topSeries, "rating"));
+      movieSection.innerHTML = renderMovies(listSorter(data.movies.top_movies, "rating"));
+      seriesSection.innerHTML = renderSeries(listSorter(data.series.top_series, "rating"));
 
       setTimeout(() => {
         const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
         const seriesCards = seriesSection.querySelectorAll('.series-card.reveal');
-        
+
         movieCards.forEach(card => observer.observe(card));
         seriesCards.forEach(card => observer.observe(card));
       }, 0);
