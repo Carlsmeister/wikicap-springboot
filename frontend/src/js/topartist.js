@@ -484,7 +484,14 @@ async function fetchYear(year) {
   return await response.json();
 }
 
-
+/**
+ * Handles the form submission for a selected year.
+ *
+ * Reads the year, resets the UI, shows a loading state, and disables the
+ * submit button. Then it fetches and renders the top artists for that year.
+ *
+ * On failure, an error message is shown. 
+ */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
