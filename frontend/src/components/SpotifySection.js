@@ -9,7 +9,7 @@ async function fetchSpotifySongs(year) {
     const res = await fetch(`${API_BASE}/api/v1/year/${year}/songs`);
     if (!res.ok) return null;
     const data = await res.json();
-    return data.topSongs ?? [];
+    return data.top_songs ?? [];
   }
 
 function clearSpotify() {
@@ -35,13 +35,13 @@ function renderSpotifySongs(songs, year) {
         card.querySelector(".song-title").textContent = song.title;
         card.querySelector(".song-artist").textContent = song.artist;
         card.querySelector(".song-album").textContent = "📀 Album: " + song.album;
-        card.querySelector(".song-release-date").textContent = "📅 Release Date: " + song.releaseDate;
+        card.querySelector(".song-release-date").textContent = "📅 Release Date: " + song.release_date;
 
         const songLink = card.querySelector(".song-link");
-        songLink.href = song.spotifyUrl;
+        songLink.href = song.spotify_url;
 
         const albumImage = card.querySelector(".spotify-album-image");
-        albumImage.href = song.spotifyUrl;
+        albumImage.href = song.spotify_url;
 
         const image = card.querySelector("img");
         if (image) {
@@ -86,4 +86,3 @@ function renderSpotifySongs(songs, year) {
     });
 
 }
-    

@@ -252,13 +252,13 @@ form.addEventListener("submit", async (e) => {
       renderMonthCard({ month, year, events, index: i });
     });
 
-    if (data.movie_highlights && data.movies?.topMovies && data.series?.topSeries) {
+    if (data.movie_highlights && data.movies?.top_movies && data.series?.top_series) {
 
       entertainmentSection.classList.remove("hidden");
 
       highlightsSection.innerHTML = renderHighlights(data.movie_highlights, year);
-      movieSection.innerHTML = renderMovies(listSorter(data.movies.topMovies, "rating"));
-      seriesSection.innerHTML = renderSeries(listSorter(data.series.topSeries, "rating"));
+      movieSection.innerHTML = renderMovies(listSorter(data.movies.top_movies, "rating"));
+      seriesSection.innerHTML = renderSeries(listSorter(data.series.top_series, "rating"));
 
       setTimeout(() => {
         const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
