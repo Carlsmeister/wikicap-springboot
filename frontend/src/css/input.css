@@ -84,6 +84,8 @@
       transform 2s cubic-bezier(0.2, 1, 0.32, 1),
       opacity 2s ease,
       filter 2s ease;
+    will-change: transform, opacity, filter;
+    transform: translateZ(0);
   }
 
   .reveal-left {
@@ -595,7 +597,7 @@
     }
   }
 
-  /* 
+  /*
     ============================================
      SPOTIFY SONG CARDS
      ============================================
