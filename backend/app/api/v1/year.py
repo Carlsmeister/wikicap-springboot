@@ -18,7 +18,7 @@ async def get_year(year: int):
         "movies": fetch_movies_for_year(year),
         "series": fetch_series_for_year(year),
         "billboard_top_artists": get_artist_of_the_year(year),
-        "billboard_artist_top_songs" : get_year_with_hit_songs(year, limit=5)
+        "billboard_artist_top_songs": get_year_with_hit_songs(year, limit=5)
         # music, events, sports osv senare...
         # music, events, sports osv senare...
     }

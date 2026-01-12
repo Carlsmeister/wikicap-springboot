@@ -11,12 +11,12 @@ def fetch_movies_for_year(year: int):
             "rating": round(item["vote_average"], 1),
             "votes": item["vote_count"],
             "poster": item["poster_path"],
-            "releaseDate": item["release_date"]
+            "release_date": item["release_date"]
         })
 
     return {
         "year": year,
-        "topMovies": movies,
+        "top_movies": movies,
         "source": "TMDb"
     }
 
@@ -37,12 +37,12 @@ def fetch_series_for_year(year: int):
             "rating": round(item["vote_average"], 1),
             "votes": item["vote_count"],
             "poster": item["poster_path"],
-            "releaseDate": item.get("first_air_date"),
+            "release_date": item.get("first_air_date"),
         })
 
     return {
         "year": year,
-        "topSeries": series,
+        "top_series": series,
         "source": "TMDb",
     }
 

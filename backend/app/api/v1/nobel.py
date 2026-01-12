@@ -38,7 +38,6 @@ def year_nobel(year: int):
         )
 
 
-
     if not nobel_prize:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

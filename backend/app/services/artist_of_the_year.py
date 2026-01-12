@@ -147,9 +147,5 @@ def add_artist_images( year_data: dict, fetch_image: Callable[[str], str | None]
         
     result = dict(year_data)
     result["artists_with_images"] = artists_with_images
-    
-    return result
 
-      
-    
-    
+    return result

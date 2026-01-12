@@ -30,16 +30,16 @@ def fetch_songs_for_year(year: int):
             "title": item["name"],
             "artist": item["artists"][0]["name"],
             "album": item["album"]["name"],
-            "releaseDate": item["album"]["release_date"],
-            "previewUrl": item["preview_url"],
-            "spotifyUrl": item["external_urls"]["spotify"],
+            "release_date": item["album"]["release_date"],
+            "preview_url": item["preview_url"],
+            "spotify_url": item["external_urls"]["spotify"],
             "image": item["album"]["images"][0]["url"],
             
         })
 
     return {
         "year": year,
-        "topSongs": songs,
+        "top_songs": songs,
         "source": "Spotify"
     }
 
@@ -64,11 +64,11 @@ def fetch_artists_for_year(year: int):
             "genres": item["genres"],
             "popularity": item["popularity"],
             "followers": item["followers"]["total"],
-            "spotifyUrl": item["external_urls"]["spotify"]
+            "spotify_url": item["external_urls"]["spotify"]
         })
 
     return {
         "year": year,
-        "topArtists": artists,
+        "top_artists": artists,
         "source": "Spotify"
     }

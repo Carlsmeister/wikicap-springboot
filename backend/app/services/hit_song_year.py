@@ -23,7 +23,7 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
     if isinstance(artists_payload, dict) and artists_payload.get("error"):
         return {
             "year": year,
-            "artist": [],
+            "artists": [],
             "error": artists_payload.get("error")
         }
 
@@ -32,7 +32,7 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
 
     result = {
         "year": year,
-        "artist": []
+        "artists": []
     }
 
     for name in artist_names:
@@ -40,11 +40,9 @@ def get_year_with_hit_songs(year: int, limit: int = 5) -> dict:
         if not top_songs:
             continue
 
-        result["artist"].append({
+        result["artists"].append({
             "artist": name,
-            "toptracks": top_songs
+            "top_tracks": top_songs
         })
 
     return result
-
-   

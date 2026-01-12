@@ -144,11 +144,11 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         
     data = response.json()
         
-    toptracks = data.get("toptracks")
-    if not toptracks:
+    top_tracks = data.get("topTracks")
+    if not top_tracks:
         return []
             
-    tracks = toptracks.get("track")
+    tracks = top_tracks.get("track")
     if not tracks:
         return []
     
@@ -160,4 +160,4 @@ def get_hit_song(artist: str, limit: int=5) -> list[dict]:
         for track in tracks
         if track.get("name")
     ]  
-    
+
