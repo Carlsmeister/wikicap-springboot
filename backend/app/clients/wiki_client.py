@@ -12,14 +12,24 @@ TIMEOUT = httpx.Timeout(10.0, connect=5.0)
 
 
 async def fetch_year_toc(client: httpx.AsyncClient, year: int) -> list[dict]:
-    """Fetch the TOC for a given year from Wikipedia.
-    This function uses the wikipedia API to fetch the TOC data for a specified year.
+    """
+    Fetches the wikipedia table of contents for a given year.
+
+    This function uses Mediawiki "parse" endpoint with "prop=tocdata" to
+    retrieve sections of information available on the Wikipedia page for the specified year.
+    This can be used to identify correct section indexes for later calls,
 
     Args:
-        year (int): The year for which to fetch the TOC.
+        client (httpx.AsyncClient): An instance of httpx AsyncClient for making requests.
+        year (int): The year for which to fetch the table of contents.
 
     Returns:
-        list [dict]: The TOC data structure.
+        list[dict]: A list of section dictionaries representing the table of contents.
+        Returns an empty list if no sections are found.
+
+        Raises:
+            httpx.HTTPStatusError: If the HTTP request returns an unsuccessful status code.
+            httpx.RequestError: If there is an issue making the HTTP request.
         """
     params = {
         "action": "parse",
@@ -35,16 +45,23 @@ async def fetch_year_toc(client: httpx.AsyncClient, year: int) -> list[dict]:
 
 async def get_month_wikitext(client: httpx.AsyncClient, year: int, month_index: str) -> str:
     """
-    Fetches raw wikitext from specific month section.
-    Uses the wikipedia API to retrive the unparsed wikitext
-    for a specific section, identified by month_index.
+    Fetch raw wikitext for a specific section of the wikipedia year page
+
+    The section is identified by its index in the table of contents., example:
+    "month_index" typically taken from the TOC data fetched via fetch_year_toc function.
 
     Args:
-        year (int): The year of the Wikipedia page.
-        month_index (str): The section index for the month.
+        client: An initialized `httpx.AsyncClient` used to make the request.
+        year: The year (e.g. 1997) whose Wikipedia page should be queried.
+        month_index: The section index for the month/section to fetch.
 
     Returns:
-        str: The raw wikitext of the specified month section.
+        The raw wikitext content of the specified month/section as a string.
+        Returns an empty string if the section is not found.
+
+    Raises:
+        httpx.HTTPStatusError: If the HTTP request returns an unsuccessful status code.
+        httpx.RequestError: If there is an issue making the HTTP request.
     """
     params = {
         "action": "parse",

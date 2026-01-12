@@ -11,15 +11,28 @@ HEADERS = {
 
 async def get_nobel_prizes(year: int) -> dict:
     """
-    Fetch Nobel Prize laureates for a given year from Wikipedia.
-    This function fetches the wikipedia page dedicated
-    to nobel prizes for a specified year and extracts the laureates
-    and their motivations using the extract_nobel function.
+    Fetch nobel prize lauureates for a given year and extract structured data.
+
+    This function requests the wikipedia page "{year}_Nobel_Prizes" using
+    mediawiki "parse" endpoint with "prop=text", then parses the returned
+    HTML to extract Nobel Prize laureates using the extract_nobel utility function.
+
     Args:
-        year (int): The year for which to fetch Nobel Prize laureates.
+        year (int): The year for which to fetch Nobel Prize data.
 
     Returns:
-        dict: A dictionary containing Nobel Prize categories and their laureates.
+        dict: A dictionary containing the year and a nested dictionary of Nobel Prize categories and their laureates.
+
+        Example:
+            {
+            "year": 1997,
+            "prizes": {
+                "Physics": [{"name": "...", "motivation": "...", "image": "..."}]
+            }
+            }
+    Raises:
+        httpx.HTTPStatusError: If the HTTP request returns an unsuccessful status code.
+        httpx.RequestError: If there is an issue making the HTTP request.
     """
     title = f"{year}_Nobel_Prizes"
 

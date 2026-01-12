@@ -16,14 +16,15 @@ export function renderMonthCard({ month, year, events, index, template }) {
   node.classList.add(isOdd ? "justify-start" : "justify-end");
 
   const card = node.querySelector(".component-card");
-  card.classList.add(isOdd ? "slide-in-blurred-left-normal" : "slide-in-blurred-right-normal");
+  card.classList.add(isOdd ? "reveal-left" : "reveal-right");
+
 
   const title = node.querySelector(".monthTitle");
   const chip = node.querySelector(".monthChip");
   const list = node.querySelector(".monthList");
 
   title.textContent = `${month} ${year}`;
-  title.classList.add(isOdd ? "text-cyan-200" : "text-purple-200");
+  title.classList.add(isOdd ? "text-amber-400" : "text-yellow-400");
 
   chip.textContent = `${events.length} event${events.length !== 1 ? 's' : ''}`;
 

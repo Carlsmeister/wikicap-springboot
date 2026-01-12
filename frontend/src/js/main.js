@@ -1,6 +1,7 @@
 import { renderHighlights, renderMovies, renderSeries } from "../components/MediaSection.js";
 import { runTopArtist } from "../components/TopArtist.js";
 import { renderWikiSection } from "../components/WikiSection.js";
+import { renderNobel, clearNobel } from "./components/NobelSection.js";
 
 /** Base URL for the backend API */
 const API_BASE = "http://127.0.0.1:8000";
@@ -348,9 +349,9 @@ form.addEventListener("submit", async (e) => {
   const raw = input.value.trim();
   const year = Number(raw);
 
-  clearNobel();
+  clearNobel({ nobelGrid, nobelSection, statsEl});
   clearResults();
-  setStatus("Fetching data...", "loading");
+  setStatus("", "loading");
   submitBtn.disabled = true;
   submitBtn.classList.add("opacity-70", "cursor-not-allowed");
 
@@ -363,8 +364,12 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await fetchYear(year);
 
-    if (data.nobel_prizes) {
-      renderNobel(data.nobel_prizes.prizes);
+    if (data?.nobel_prizes) {
+      renderNobel(
+        data.nobel_prizes,
+        { nobelSection, nobelGrid, nobelTpl, statsEl },
+        observer
+      );
     }
 
     const eventsByMonth = data?.events_by_month ?? {};
@@ -378,9 +383,12 @@ form.addEventListener("submit", async (e) => {
 
     heroText.textContent = `The year was ${year}`;
 
-    entries.forEach(([month, events], i) => {
-      renderMonthCard({ month, year, events, index: i });
-    });
+    const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
+    resultsEl.appendChild(wikiFragment);
+
+    resultsEl
+      .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
+      .forEach(el => observer.observe(el));
 
     if (data.movie_highlights && data.movies?.top_movies && data.series?.top_series) {
 
