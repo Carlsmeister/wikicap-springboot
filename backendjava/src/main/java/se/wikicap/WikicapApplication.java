@@ -8,10 +8,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WikicapApplication {
 
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.configure()
-                .directory("")
-                .ignoreIfMissing()
-                .load();
+        Dotenv dotenv = null;
+        try {
+            dotenv = Dotenv.configure()
+                    .directory("./backendjava")
+                    .load();
+        } catch (Exception e) {
+            dotenv = Dotenv.configure()
+                    .directory("./")
+                    .ignoreIfMissing()
+                    .load();
+        }
 
         dotenv.entries().forEach(entry -> {
             System.setProperty(entry.getKey(), entry.getValue());
