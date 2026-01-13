@@ -44,8 +44,8 @@ function renderSpotifySongs(songs, year) {
     for (const song of songs) {  //Skapar ett kort för varje låt i Songs
         const card = spotifyCardTpl.content.firstElementChild.cloneNode(true);
 
-        card.querySelector(".song-title").textContent = song.title;
-        card.querySelector(".song-artist").textContent = song.artist;
+        card.querySelector(".song-title").textContent = "🎵 " + song.title;
+        card.querySelector(".song-artist").textContent = "👤 " + song.artist;
         card.querySelector(".song-album").textContent = "📀 Album: " + song.album;
         card.querySelector(".song-release-date").textContent = "📅 Release Date: " + song.release_date;
 
