@@ -12,12 +12,12 @@ def fetch_wiki_image(title:str) -> str | None:
     Retrieves image information from the Wikipedia summary API and returns the page's 
     thumbnail or original image URL if available. 
     
-    Parameters:
+    Parameters
     ----------
         title: str
             The title of the Wikipedia page to look up.
 
-    Returns:
+    Returns
     -------
         str or None:
             The URL of the page's thumbnail or original image if available;
