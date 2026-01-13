@@ -1,7 +1,39 @@
+/**
+ * @typedef {Object} NobelWinner
+ * @property {string} [name] - Laureate name.
+ * @property {string} [motivation] - Nobel motivation text.
+ * @property {string} [image] - Optional portrait URL.
+ */
 
+/**
+ * Map of category -> list of winners.
+ * @typedef {Record<string, NobelWinner[]>} NobelPrizeMap
+ */
+
+/**
+ * Nobel API response can be either a wrapped structure or already a map.
+ * @typedef {NobelPrizeMap | { prizes: NobelPrizeMap }} NobelData
+ */
+
+/**
+ * @typedef {Object} NobelUI
+ * @property {HTMLElement | null} nobelSection - Wrapper section that is shown/hidden.
+ * @property {HTMLElement | null} nobelGrid - Grid container where cards are appended.
+ * @property {HTMLTemplateElement | null} nobelTpl - Template for a single Nobel card.
+ * @property {HTMLElement | null} statsEl - Element where stats text is shown (e.g. "3 prizes").
+ */
 
 /**
  * Clear Nobel section
+ *
+ * - Clears the card grid
+ * - Hides the section
+ * - resets stats text
+ *
+ * Safe to call even if elements are null.
+ *
+ *  @param {Pick<NobelUI, "nobelGrid" | "nobelSection" | "statsEl">} params
+ *  @returns {void}
  */
 
 export function clearNobel({nobelGrid, nobelSection, statsEl}) {
@@ -10,7 +42,22 @@ export function clearNobel({nobelGrid, nobelSection, statsEl}) {
     if (statsEl) statsEl.textContent = "";
 }
 
-//** Render nobel cards
+/**
+ * Render Nobel cards into the nobel section
+ *
+ * Accepts nobel data in two shapes:
+ * - "{ prizes: { [category]: NobelWinner[]] } }"
+ * - "{ [category]: NobelWinner[] }"
+ *
+ * The section is shown only if there is atleast one winner.
+ * Each rendered card is optionally registered with the provided IntersectionObserver.
+ *
+ * @param {NobelData} nobelData - Nobel prize data for a year.
+ * @param {NobelUI} ui - Nobel DOM references.
+ * @param {IntersectionObserver | null | undefined} observer - Observer used for reveal animations.
+ * @returns {void}
+ */
+
 
 export function renderNobel(nobelData, {nobelSection, nobelGrid, nobelTpl, statsEl}, observer) {
     clearNobel({nobelGrid, nobelSection, statsEl});
