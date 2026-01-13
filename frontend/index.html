@@ -90,21 +90,21 @@
         <div class="spotify-card-label flex items-center gap-2">
           <p class="popular-songs-label">Popular songs of the year:</p>
           <p class="spotify-year-label"></p>
-          <div class="grow h-1 rounded-full bg-linear-to-r from-[#03A6A1]/40 to-transparent"></div>
+          <div class="grow h-1 rounded-full bg-linear-to-r from-[#FFA673]/40 to-transparent"></div>
         </div>
 
         <template id="spotifyCardTpl">
           <div class="spotify-card-wrapper opacity-0 transition-opacity duration-1000 ease-in-out">
             <div class="component-card spotify-component-card shadow-glass-warm hover-lift flex gap-4 items-start">
               <a class="spotify-album-image" target="_blank"> <img class="w-25 h-25 rounded-2xl object-cover border border-slate-900/10" /></a>
-              <div class="text-left space-y-1">
-                <p class="text-20 font-semibold text-slate-1000 song-title"></p>
-                <p class="text-base text-slate-900 song-artist"></p>
-                <p class="text-sm text-slate-700 song-album"></p>
-                <p class="text-sm text-slate-700 song-release-date"></p>
+              <div class="text-spotify space-y-1">
+                <p class="text-2xl font-semibold text-slate-1000 song-title"></p>
+                <p class="text-lg text-slate-900 song-artist"></p>
+                <p class="text-base text-slate-700 song-album"></p>
+                <p class="text-base text-slate-700 song-release-date"></p>
                 <div class="flex items-center gap-2">
                   <img src="src/img/spotify_logo3.png" class="w-4 h-4" alt="" />
-                  <a class="text-sm text-slate-700 song-link" target="_blank">Listen on Spotify</a>
+                  <a class="text-base text-slate-700 song-link" target="_blank">Listen on Spotify</a>
                 </div>
               </div>
             </div>

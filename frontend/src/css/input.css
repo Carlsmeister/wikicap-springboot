@@ -625,12 +625,12 @@
 
   .popular-songs-label {
     @apply text-4xl font-semibold tracking-tight;
-    color: var(--apricot);
+    color: var(--primary);
   }
 
   .spotify-card-label {
     @apply text-4xl font-semibold tracking-tight;
-    color: var(--primary);
+    color: var(--apricot);
   }
 
   .spotify-album-image:hover {

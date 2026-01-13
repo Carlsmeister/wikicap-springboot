@@ -3,7 +3,7 @@ import httpx
 from app.services.music_service import fetch_songs_for_year, fetch_artists_for_year
 router = APIRouter()
 
-@router.get("/year/{year}/artists") # Används inte
+@router.get("/year/{year}/artists") # Används inte ännu
 def get_artists(year: int):
 
     return fetch_artists_for_year(year)
@@ -11,6 +11,16 @@ def get_artists(year: int):
 
 @router.get("/year/{year}/songs")
 def get_songs(year: int):
+    """
+    Retrieve top songs for a specific year from Spotify.
+    Args:
+        year (int): The year to retrieve songs for (e.g., 2020).
+    Returns:
+        dict: If no error, returns a dictionary containing the year and a list of top songs.
+        Else, raises HTTPException with appropriate status code and detail message.
+    Raises:
+        HTTPException: Raises appropriate HTTP exceptions for various error scenarios.
+    """
     try:
         songs = fetch_songs_for_year(year)
         return songs
