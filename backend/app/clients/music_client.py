@@ -14,7 +14,9 @@ def get_spotify_token():
     Retrieves an access token from the Spotify API using client credentials.
     Token is required for making authorized requests to Spotify endpoints.
     Token is valid for 1 hour.
-    Returns: json: Access token string.
+    
+    Returns: 
+        json: Access token string.
     """
 
     auth_string = f"{spotify_client_id}:{spotify_client_secret}"
