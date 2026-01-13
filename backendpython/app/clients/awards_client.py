@@ -1,7 +1,7 @@
 """
-The Awards API client module.
+The Awards API se.wikicap.client module.
 
-This module provides async HTTP client functions for interacting with The Awards API
+This module provides async HTTP se.wikicap.client functions for interacting with The Awards API
 to retrieve Oscar (Academy Awards) data including editions, categories, and nominees.
 
 API Documentation: https://theawards.vercel.app/api

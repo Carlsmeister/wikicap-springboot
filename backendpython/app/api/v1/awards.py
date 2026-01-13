@@ -50,7 +50,7 @@ async def get_awards(year: int):
             - 404: No Oscar data found for the specified year
             - 429: API rate limit exceeded
             - 502: The Awards API returned an error response
-            - 503: Unable to connect to The Awards API service
+            - 503: Unable to connect to The Awards API se.wikicap.service
 
     Example:
         GET /api/v1/year/2020/awards
@@ -100,7 +100,7 @@ async def get_awards(year: int):
             )
         raise HTTPException(
             status_code = status.HTTP_502_BAD_GATEWAY,
-            detail = f"BAD GATEWAY: Oscar service returned {code}."
+            detail = f"BAD GATEWAY: Oscar se.wikicap.service returned {code}."
         )
     except httpx.RequestError:
         raise HTTPException(

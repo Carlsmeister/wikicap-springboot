@@ -1,5 +1,5 @@
 """
-Awards service module.
+Awards se.wikicap.service module.
 
 This module provides business logic for fetching and processing Oscar (Academy Awards)
 data from The Awards API, enriched with images from The Movie Database (TMDb).

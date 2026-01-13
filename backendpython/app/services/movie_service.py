@@ -1,5 +1,5 @@
 """
-Movie and TV series service module.
+Movie and TV series se.wikicap.service module.
 
 This module provides business logic for fetching and processing movie and TV series
 data from The Movie Database (TMDb) API. Includes custom ranking algorithms for

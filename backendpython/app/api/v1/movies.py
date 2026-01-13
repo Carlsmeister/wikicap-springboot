@@ -44,7 +44,7 @@ async def get_movies(year: int):
             - 404: No movie data found for the specified year
             - 429: TMDb API rate limit exceeded
             - 502: TMDb API returned an error response
-            - 503: Unable to connect to TMDb service
+            - 503: Unable to connect to TMDb se.wikicap.service
 
     Example:
         GET /api/v1/year/2020/movies
@@ -84,12 +84,12 @@ async def get_movies(year: int):
 
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"BAD GATEWAY: Movie service returned {code}."
+            detail=f"BAD GATEWAY: Movie se.wikicap.service returned {code}."
         )
     except httpx.RequestError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Movie service."
+            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Movie se.wikicap.service."
         )
 
     if not movies:
@@ -129,7 +129,7 @@ async def get_series(year: int):
             - 404: No series data found for the specified year
             - 429: TMDb API rate limit exceeded
             - 502: TMDb API returned an error response
-            - 503: Unable to connect to TMDb service
+            - 503: Unable to connect to TMDb se.wikicap.service
 
     Example:
         GET /api/v1/year/2020/series
@@ -174,7 +174,7 @@ async def get_series(year: int):
             )
         raise HTTPException(
             status_code = status.HTTP_502_BAD_GATEWAY,
-            detail = f"BAD GATEWAY: Series service returned {code}."
+            detail = f"BAD GATEWAY: Series se.wikicap.service returned {code}."
         )
 
     if not series:

@@ -57,7 +57,7 @@ def get_songs(year: int):
         if status == 503:
             raise HTTPException(
                 status_code=503,
-                detail="Spotify service is currently unavailable. Please try again later."
+                detail="Spotify se.wikicap.service is currently unavailable. Please try again later."
             )
         
         raise HTTPException(

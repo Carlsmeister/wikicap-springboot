@@ -1,7 +1,7 @@
 """
-TMDb (The Movie Database) API client module.
+TMDb (The Movie Database) API se.wikicap.client module.
 
-This module provides async HTTP client functions for interacting with The Movie
+This module provides async HTTP se.wikicap.client functions for interacting with The Movie
 Database (TMDb) API v3. Handles authentication, request construction, and returns
 raw JSON responses for movies, TV series, and person search operations.
 

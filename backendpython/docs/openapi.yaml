@@ -153,11 +153,11 @@ paths:
         '404':
           description: No Billboard data exists for the given year
         '429':
-          description: The Billboard service rate limit was exceeded
+          description: The Billboard se.wikicap.service rate limit was exceeded
         '502':
-          description: The Billboard service returned an unexpected error
+          description: The Billboard se.wikicap.service returned an unexpected error
         '503':
-          description: A connection error occurred when contacting the Billboard service
+          description: A connection error occurred when contacting the Billboard se.wikicap.service
         '500':
           description: Internal server error
 
@@ -196,11 +196,11 @@ paths:
         '404':
           description: No Billboard data exists for the given year
         '429':
-          description: The Billboard service rate limit was exceeded
+          description: The Billboard se.wikicap.service rate limit was exceeded
         '502':
-          description: The Billboard service returned an unexpected error
+          description: The Billboard se.wikicap.service returned an unexpected error
         '503':
-          description: A connection error occurred when contacting the Billboard service
+          description: A connection error occurred when contacting the Billboard se.wikicap.service
         '500':
           description: Internal server error
 
@@ -303,7 +303,7 @@ paths:
         '502':
           description: Bad gateway error when accessing Spotify
         '503':
-          description: Spotify service is currently unavailable. Please try again later.
+          description: Spotify se.wikicap.service is currently unavailable. Please try again later.
 
 components:
   schemas:

@@ -11,7 +11,7 @@ spotify_client_secret = config.SPOTIFY_CLIENT_SECRET
 
 def get_spotify_token():
     """
-    Retrieves an access token from the Spotify API using client credentials.
+    Retrieves an access token from the Spotify API using se.wikicap.client credentials.
     Token is required for making authorized requests to Spotify endpoints.
     Token is valid for 1 hour.
     

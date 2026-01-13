@@ -34,7 +34,7 @@ async def year_nobel(year: int):
     except httpx.RequestError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Nobel Prize service."
+            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Nobel Prize se.wikicap.service."
         )
 
 

@@ -14,7 +14,7 @@ async def get_billboard_top_songs(year: int):
     Retrives the top Billboard artists and their hit songs for a given year.
     
     This endpoint vaidates the provided year and handles common errors 
-    and translates them into clear HTTP resonses for the client.
+    and translates them into clear HTTP resonses for the se.wikicap.client.
     
     Parameters
     -----------
@@ -31,9 +31,9 @@ async def get_billboard_top_songs(year: int):
     ------
     HTTPException:
         - 404 NOT FOUND: No Billboard data exsits for the given year.
-        - 429 TOO MANY REQUESTS: The Billboard service rate limit was exceeded.
-        - 502 BAD GATEWAY: The Billboard service returned an unexpected error.
-        - 503 SERVICE UNAVAILABLE: A connection error occurred when contacting the Billboard service.         
+        - 429 TOO MANY REQUESTS: The Billboard se.wikicap.service rate limit was exceeded.
+        - 502 BAD GATEWAY: The Billboard se.wikicap.service returned an unexpected error.
+        - 503 SERVICE UNAVAILABLE: A connection error occurred when contacting the Billboard se.wikicap.service.
     """
     validate_year(year)
 
@@ -54,12 +54,12 @@ async def get_billboard_top_songs(year: int):
 
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"BAD GATEWAY: Billboard service returned {code}."
+            detail=f"BAD GATEWAY: Billboard se.wikicap.service returned {code}."
         )
     except httpx.RequestError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Billboard service."
+            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Billboard se.wikicap.service."
         )
 
     if not result or not result.get("artists"):
@@ -76,7 +76,7 @@ async def get_billboard_artists(year:int):
     Retrieve Billboard's top artists for a given year.
     
     This endpoint validates the provided year and calls an external 
-    Billboard data service to fetch the most popular artists for that year.
+    Billboard data se.wikicap.service to fetch the most popular artists for that year.
     It also fetches the response with artist images sourced from Wikipedia.
     
     Common errors are caught and translated into clear HTTP responses. 
@@ -96,9 +96,9 @@ async def get_billboard_artists(year:int):
     ------
     HTTPException:
         - 404 NOT FOUND: No Billboard data exsits for the given year.
-        - 429 TOO MANY REQUESTS: The Billboard service rate limit was exceeded.
-        - 502 BAD GATEWAY: The BIllboard service returned an unexpected error.
-        - 503 SERVICE UNAVAILABLE:  A conection error occurred when contacting the Billboard service. 
+        - 429 TOO MANY REQUESTS: The Billboard se.wikicap.service rate limit was exceeded.
+        - 502 BAD GATEWAY: The BIllboard se.wikicap.service returned an unexpected error.
+        - 503 SERVICE UNAVAILABLE:  A conection error occurred when contacting the Billboard se.wikicap.service.
     """
     validate_year(year)
 
@@ -119,12 +119,12 @@ async def get_billboard_artists(year:int):
 
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"BAD GATEWAY: Billboard service returned {code}."
+            detail=f"BAD GATEWAY: Billboard se.wikicap.service returned {code}."
         )
     except httpx.RequestError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Billboard service."
+            detail="SERVICE UNAVAILABLE: An error occurred while trying to connect to the Billboard se.wikicap.service."
         )
 
     if not base or not base.get("artists"):
