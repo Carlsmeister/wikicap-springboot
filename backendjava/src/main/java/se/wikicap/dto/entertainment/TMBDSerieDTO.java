@@ -1,4 +1,4 @@
-package se.wikicap.dto;
+package se.wikicap.dto.entertainment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

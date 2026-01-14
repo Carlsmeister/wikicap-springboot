@@ -1,14 +1,20 @@
 package se.wikicap.service;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import se.wikicap.dto.EventResponseDTO;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EventService {
-    public CompletableFuture<EventResponseDTO> getEventsByYear(int year) {
+
+    /**
+     * Fetch historical events for a specific year.
+     *
+     * @param year The year to fetch events for
+     * @return Mono<EventResponseDTO> containing events data
+     */
+    public Mono<EventResponseDTO> getEventsByYear(int year) {
         //TODO: Implement fetching events by year
-        return null;
+        return Mono.empty();  // Return empty Mono instead of null
     }
 }

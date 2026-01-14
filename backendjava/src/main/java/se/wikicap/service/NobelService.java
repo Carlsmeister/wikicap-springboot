@@ -1,14 +1,20 @@
 package se.wikicap.service;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import se.wikicap.dto.NobelResponseDTO;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class NobelService {
-    public CompletableFuture<NobelResponseDTO> getNobelByYear(int year) {
+
+    /**
+     * Fetch Nobel Prize data for a specific year.
+     *
+     * @param year The year to fetch Nobel Prize data for
+     * @return Mono<NobelResponseDTO> containing Nobel Prize data
+     */
+    public Mono<NobelResponseDTO> getNobelByYear(int year) {
         //TODO: Implement Nobel data fetching logic
-        return null;
+        return Mono.empty();  // Return empty Mono instead of null
     }
 }
