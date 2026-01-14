@@ -7,11 +7,13 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Wrapper DTO for TMDB movie API response containing list of results.
+ * Wrapper DTO for TMDB movie API response containing list of top movies.
  */
 @Setter
 @Getter
 public class TMBDMovieResponse {
+    private String source = "TMDB";
+    private int year;
     private List<TMBDMovieDTO> results;
     private Integer page;
 

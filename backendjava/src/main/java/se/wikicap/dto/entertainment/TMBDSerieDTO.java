@@ -26,6 +26,8 @@ public class TMBDSerieDTO {
     @JsonProperty("vote_count")
     private Integer voteCount;
 
+    private Double popularity;
+
     public TMBDSerieDTO() {
     }
 

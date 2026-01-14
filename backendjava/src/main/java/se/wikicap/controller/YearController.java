@@ -35,7 +35,7 @@ public class YearController {
      * Makes 4 API calls in PARALLEL (non-blocking).
      *
      * @param year The year to fetch data for
-     * @return Mono<YearResponseDTO> with all year data (music, se.wikicap.dto.entertainment, events, nobel)
+     * @return Mono<YearResponseDTO> with all year data (music, entertainment, events, nobel)
      */
     @GetMapping("/{year}")
     public Mono<YearResponseDTO> getYear(@PathVariable int year) {
@@ -48,7 +48,7 @@ public class YearController {
                 .map(tuple -> new YearResponseDTO(
                         year,
                         tuple.getT1(),  // music
-                        tuple.getT2(),  // se.wikicap.dto.entertainment
+                        tuple.getT2(),  // entertainment
                         tuple.getT3(),  // events
                         tuple.getT4()   // nobel
                 ));

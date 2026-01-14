@@ -13,16 +13,15 @@ import java.util.List;
 @Setter
 @Getter
 public class TMBDPersonResponse {
-
-    private Integer page;
-
+    private String source = "TMDB";
     private List<TMBDPersonDTO> results;
-
-    @JsonProperty("total_pages")
-    private Integer totalPages;
+    private Integer page;
 
     @JsonProperty("total_results")
     private Integer totalResults;
+
+    @JsonProperty("total_pages")
+    private Integer totalPages;
 
     public TMBDPersonResponse() {
     }

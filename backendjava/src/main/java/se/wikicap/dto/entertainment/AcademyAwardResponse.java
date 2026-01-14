@@ -1,38 +1,71 @@
 package se.wikicap.dto.entertainment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * Response wrapper for Academy Awards API data.
- * Contains edition info and categories with their nominees grouped together.
+ * Matches the Python backend structure with bestActor, bestActress, and bestPicture.
  */
 @Setter
 @Getter
 public class AcademyAwardResponse {
-
-    private AcademyAwardDTO.Edition edition;
-    private List<AcademyAwardDTO.Category> categories;
-    private List<CategoryWithNominees> awards;
+    private Integer year;
+    private OscarsData oscars;
+    private String source = "The Unofficial Awards API";
 
     public AcademyAwardResponse() {
+        this.oscars = new OscarsData();
     }
 
     /**
-     * Inner class to group a category with its nominees.
-     * Makes it clear which nominees belong to which category.
+     * Container for the three main Oscar categories.
      */
     @Setter
     @Getter
-    public static class CategoryWithNominees {
-        private AcademyAwardDTO.Category category;
-        private List<AcademyAwardDTO.Nominee> nominees;
+    public static class OscarsData {
+        @JsonProperty("bestActor")
+        private ActorAward bestActor;
 
-        public CategoryWithNominees(AcademyAwardDTO.Category category, List<AcademyAwardDTO.Nominee> nominees) {
-            this.category = category;
-            this.nominees = nominees;
-        }
+        @JsonProperty("bestActress")
+        private ActorAward bestActress;
+
+        @JsonProperty("bestPicture")
+        private PictureAward bestPicture;
+    }
+
+    /**
+     * Award data for Best Actor / Best Actress.
+     * Includes the winner's name, movie, and profile image from TMDB.
+     */
+    @Setter
+    @Getter
+    public static class ActorAward {
+        private String name;
+        private String movie;
+        private String image;
+
+        private Integer id;
+        private String more;
+        private String note;
+        private Boolean winner;
+    }
+
+    /**
+     * Award data for Best Picture.
+     * Includes the movie title and poster from TMDB.
+     */
+    @Setter
+    @Getter
+    public static class PictureAward {
+        private String title;
+        private String poster;
+
+        private Integer id;
+        private String more;
+        private String note;
+        private Boolean winner;
     }
 }
+

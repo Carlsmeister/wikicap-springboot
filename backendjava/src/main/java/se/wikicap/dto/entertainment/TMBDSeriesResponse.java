@@ -12,6 +12,8 @@ import java.util.List;
 @Setter
 @Getter
 public class TMBDSeriesResponse {
+    private String source = "TMDB";
+    private int year;
     private List<TMBDSerieDTO> results;
     private Integer page;
 

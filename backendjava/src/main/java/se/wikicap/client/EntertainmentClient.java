@@ -6,13 +6,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import se.wikicap.dto.entertainment.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Client for interacting with The Movie Database (TMDB) API.
  * Provides methods to fetch movies, TV series, and search functionality.
- * All methods are fully reactive (non-blocking) and return Mono types.
  *
  * API Documentation:
  *      - https://developers.themoviedb.org/3
@@ -41,7 +39,6 @@ public class EntertainmentClient {
 
     /**
      * Fetch top-rated movies for a specific release year from TMDB.
-     * Non-blocking - returns immediately with a Mono.
      *
      * Filters movies by:
      * - Primary release year matching the specified year
@@ -64,12 +61,15 @@ public class EntertainmentClient {
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + TMDB_API_KEY)
                 .retrieve()
-                .bodyToMono(TMBDMovieResponse.class);
+                .bodyToMono(TMBDMovieResponse.class)
+                .map(response -> {
+                    response.setYear(year);
+                    return response;
+                });
     }
 
     /**
      * Fetch top-rated TV series that aired during a specific year from TMDB.
-     * Non-blocking - returns immediately with a Mono.
      *
      * Filters series by:
      * - Air date between January 1 and December 31 of the specified year
@@ -94,13 +94,16 @@ public class EntertainmentClient {
                 .header("Accept", "application/json")
                 .header("Authorization", "Bearer " + TMDB_API_KEY)
                 .retrieve()
-                .bodyToMono(TMBDSeriesResponse.class);
+                .bodyToMono(TMBDSeriesResponse.class)
+                .map(response -> {
+                    response.setYear(year);
+                    return response;
+                });
     }
 
     /**
      * Search TMDB for a movie by title with optional year filtering.
      * Returns the first result (best match) or null if no results found.
-     * Non-blocking - returns immediately with a Mono.
      *
      * @param title The movie title to search for
      * @param year Optional release year to narrow results (can be null)
@@ -130,7 +133,6 @@ public class EntertainmentClient {
     /**
      * Search TMDB for a person (actor, director, etc.) by name.
      * Returns the first result (best match) or null if no results found.
-     * Non-blocking - returns immediately with a Mono.
      *
      * @param name The person's name to search for
      * @return Mono<TMBDPersonDTO> with first person result or empty
@@ -153,10 +155,8 @@ public class EntertainmentClient {
 
     /**
      * Fetch Academy Awards data for a specific year.
-     * Non-blocking - returns immediately with a Mono.
-     * Fetches edition, all categories, and nominees for Best Picture, Best Actor, and Best Actress.
-     * All nominee API calls are made in PARALLEL for maximum performance.
-     *
+     * Fetches edition, all categories, and nominees for  bestActor, bestActress, bestPicture.
+     * Enriches data with TMDB images (posters and profile photos).
      * @param year The year to fetch awards for
      * @return Mono<AcademyAwardResponse> containing awards data
      */
@@ -170,68 +170,126 @@ public class EntertainmentClient {
                 .retrieve()
                 .bodyToFlux(AcademyAwardDTO.Edition.class)
                 .next()
-                .flatMap(edition -> {
-                    Mono<List<AcademyAwardDTO.Category>> categoriesMono = fetchCategoriesForEdition(edition.getId());
+                .flatMap(edition -> fetchCategoriesForEdition(edition.getId())
+                        .flatMap(categories -> {
+                            AcademyAwardDTO.Category bestPictureCat = categories.stream()
+                                    .filter(cat -> cat.getName().equals("Best Picture"))
+                                    .findFirst().orElse(null);
 
-                    System.out.println("Fetched edition: " + edition.getEdition() + " for year: " + year + " and categories are: " + categoriesMono);
+                            AcademyAwardDTO.Category bestActorCat = categories.stream()
+                                    .filter(cat -> cat.getName().equals("Actor In A Leading Role"))
+                                    .findFirst().orElse(null);
 
-                    return categoriesMono.flatMap(categories -> {
-                        if (categories.isEmpty()) {
-                            AcademyAwardResponse response = new AcademyAwardResponse();
-                            response.setEdition(edition);
-                            return Mono.just(response);
-                        }
+                            AcademyAwardDTO.Category bestActressCat = categories.stream()
+                                    .filter(cat -> cat.getName().equals("Actress In A Leading Role"))
+                                    .findFirst().orElse(null);
 
-                        List<String> desiredCategories = List.of(
-                                "Best Picture",
-                                "Actor In A Leading Role",
-                                "Actress In A Leading Role"
-                        );
+                            Mono<AcademyAwardResponse.PictureAward> bestPictureMono =
+                                    bestPictureCat != null
+                                            ? processBestPicture(edition.getId(), bestPictureCat.getId(), year)
+                                            : Mono.just(new AcademyAwardResponse.PictureAward());
 
-                        List<AcademyAwardDTO.Category> relevantCategories = categories.stream()
-                                .filter(cat -> desiredCategories.stream()
-                                        .anyMatch(desired -> cat.getName().contains(desired)))
-                                .toList();
+                            Mono<AcademyAwardResponse.ActorAward> bestActorMono =
+                                    bestActorCat != null
+                                            ? processPerson(edition.getId(), bestActorCat.getId())
+                                            : Mono.just(new AcademyAwardResponse.ActorAward());
 
-                        if (relevantCategories.isEmpty()) {
-                            AcademyAwardResponse response = new AcademyAwardResponse();
-                            response.setEdition(edition);
-                            response.setCategories(categories);
-                            return Mono.just(response);
-                        }
+                            Mono<AcademyAwardResponse.ActorAward> bestActressMono =
+                                    bestActressCat != null
+                                            ? processPerson(edition.getId(), bestActressCat.getId())
+                                            : Mono.just(new AcademyAwardResponse.ActorAward());
 
-                        // Fetch nominees for all relevant categories IN PARALLEL
-                        // Create a Mono for each category that fetches nominees and groups them together
-                        List<Mono<AcademyAwardResponse.CategoryWithNominees>> categoryWithNomineesFetches =
-                            relevantCategories.stream()
-                                .map(category -> fetchNomineesForCategory(edition.getId(), category.getId())
-                                    .map(nominees -> new AcademyAwardResponse.CategoryWithNominees(category, nominees)))
-                                .toList();
-
-                        // Wait for all category+nominee fetches to complete
-                        return Mono.zip(categoryWithNomineesFetches, results -> {
-                                    List<AcademyAwardResponse.CategoryWithNominees> awards = new ArrayList<>();
-                                    for (Object result : results) {
-                                        @SuppressWarnings("unchecked")
-                                        AcademyAwardResponse.CategoryWithNominees categoryWithNominees =
-                                            (AcademyAwardResponse.CategoryWithNominees) result;
-                                        awards.add(categoryWithNominees);
-                                    }
-                                    return awards;
-                                })
-                                .map(awards -> {
-                                    AcademyAwardResponse response = new AcademyAwardResponse();
-                                    response.setEdition(edition);
-                                    response.setCategories(categories);
-                                    response.setAwards(awards);  // Now grouped by category!
-                                    return response;
-                                });
-                    });
-                })
+                            return Mono.zip(bestPictureMono, bestActorMono, bestActressMono)
+                                    .map(tuple -> {
+                                        AcademyAwardResponse response = new AcademyAwardResponse();
+                                        response.setYear(year);
+                                        response.getOscars().setBestPicture(tuple.getT1());
+                                        response.getOscars().setBestActor(tuple.getT2());
+                                        response.getOscars().setBestActress(tuple.getT3());
+                                        return response;
+                                    });
+                        }))
                 .onErrorResume(error -> {
                     System.err.println("Error fetching Academy Awards: " + error.getMessage());
-                    return Mono.just(new AcademyAwardResponse());
+                    AcademyAwardResponse response = new AcademyAwardResponse();
+                    response.setYear(year);
+                    return Mono.just(response);
                 });
+    }
+
+    /**
+     * Process Best Picture winner and enrich with TMDB poster.
+     */
+    private Mono<AcademyAwardResponse.PictureAward> processBestPicture(Integer editionId, Integer categoryId, int year) {
+        return fetchNomineesForCategory(editionId, categoryId)
+                .flatMap(nominees -> {
+                    AcademyAwardDTO.Nominee winner = nominees.stream()
+                            .filter(n -> n.getWinner() != null && n.getWinner())
+                            .findFirst()
+                            .orElse(null);
+
+                    if (winner == null) {
+                        return Mono.just(new AcademyAwardResponse.PictureAward());
+                    }
+
+                    String movieTitle = winner.getName();
+
+                    return searchMovieByTitle(movieTitle, year)
+                            .map(movie -> {
+                                AcademyAwardResponse.PictureAward award = new AcademyAwardResponse.PictureAward();
+                                award.setTitle(movieTitle);
+                                award.setPoster(movie.getPosterPath());
+                                award.setId(winner.getId());
+                                award.setMore(winner.getMore());
+                                award.setNote(winner.getNote());
+                                award.setWinner(winner.getWinner());
+                                return award;
+                            });
+                });
+    }
+
+    /**
+     * Process actor/actress winner and enrich with TMDB profile image.
+     */
+    private Mono<AcademyAwardResponse.ActorAward> processPerson(Integer editionId, Integer categoryId) {
+        return fetchNomineesForCategory(editionId, categoryId)
+                .flatMap(nominees -> {
+                    AcademyAwardDTO.Nominee winner = nominees.stream()
+                            .filter(n -> n.getWinner() != null && n.getWinner())
+                            .findFirst()
+                            .orElse(null);
+
+                    if (winner == null) {
+                        return Mono.just(new AcademyAwardResponse.ActorAward());
+                    }
+
+                    String personName = winner.getName();
+                    String movieTitle = extractMovieTitle(winner.getMore());
+
+                    return searchPersonByName(personName)
+                            .map(person -> {
+                                AcademyAwardResponse.ActorAward award = new AcademyAwardResponse.ActorAward();
+                                award.setName(personName);
+                                award.setMovie(movieTitle);
+                                award.setImage(person.getProfilePath());
+                                award.setId(winner.getId());
+                                award.setMore(winner.getMore());
+                                award.setNote(winner.getNote());
+                                award.setWinner(winner.getWinner());
+                                return award;
+                            });
+                });
+    }
+
+    /**
+     * Extract clean movie title from Awards API 'more' field.
+     * Example: "Joker {Arthur Fleck}" -> "Joker"
+     */
+    private String extractMovieTitle(String moreField) {
+        if (moreField == null || moreField.isEmpty()) {
+            return "";
+        }
+        return moreField.replaceAll("\\s*\\{.*?}\\s*", "").trim();
     }
 
     /**
@@ -269,3 +327,4 @@ public class EntertainmentClient {
                 .collectList();
     }
 }
+
