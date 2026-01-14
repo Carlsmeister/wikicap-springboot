@@ -4,14 +4,21 @@ on:
   push:
     branches:
       - main
-      - dev  # Also run on dev branch pushes
+      - dev
   pull_request:
     branches:
       - main
 
+# Security: Define minimal permissions
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
   build-backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Prevent hanging builds
 
     steps:
       - name: Checkout code
@@ -30,11 +37,32 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and test backend
+      - name: Build backend
         working-directory: ./backendjava
         run: mvn clean package -DskipTests
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
 
       - name: Run tests
         working-directory: ./backendjava
         run: mvn test
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+
+      - name: Upload build artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wikicap-jar
+          path: backendjava/target/*.jar
+          retention-days: 2
+
+      - name: Generate job summary
+        if: always()
+        run: |
+          echo "## CI Pipeline Results 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Java Version**: 25" >> $GITHUB_STEP_SUMMARY
+          echo "- **Runner**: ubuntu-latest" >> $GITHUB_STEP_SUMMARY
 
