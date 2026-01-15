@@ -1,4 +1,4 @@
-package se.wikicap.dto;
+package se.wikicap.dto.entertainment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EntertainmentResponseDTO {
+public class EntertainmentResponse {
 
     @Schema (description = "Movies released in the specified year")
     TMBDMovieResponse movies;
@@ -15,12 +15,12 @@ public class EntertainmentResponseDTO {
     TMBDSeriesResponse series;
 
     @Schema (description = "Academy Awards held in the specified year")
-    AcademyAwardDTO academyAwards;
+    AcademyAwardResponse academyAwards;
 
-    public EntertainmentResponseDTO() {
+    public EntertainmentResponse() {
     }
 
-    public EntertainmentResponseDTO(TMBDMovieResponse movies, TMBDSeriesResponse series, AcademyAwardDTO academyAwards) {
+    public EntertainmentResponse(TMBDMovieResponse movies, TMBDSeriesResponse series, AcademyAwardResponse academyAwards) {
         this.movies = movies;
         this.series = series;
         this.academyAwards = academyAwards;

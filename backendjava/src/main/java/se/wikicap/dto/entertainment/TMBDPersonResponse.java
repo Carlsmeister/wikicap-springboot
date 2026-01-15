@@ -1,4 +1,4 @@
-package se.wikicap.dto;
+package se.wikicap.dto.entertainment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -7,12 +7,14 @@ import lombok.Setter;
 import java.util.List;
 
 /**
- * Wrapper DTO for TMDB movie API response containing list of results.
+ * Response wrapper for TMDB person search API.
+ * Contains the list of person results and pagination information.
  */
 @Setter
 @Getter
-public class TMBDMovieResponse {
-    private List<TMBDMovieDTO> results;
+public class TMBDPersonResponse {
+    private String source = "TMDB";
+    private List<TMBDPersonDTO> results;
     private Integer page;
 
     @JsonProperty("total_results")
@@ -21,7 +23,7 @@ public class TMBDMovieResponse {
     @JsonProperty("total_pages")
     private Integer totalPages;
 
-    public TMBDMovieResponse() {
+    public TMBDPersonResponse() {
     }
 
 }
