@@ -25,11 +25,11 @@ public class EntertainmentClient {
 
     @Value("${TMDB_API_KEY}")
     private String TMDB_API_KEY;
-    private final WebClient tmbdClient;
+    private final WebClient tmdbClient;
     private final WebClient awardsClient;
 
     public EntertainmentClient() {
-        this.tmbdClient = WebClient.builder()
+        this.tmdbClient = WebClient.builder()
                 .baseUrl(TMDB_BASE_URL)
                 .build();
 
@@ -51,7 +51,7 @@ public class EntertainmentClient {
      * @return Mono<TMBDMovieResponse> containing list of movies and pagination info
      */
     public Mono<TMBDMovieResponse> fetchTopMoviesByYear(int year) {
-        return tmbdClient.get()
+        return tmdbClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/discover/movie")
                         .queryParam("primary_release_year", year)
@@ -82,7 +82,7 @@ public class EntertainmentClient {
      * @return Mono<TMBDSeriesResponse> containing list of TV series and pagination info
      */
     public Mono<TMBDSeriesResponse> fetchTopSeriesByYear(int year) {
-        return tmbdClient.get()
+        return tmdbClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/discover/tv")
                         .queryParam("air_date.gte", year + "-01-01")
@@ -111,7 +111,7 @@ public class EntertainmentClient {
      * @return Mono<TMBDMovieDTO> with first movie result or empty
      */
     public Mono<TMBDMovieDTO> searchMovieByTitle(String title, Integer year) {
-        return tmbdClient.get()
+        return tmdbClient.get()
                 .uri(uriBuilder -> {
                     var builder = uriBuilder
                             .path("/search/movie")
@@ -142,7 +142,7 @@ public class EntertainmentClient {
      * @return Mono<TMBDPersonDTO> with first person result or empty
      */
     public Mono<TMBDPersonDTO> searchPersonByName(String name) {
-        return tmbdClient.get()
+        return tmdbClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/search/person")
                         .queryParam("query", name)
