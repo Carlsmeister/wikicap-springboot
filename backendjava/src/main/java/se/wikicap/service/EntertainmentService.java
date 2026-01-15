@@ -88,27 +88,42 @@ public class EntertainmentService {
      * Applies progressive penalties to older shows to prioritize recent content.
      *
      * @param firstAirDate First air date in YYYY-MM-DD format
-     * @param year The year being queried
+     * @param year         The year being queried
      * @return Penalty multiplier between 0.5 and 1.0
      */
     private double calculateAgePenalty(String firstAirDate, int year) {
-        if (firstAirDate == null || firstAirDate.length() < 4) {
-            return 1.0;
-        }
-
-        try {
-            int startYear = Integer.parseInt(firstAirDate.substring(0, 4));
-            int age = year - startYear;
-
-            if (age <= 2) return 1.0;
-            if (age <= 5) return 0.9;
-            if (age <= 10) return 0.8;
-            if (age <= 20) return 0.65;
-            return 0.5;
-        } catch (NumberFormatException e) {
-            return 1.0;
-        }
+        return 0;
     }
 
+    /**
+     * Fetch movie data for a specific year.
+     *
+     * @param year The year to fetch entertainment data for
+     * @return Mono<TMBDMovieResponse> containing all movie data
+     */
+    public Mono<TMBDMovieResponse> getMoviesByYear(int year) {
+        return entertainmentClient.fetchTopMoviesByYear(year);
+    }
+
+    /**
+     * Fetch series data for a specific year.
+     *
+     * @param year The year to fetch entertainment data for
+     * @return Mono<TMBDSerieResponse> containing all series data
+     */
+    public Mono<TMBDSeriesResponse> getSeriesByYear(int year) {
+        return entertainmentClient.fetchTopSeriesByYear(year)
+                .map(response -> rankAndFilterSeries(response, year));
+    }
+
+    /**
+     * Fetch Academy award data for a specific year.
+     *
+     * @param year The year to fetch entertainment data for
+     * @return Mono<AcademyAwardResponse> containing all award data
+     */
+    public Mono<AcademyAwardResponse> getAwardsByYear(int year) {
+        return entertainmentClient.fetchAwards(year);
+    }
 }
 

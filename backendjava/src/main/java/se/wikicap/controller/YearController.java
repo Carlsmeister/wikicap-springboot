@@ -53,15 +53,4 @@ public class YearController {
                         tuple.getT4()   // nobel
                 ));
     }
-
-    /**
-     * Get se.wikicap.dto.entertainment data (movies, series, awards) for a specific year.
-     *
-     * @param year The year to fetch se.wikicap.dto.entertainment data for
-     * @return Mono<EntertainmentResponse> with movies, series, and awards
-     */
-    @GetMapping("/{year}/entertainment")
-    public Mono<EntertainmentResponse> getEntertainmentByYear(@PathVariable int year) {
-        return entertainmentService.getEntertainmentByYear(year);
-    }
 }
