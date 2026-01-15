@@ -10,7 +10,7 @@ import se.wikicap.dto.entertainment.TMBDSerieDTO;
 import se.wikicap.dto.entertainment.TMBDSeriesResponse;
 
 /**
- * Service for aggregating se.wikicap.dto.entertainment data from multiple sources.
+ * Service for aggregating entertainment data from multiple sources.
  * Uses reactive programming for non-blocking, parallel API calls.
  */
 @Service
@@ -92,7 +92,30 @@ public class EntertainmentService {
      * @return Penalty multiplier between 0.5 and 1.0
      */
     private double calculateAgePenalty(String firstAirDate, int year) {
-        return 0;
+        if (firstAirDate == null || firstAirDate.isEmpty()) {
+            return 1.0;
+        }
+
+        try {
+            int startYear = Integer.parseInt(firstAirDate.substring(0, 4));
+            int age = year - startYear;
+
+            if (age <= 2) {
+                return 1.0;
+            }
+            if (age <= 5) {
+                return 0.9;
+            }
+            if (age <= 10) {
+                return 0.8;
+            }
+            if (age <= 20) {
+                return 0.65;
+            }
+            return 0.5;
+        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            return 1.0;
+        }
     }
 
     /**

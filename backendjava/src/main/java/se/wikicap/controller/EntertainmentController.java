@@ -40,7 +40,7 @@ public class EntertainmentController {
     /**
      * Get movie data for a specific year.
      *
-     * @param year The year to fetch entertainment data for
+     * @param year The year to fetch movie data for
      * @return Mono<TMBDMovieResponse> containing all movie data
      */
     @GetMapping("/{year}/entertainment/movies")
@@ -51,7 +51,7 @@ public class EntertainmentController {
     /**
      * Get series data for a specific year.
      *
-     * @param year The year to fetch se.wikicap.dto.entertainment data for
+     * @param year The year to fetch series data for
      * @return Mono<TMBDSeriesResponse> containing all series data
      */
     @GetMapping("/{year}/entertainment/series")
@@ -62,7 +62,7 @@ public class EntertainmentController {
     /**
      * Get awards data for a specific year.
      *
-     * @param year The year to fetch se.wikicap.dto.entertainment data for
+     * @param year The year to fetch awards data for
      * @return Mono<AcademyAwardResponse> containing all award data
      */
     @GetMapping("/{year}/entertainment/awards")

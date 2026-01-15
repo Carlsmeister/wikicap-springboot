@@ -9,8 +9,9 @@ import se.wikicap.dto.entertainment.*;
 import java.util.List;
 
 /**
- * Client for interacting with The Movie Database (TMDB) API.
- * Provides methods to fetch movies, TV series, and search functionality.
+ * Client for interacting with The Movie Database (TMDB) API and the Awards API.
+ * Provides methods to fetch movies, TV series, and Oscars winners, and enriches
+ * Oscars winner data with TMDB images (posters and profile photos).
  *
  * API Documentation:
  *      - https://developers.themoviedb.org/3
@@ -103,7 +104,7 @@ public class EntertainmentClient {
 
     /**
      * Search TMDB for a movie by title with optional year filtering.
-     * Returns the first result (best match) or null if no results found.
+     * Returns the first result (best match) or empty Mono if no results found.
      *
      * @param title The movie title to search for
      * @param year Optional release year to narrow results (can be null)
@@ -125,14 +126,17 @@ public class EntertainmentClient {
                 .header("Authorization", "Bearer " + TMDB_API_KEY)
                 .retrieve()
                 .bodyToMono(TMBDMovieResponse.class)
-                .map(response -> response.getResults() != null && !response.getResults().isEmpty()
-                        ? response.getResults().getFirst()
-                        : null);
+                .flatMap(response -> {
+                    if (response.getResults() != null && !response.getResults().isEmpty()) {
+                        return Mono.just(response.getResults().getFirst());
+                    }
+                    return Mono.empty();
+                });
     }
 
     /**
      * Search TMDB for a person (actor, director, etc.) by name.
-     * Returns the first result (best match) or null if no results found.
+     * Returns the first result (best match) or empty Mono if no results found.
      *
      * @param name The person's name to search for
      * @return Mono<TMBDPersonDTO> with first person result or empty
@@ -148,14 +152,17 @@ public class EntertainmentClient {
                 .header("Authorization", "Bearer " + TMDB_API_KEY)
                 .retrieve()
                 .bodyToMono(TMBDPersonResponse.class)
-                .map(response -> response.getResults() != null && !response.getResults().isEmpty()
-                        ? response.getResults().getFirst()
-                        : null);
+                .flatMap(response -> {
+                    if (response.getResults() != null && !response.getResults().isEmpty()) {
+                        return Mono.just(response.getResults().getFirst());
+                    }
+                    return Mono.empty();
+                });
     }
 
     /**
      * Fetch Academy Awards data for a specific year.
-     * Fetches edition, all categories, and nominees for  bestActor, bestActress, bestPicture.
+     * Fetches edition, all categories, and nominees for bestActor, bestActress, bestPicture.
      * Enriches data with TMDB images (posters and profile photos).
      * @param year The year to fetch awards for
      * @return Mono<AcademyAwardResponse> containing awards data
@@ -218,7 +225,57 @@ public class EntertainmentClient {
     }
 
     /**
-     * Process Best Picture winner and enrich with TMDB poster.
+     * Fallback build when TMDB does not return a movie match.
+     *
+     * The returned instance always contains nominee metadata from the Awards API.
+     * The poster is intentionally left unset (null) so callers can distinguish between
+     * "found but missing poster" vs. "not found" if they need to.
+     *
+     * @param winner the Awards API nominee marked as winner (must not be null)
+     * @param movieTitle the winner movie title from the Awards API
+     * @return a populated {@code PictureAward} without a poster
+     */
+    private static AcademyAwardResponse.PictureAward buildPictureAwardFallback(AcademyAwardDTO.Nominee winner,
+                                                                              String movieTitle) {
+        AcademyAwardResponse.PictureAward award = new AcademyAwardResponse.PictureAward();
+        award.setTitle(movieTitle);
+        award.setId(winner.getId());
+        award.setMore(winner.getMore());
+        award.setNote(winner.getNote());
+        award.setWinner(winner.getWinner());
+        return award;
+    }
+
+    /**
+     * Fallback build when TMDB does not return a person match.
+     *
+     * The returned instance always contains nominee metadata from the Awards API.
+     * The profile image path is intentionally left unset (null).
+     *
+     * @param winner the Awards API nominee marked as winner (must not be null)
+     * @param personName the winner person name from the Awards API
+     * @param movieTitle extracted movie title from the Awards API nominee "more" field
+     * @return a populated {@code ActorAward} without an image
+     */
+    private static AcademyAwardResponse.ActorAward buildActorAwardFallback(AcademyAwardDTO.Nominee winner,
+                                                                          String personName,
+                                                                          String movieTitle) {
+        AcademyAwardResponse.ActorAward award = new AcademyAwardResponse.ActorAward();
+        award.setName(personName);
+        award.setMovie(movieTitle);
+        award.setId(winner.getId());
+        award.setMore(winner.getMore());
+        award.setNote(winner.getNote());
+        award.setWinner(winner.getWinner());
+        return award;
+    }
+
+    /**
+     * Process best picture winner and enrich with TMDB poster image.
+     * @param editionId The edition ID (e.g., 73 for 2000)
+     * @param categoryId The category ID (e.g., 3636 for Best Picture)
+     * @param year The award year to help narrow movie search
+     * @return Mono<PictureAward>
      */
     private Mono<AcademyAwardResponse.PictureAward> processBestPicture(Integer editionId, Integer categoryId, int year) {
         return fetchNomineesForCategory(editionId, categoryId)
@@ -236,20 +293,19 @@ public class EntertainmentClient {
 
                     return searchMovieByTitle(movieTitle, year)
                             .map(movie -> {
-                                AcademyAwardResponse.PictureAward award = new AcademyAwardResponse.PictureAward();
-                                award.setTitle(movieTitle);
+                                AcademyAwardResponse.PictureAward award = buildPictureAwardFallback(winner, movieTitle);
                                 award.setPoster(movie.getPosterPath());
-                                award.setId(winner.getId());
-                                award.setMore(winner.getMore());
-                                award.setNote(winner.getNote());
-                                award.setWinner(winner.getWinner());
                                 return award;
-                            });
+                            })
+                            .defaultIfEmpty(buildPictureAwardFallback(winner, movieTitle));
                 });
     }
 
     /**
-     * Process actor/actress winner and enrich with TMDB profile image.
+     * Process best actor/actress winner and enrich with TMDB profile image.
+     * @param editionId The edition ID (e.g., 73 for 2000)
+     * @param categoryId The category ID (e.g., 3636 for Best Picture)
+     * @return Mono<ActorAward>
      */
     private Mono<AcademyAwardResponse.ActorAward> processPerson(Integer editionId, Integer categoryId) {
         return fetchNomineesForCategory(editionId, categoryId)
@@ -268,16 +324,11 @@ public class EntertainmentClient {
 
                     return searchPersonByName(personName)
                             .map(person -> {
-                                AcademyAwardResponse.ActorAward award = new AcademyAwardResponse.ActorAward();
-                                award.setName(personName);
-                                award.setMovie(movieTitle);
+                                AcademyAwardResponse.ActorAward award = buildActorAwardFallback(winner, personName, movieTitle);
                                 award.setImage(person.getProfilePath());
-                                award.setId(winner.getId());
-                                award.setMore(winner.getMore());
-                                award.setNote(winner.getNote());
-                                award.setWinner(winner.getWinner());
                                 return award;
-                            });
+                            })
+                            .defaultIfEmpty(buildActorAwardFallback(winner, personName, movieTitle));
                 });
     }
 
