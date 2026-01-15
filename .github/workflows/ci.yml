@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - dev
+      - feature/*
   pull_request:
     branches:
       - main
+      - dev
 
 # Security: Define minimal permissions
 permissions:
