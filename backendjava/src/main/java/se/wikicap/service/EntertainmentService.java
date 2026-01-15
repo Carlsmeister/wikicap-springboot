@@ -132,7 +132,7 @@ public class EntertainmentService {
      * Fetch series data for a specific year.
      *
      * @param year The year to fetch entertainment data for
-     * @return Mono<TMBDSerieResponse> containing all series data
+     * @return Mono<TMBDSeriesResponse> containing all series data
      */
     public Mono<TMBDSeriesResponse> getSeriesByYear(int year) {
         return entertainmentClient.fetchTopSeriesByYear(year)

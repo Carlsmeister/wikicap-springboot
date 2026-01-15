@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 public class TMBDPersonDTO {
 
-    // Getters and Setters
     private Long id;
     private String name;
 
