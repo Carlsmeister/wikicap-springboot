@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import se.wikicap.dto.*;
 import se.wikicap.dto.entertainment.EntertainmentResponse;
+import se.wikicap.dto.music.MusicResponseDTO;
 import se.wikicap.service.*;
 
 /**
@@ -14,7 +15,7 @@ import se.wikicap.service.*;
  * All endpoints are fully reactive (non-blocking) for maximum performance.
  */
 @RestController
-@RequestMapping("/api/v1/year")
+@RequestMapping("/api/v1/years")
 public class YearController {
 
     private final MusicService musicService;
