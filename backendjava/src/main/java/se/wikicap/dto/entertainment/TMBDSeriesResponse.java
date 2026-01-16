@@ -14,7 +14,7 @@ import java.util.List;
 public class TMBDSeriesResponse {
     private String source = "TMDB";
     private int year;
-    private List<TMBDSerieDTO> results;
+    private List<TMBDSerie> results;
     private Integer page;
 
     @JsonProperty("total_results")

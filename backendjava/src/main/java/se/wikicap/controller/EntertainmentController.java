@@ -16,7 +16,7 @@ import se.wikicap.service.EntertainmentService;
  * All endpoints are fully reactive (non-blocking) for maximum performance.
  */
 @RestController
-@RequestMapping("/api/v1/year")
+@RequestMapping("/api/v1/years")
 public class EntertainmentController {
 
     private final EntertainmentService entertainmentService;

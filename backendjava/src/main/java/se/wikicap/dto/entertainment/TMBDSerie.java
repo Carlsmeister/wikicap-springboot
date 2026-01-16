@@ -5,20 +5,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * DTO representing a movie from TMDB API.
+ * DTO representing a TV series from TMDB API.
  */
 @Setter
 @Getter
-public class TMBDMovieDTO {
+public class TMBDSerie {
     private Long id;
-    private String title;
+    private String name;
     private String overview;
 
     @JsonProperty("poster_path")
     private String posterPath;
 
-    @JsonProperty("release_date")
-    private String releaseDate;
+    @JsonProperty("first_air_date")
+    private String firstAirDate;
 
     @JsonProperty("vote_average")
     private Double voteAverage;
@@ -26,7 +26,9 @@ public class TMBDMovieDTO {
     @JsonProperty("vote_count")
     private Integer voteCount;
 
-    public TMBDMovieDTO() {
+    private Double popularity;
+
+    public TMBDSerie() {
     }
 
 }

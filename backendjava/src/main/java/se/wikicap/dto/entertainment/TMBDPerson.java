@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Setter
 @Getter
-public class TMBDPersonDTO {
+public class TMBDPerson {
 
     private Long id;
     private String name;
@@ -28,7 +28,7 @@ public class TMBDPersonDTO {
     @JsonProperty("known_for")
     private List<KnownForItem> knownFor;
 
-    public TMBDPersonDTO() {
+    public TMBDPerson() {
     }
 
     /**
