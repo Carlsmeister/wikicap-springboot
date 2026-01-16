@@ -7,7 +7,7 @@ import lombok.Setter;
  * DTOs for Academy Awards API responses.
  * Different endpoints return different structures.
  */
-public class AcademyAwardDTO {
+public class AcademyAward {
 
     /**
      * Edition DTO - returned by /oscars/editions?year=X

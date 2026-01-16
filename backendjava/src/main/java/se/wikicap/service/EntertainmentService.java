@@ -6,7 +6,7 @@ import se.wikicap.client.EntertainmentClient;
 import se.wikicap.dto.entertainment.AcademyAwardResponse;
 import se.wikicap.dto.entertainment.EntertainmentResponse;
 import se.wikicap.dto.entertainment.TMBDMovieResponse;
-import se.wikicap.dto.entertainment.TMBDSerieDTO;
+import se.wikicap.dto.entertainment.TMBDSerie;
 import se.wikicap.dto.entertainment.TMBDSeriesResponse;
 
 /**
@@ -75,7 +75,7 @@ public class EntertainmentService {
      * @param year The year being queried
      * @return Composite score for ranking
      */
-    private double calculateSeriesScore(TMBDSerieDTO serie, int year) {
+    private double calculateSeriesScore(TMBDSerie serie, int year) {
         double popularity = serie.getPopularity() != null ? serie.getPopularity() : 0.0;
         double rating = serie.getVoteAverage() != null ? serie.getVoteAverage() / 10.0 : 0.0;
 

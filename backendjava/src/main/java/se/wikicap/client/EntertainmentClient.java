@@ -108,9 +108,9 @@ public class EntertainmentClient {
      *
      * @param title The movie title to search for
      * @param year Optional release year to narrow results (can be null)
-     * @return Mono<TMBDMovieDTO> with first movie result or empty
+     * @return Mono<TMBDMovie> with first movie result or empty
      */
-    public Mono<TMBDMovieDTO> searchMovieByTitle(String title, Integer year) {
+    public Mono<TMBDMovie> searchMovieByTitle(String title, Integer year) {
         return tmdbClient.get()
                 .uri(uriBuilder -> {
                     var builder = uriBuilder
@@ -139,9 +139,9 @@ public class EntertainmentClient {
      * Returns the first result (best match) or empty Mono if no results found.
      *
      * @param name The person's name to search for
-     * @return Mono<TMBDPersonDTO> with first person result or empty
+     * @return Mono<TMBDPerson> with first person result or empty
      */
-    public Mono<TMBDPersonDTO> searchPersonByName(String name) {
+    public Mono<TMBDPerson> searchPersonByName(String name) {
         return tmdbClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/search/person")
@@ -175,19 +175,19 @@ public class EntertainmentClient {
                         .build())
                 .header("Accept", "application/json")
                 .retrieve()
-                .bodyToFlux(AcademyAwardDTO.Edition.class)
+                .bodyToFlux(AcademyAward.Edition.class)
                 .next()
                 .flatMap(edition -> fetchCategoriesForEdition(edition.getId())
                         .flatMap(categories -> {
-                            AcademyAwardDTO.Category bestPictureCat = categories.stream()
+                            AcademyAward.Category bestPictureCat = categories.stream()
                                     .filter(cat -> cat.getName().equals("Best Picture"))
                                     .findFirst().orElse(null);
 
-                            AcademyAwardDTO.Category bestActorCat = categories.stream()
+                            AcademyAward.Category bestActorCat = categories.stream()
                                     .filter(cat -> cat.getName().equals("Actor In A Leading Role"))
                                     .findFirst().orElse(null);
 
-                            AcademyAwardDTO.Category bestActressCat = categories.stream()
+                            AcademyAward.Category bestActressCat = categories.stream()
                                     .filter(cat -> cat.getName().equals("Actress In A Leading Role"))
                                     .findFirst().orElse(null);
 
@@ -235,8 +235,8 @@ public class EntertainmentClient {
      * @param movieTitle the winner movie title from the Awards API
      * @return a populated {@code PictureAward} without a poster
      */
-    private static AcademyAwardResponse.PictureAward buildPictureAwardFallback(AcademyAwardDTO.Nominee winner,
-                                                                              String movieTitle) {
+    private static AcademyAwardResponse.PictureAward buildPictureAwardFallback(AcademyAward.Nominee winner,
+                                                                               String movieTitle) {
         AcademyAwardResponse.PictureAward award = new AcademyAwardResponse.PictureAward();
         award.setTitle(movieTitle);
         award.setId(winner.getId());
@@ -257,9 +257,9 @@ public class EntertainmentClient {
      * @param movieTitle extracted movie title from the Awards API nominee "more" field
      * @return a populated {@code ActorAward} without an image
      */
-    private static AcademyAwardResponse.ActorAward buildActorAwardFallback(AcademyAwardDTO.Nominee winner,
-                                                                          String personName,
-                                                                          String movieTitle) {
+    private static AcademyAwardResponse.ActorAward buildActorAwardFallback(AcademyAward.Nominee winner,
+                                                                           String personName,
+                                                                           String movieTitle) {
         AcademyAwardResponse.ActorAward award = new AcademyAwardResponse.ActorAward();
         award.setName(personName);
         award.setMovie(movieTitle);
@@ -280,7 +280,7 @@ public class EntertainmentClient {
     private Mono<AcademyAwardResponse.PictureAward> processBestPicture(Integer editionId, Integer categoryId, int year) {
         return fetchNomineesForCategory(editionId, categoryId)
                 .flatMap(nominees -> {
-                    AcademyAwardDTO.Nominee winner = nominees.stream()
+                    AcademyAward.Nominee winner = nominees.stream()
                             .filter(n -> n.getWinner() != null && n.getWinner())
                             .findFirst()
                             .orElse(null);
@@ -310,7 +310,7 @@ public class EntertainmentClient {
     private Mono<AcademyAwardResponse.ActorAward> processPerson(Integer editionId, Integer categoryId) {
         return fetchNomineesForCategory(editionId, categoryId)
                 .flatMap(nominees -> {
-                    AcademyAwardDTO.Nominee winner = nominees.stream()
+                    AcademyAward.Nominee winner = nominees.stream()
                             .filter(n -> n.getWinner() != null && n.getWinner())
                             .findFirst()
                             .orElse(null);
@@ -349,14 +349,14 @@ public class EntertainmentClient {
      * @param editionId The edition ID (e.g., 73 for 2000)
      * @return Mono<List<Category>> containing all award categories for this edition
      */
-    private Mono<List<AcademyAwardDTO.Category>> fetchCategoriesForEdition(Integer editionId) {
+    private Mono<List<AcademyAward.Category>> fetchCategoriesForEdition(Integer editionId) {
         return awardsClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/oscars/editions/" + editionId + "/categories")
                         .build())
                 .header("Accept", "application/json")
                 .retrieve()
-                .bodyToFlux(AcademyAwardDTO.Category.class)
+                .bodyToFlux(AcademyAward.Category.class)
                 .collectList();
     }
 
@@ -367,14 +367,14 @@ public class EntertainmentClient {
      * @param categoryId The category ID (e.g., 3636 for Best Picture)
      * @return Mono<List<Nominee>> containing all nominees for this category
      */
-    private Mono<List<AcademyAwardDTO.Nominee>> fetchNomineesForCategory(Integer editionId, Integer categoryId) {
+    private Mono<List<AcademyAward.Nominee>> fetchNomineesForCategory(Integer editionId, Integer categoryId) {
         return awardsClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/oscars/editions/" + editionId + "/categories/" + categoryId + "/nominees")
                         .build())
                 .header("Accept", "application/json")
                 .retrieve()
-                .bodyToFlux(AcademyAwardDTO.Nominee.class)
+                .bodyToFlux(AcademyAward.Nominee.class)
                 .collectList();
     }
 }

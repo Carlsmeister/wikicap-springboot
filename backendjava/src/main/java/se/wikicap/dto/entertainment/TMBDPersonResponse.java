@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 public class TMBDPersonResponse {
     private String source = "TMDB";
-    private List<TMBDPersonDTO> results;
+    private List<TMBDPerson> results;
     private Integer page;
 
     @JsonProperty("total_results")
