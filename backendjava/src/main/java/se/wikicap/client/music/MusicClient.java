@@ -16,7 +16,18 @@ import se.wikicap.dto.music.spotify.SpotifyTrackSearchResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Spotify client used to enrich ranked songs/artists with metadata.
+ *
+ * Features:
+ * - Uses Spotify Client Credentials flow to get an access token
+ * - Caches the token in memory until shortly before expiry
+ * - Reuses an in-flight token request so concurrent calls don't trigger multiple token refreshes
+ *
+ * All methods return {@link Mono} and are intended to be used from service layers.
+ */
 @Component
 public class MusicClient {
 
@@ -32,9 +43,28 @@ public class MusicClient {
     private final WebClient spotifyApiClient;
     private final WebClient spotifyAuthClient;
 
-    private volatile String cachedAccessToken;
-    private volatile Instant cachedAccessTokenExpiresAt;
+    private final AtomicReference<TokenHolder> tokenHolder = new AtomicReference<>();
+    private volatile Mono<String> activeTokenRequest;
 
+    /**
+     * Small in-memory representation of a Spotify access token.
+     *
+     * The token is treated as expired slightly before the official expiry time to
+     * avoid edge cases where it expires during a request.
+     */
+    private record TokenHolder(String accessToken, Instant expiresAt) {
+        boolean isExpired() {
+            return !Instant.now().isAfter(expiresAt.minusSeconds(30));
+        }
+    }
+
+    /**
+     * Creates a new {@link MusicClient}.
+     *
+     * Uses separate {@link WebClient} instances for:
+     * - Spotify Web API requests (search/top-tracks)
+     * - Spotify Accounts requests (token)
+     */
     public MusicClient() {
         this.spotifyApiClient = WebClient.builder()
                 .baseUrl(SPOTIFY_SEARCH_BASE_URL)
@@ -46,42 +76,80 @@ public class MusicClient {
     }
 
     /**
-     * Get a Spotify access token using the client credentials flow.
-     * Token is cached in-memory until shortly before expiry.
+     * Returns a Spotify access token using the Client Credentials flow.
+     *
+     * Behavior:
+     * - If a valid token is cached, returns it immediately.
+     * - If the cached token is missing/expired, requests a new token.
+     * - If a token request is already in-flight, reuses that request for all callers.
+     *
+     * @return a {@link Mono} emitting the access token string
+     * @see SpotifyTokenResponse
      */
     public Mono<String> getSpotifyAccessToken() {
-        if (cachedAccessToken != null && cachedAccessTokenExpiresAt != null) {
-            if (Instant.now().isBefore(cachedAccessTokenExpiresAt.minusSeconds(30))) {
-                return Mono.just(cachedAccessToken);
-            }
+        TokenHolder current = tokenHolder.get();
+        if (current != null && current.isExpired()) {
+            return Mono.just(current.accessToken());
         }
 
-        String auth = spotifyClientId + ":" + spotifyClientSecret;
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+        return Mono.defer(() -> {
+            TokenHolder latest = tokenHolder.get();
+            if (latest != null && latest.isExpired()) {
+                return Mono.just(latest.accessToken());
+            }
 
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("grant_type", "client_credentials");
+            synchronized (this) {
+                if (activeTokenRequest != null) {
+                    return activeTokenRequest;
+                }
 
-        return spotifyAuthClient.post()
-                .uri("/api/token")
-                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(form)
-                .retrieve()
-                .bodyToMono(SpotifyTokenResponse.class)
-                .map(token -> {
-                    this.cachedAccessToken = token.accessToken();
-                    this.cachedAccessTokenExpiresAt = Instant.now().plusSeconds(token.expiresIn());
-                    return token.accessToken();
-                });
+                String auth = spotifyClientId + ":" + spotifyClientSecret;
+                String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+                MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+                form.add("grant_type", "client_credentials");
+
+                activeTokenRequest = spotifyAuthClient.post()
+                        .uri("/api/token")
+                        .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .bodyValue(form)
+                        .retrieve()
+                        .bodyToMono(SpotifyTokenResponse.class)
+                        .map(token -> {
+                            TokenHolder newToken = new TokenHolder(
+                                    token.accessToken(),
+                                    Instant.now().plusSeconds(token.expiresIn())
+                            );
+                            tokenHolder.set(newToken);
+                            return token.accessToken();
+                        })
+                        .doFinally(signalType -> {
+                            synchronized (this) {
+                                activeTokenRequest = null;
+                            }
+                        })
+                        .cache();
+
+                return activeTokenRequest;
+            }
+        });
     }
 
     /**
-     * Search Spotify for a specific track by name and artist.
-     * @param title The track title
-     * @param artist The artist name
-     * @return Mono<SpotifyTrackSearchResponse>
+     * Searches Spotify for a track by title and artist.
+     *
+     * Query format:
+     * track:"{title}" artist:"{artist}"
+     *
+     * Notes:
+     * - Returns up to one result (limit=1)
+     * - Uses {@link #getSpotifyAccessToken()} to authenticate
+     *
+     * @param title track title
+     * @param artist artist name
+     * @return a {@link Mono} emitting a {@link SpotifyTrackSearchResponse}
      */
     public Mono<SpotifyTrackSearchResponse> searchTrack(String title, String artist) {
         String query = String.format("track:\"%s\" artist:\"%s\"", title, artist);
@@ -100,9 +168,14 @@ public class MusicClient {
     }
 
     /**
-     * Search Spotify for a specific artist by name.
-     * @param name The artist name
-     * @return Mono<SpotifyArtistSearchResponse>
+     * Searches Spotify for an artist by name.
+     *
+     * Notes:
+     * - Returns up to one result (limit=1)
+     * - Uses {@link #getSpotifyAccessToken()} to authenticate
+     *
+     * @param name artist name
+     * @return a {@link Mono} emitting a {@link SpotifyArtistSearchResponse}
      */
     public Mono<SpotifyArtistSearchResponse> searchArtist(String name) {
         return getSpotifyAccessToken()
@@ -120,9 +193,13 @@ public class MusicClient {
     }
 
     /**
-     * Get the top tracks for a specific artist.
-     * @param artistId The Spotify artist ID
-     * @return Mono<SpotifyTopTracksResponse>
+     * Fetches the top tracks for a Spotify artist.
+     *
+     * Notes:
+     * - Uses {@link #getSpotifyAccessToken()} to authenticate
+     *
+     * @param artistId Spotify artist ID
+     * @return a {@link Mono} emitting a {@link SpotifyTopTracksResponse}
      */
     public Mono<SpotifyTopTracksResponse> getArtistTopTracks(String artistId) {
         return getSpotifyAccessToken()

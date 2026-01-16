@@ -10,23 +10,51 @@ import se.wikicap.dto.music.spotify.SpotifyArtistSearchResponse;
 
 import java.util.List;
 
+/**
+ * Music aggregation service.
+ *
+ * Combines:
+ * - Rankings (songs + artists) from {@link MusicRankProvider} (e.g. Wikipedia scraping)
+ * - Metadata enrichment from {@link MusicClient} (Spotify search + artist top tracks)
+ *
+ * Public API methods return reactive types ({@link Mono}) and are safe to call from
+ * WebFlux/Spring MVC controllers.
+ */
 @Service
 public class MusicService {
 
     private final MusicClient musicClient;
     private final MusicRankProvider rankProvider;
 
+    /**
+     * Creates a new {@link MusicService}.
+     *
+     * @param musicClient   client for fetching music metadata (Spotify)
+     * @param rankProvider  provider for fetching ranked songs/artists for a given year
+     */
     public MusicService(MusicClient musicClient, MusicRankProvider rankProvider) {
         this.musicClient = musicClient;
         this.rankProvider = rankProvider;
     }
 
     /**
-     * Fetch music data for a specific year.
-     * Uses Wikipedia for rankings and Spotify for metadata enrichment.
+     * Fetches aggregated music data for a year.
      *
-     * @param year The year to fetch music data for
-     * @return Mono<MusicResponse> containing enriched music data
+     * Flow:
+     * 1) Fetch top songs and top artists for {@code year} from {@link #rankProvider}
+     * 2) Deduplicate/limit songs and sort/limit artists
+     * 3) Enrich each song/artist with Spotify metadata via {@link #musicClient}
+     *
+     * Caching:
+     * The result is cached by year. A second request for the same year should return from cache
+     * (no external calls) as long as the cache entry is still valid.
+     *
+     * Error handling:
+     * If Spotify APIs fail for an individual item, the item is returned in a fallback "Unknown"
+     * form rather than failing the entire year response.
+     *
+     * @param year the year to fetch music data for
+     * @return a {@link Mono} emitting a {@link MusicResponse} containing enriched songs and artists
      */
     @Cacheable(value = "music", key = "#year")
     public Mono<MusicResponse> getMusicByYear(int year) {
@@ -48,8 +76,16 @@ public class MusicService {
                 .map(tuple -> new MusicResponse(year, tuple.getT1(), tuple.getT2(), "Wikipedia + Spotify"));
     }
 
+    /**
+     * Deduplicates ranked songs while preserving the first occurrence and original order.
+     *
+     * Wikipedia tables can contain duplicate tracks (same song appearing in different releases).
+     * This method keeps the first occurrence per (title + displayName) pair.
+     *
+     * @param songs a list of ranked songs
+     * @return a de-duplicated list limited to the top 10
+     */
     private List<MusicRankProvider.RankedSong> deduplicateAndLimitSongs(List<MusicRankProvider.RankedSong> songs) {
-        // Use a map to keep only the first time a song appears
         java.util.Map<String, MusicRankProvider.RankedSong> uniqueSongs = new java.util.LinkedHashMap<>();
         for (var s : songs) {
             String key = (s.title() + "|" + s.displayName()).toLowerCase();
@@ -60,10 +96,19 @@ public class MusicService {
                 .toList();
     }
 
+    /**
+     * Sorts artists by "impact" and limits the list.
+     *
+     * Sort order:
+     * - Primary: the number of occurrences/weeks a lead artist appears
+     * - Secondary (tie-breaker): lowest rank (earlier/better appearance)
+     *
+     * @param artists ranked artists
+     * @return sorted/limited list of artists (top 10)
+     */
     private List<MusicRankProvider.RankedArtist> sortAndLimitArtists(List<MusicRankProvider.RankedArtist> artists) {
         return artists.stream()
                 .sorted((a, b) -> {
-                    // Primary sort: Most weeks at #1. Secondary: Earliest rank (tie-breaker)
                     int scoreDiff = Integer.compare(b.occurrenceCount(), a.occurrenceCount());
                     return scoreDiff != 0 ? scoreDiff : Integer.compare(a.rank(), b.rank());
                 })
@@ -71,6 +116,16 @@ public class MusicService {
                 .toList();
     }
 
+    /**
+     * Enriches a ranked song with Spotify search results.
+     *
+     * If Spotify doesn't return any results (or the request fails), a minimal fallback
+     * representation is returned.
+     *
+     * @param rankedSong ranked song from the ranking provider
+     * @param displayRank 1-based rank used for display (preserves list order)
+     * @return enriched track DTO
+     */
     private Mono<MusicResponse.TrackDTO> enrichSong(MusicRankProvider.RankedSong rankedSong, int displayRank) {
         return musicClient.searchTrack(rankedSong.title(), rankedSong.primaryArtist())
                 .map(response -> {
@@ -87,8 +142,14 @@ public class MusicService {
                 .onErrorResume(e -> Mono.just(createEmptySong(rankedSong, displayRank)));
     }
 
+    /**
+     * Builds a fallback song payload when Spotify search fails or returns no hits.
+     *
+     * @param rankedSong ranked song
+     * @param displayRank rank to display
+     * @return track DTO with "Unknown" album data and minimal artist info
+     */
     private MusicResponse.TrackDTO createEmptySong(MusicRankProvider.RankedSong rankedSong, int displayRank) {
-        // Create a minimal Spotify TrackItem for fallback
         var emptyTrack = new se.wikicap.dto.music.spotify.SpotifyTrackSearchResponse.TrackItem(
                 null, rankedSong.title(), 0, null,
                 new se.wikicap.dto.music.spotify.SpotifyTrackSearchResponse.Album("Unknown", "Unknown", List.of()),
@@ -97,6 +158,15 @@ public class MusicService {
         return new MusicResponse.TrackDTO(displayRank, rankedSong.displayName(), emptyTrack);
     }
 
+    /**
+     * Enriches a ranked artist with Spotify artist data and the artist's top tracks.
+     *
+     * If Spotify search fails (or returns no hits), a minimal fallback artist payload is returned.
+     *
+     * @param rankedArtist ranked artist from the ranking provider
+     * @param displayRank 1-based rank used for display (preserves list order)
+     * @return enriched artist DTO
+     */
     private Mono<MusicResponse.ArtistDTO> enrichArtist(MusicRankProvider.RankedArtist rankedArtist, int displayRank) {
         return musicClient.searchArtist(rankedArtist.primaryArtist())
                 .flatMap(response -> {
@@ -120,6 +190,13 @@ public class MusicService {
                 .onErrorResume(e -> Mono.just(createEmptyArtist(rankedArtist, displayRank)));
     }
 
+    /**
+     * Builds a fallback artist payload when Spotify search fails or returns no hits.
+     *
+     * @param rankedArtist ranked artist
+     * @param displayRank rank to display
+     * @return artist DTO with minimal fields set
+     */
     private MusicResponse.ArtistDTO createEmptyArtist(MusicRankProvider.RankedArtist rankedArtist, int displayRank) {
         var emptyArtist = new se.wikicap.dto.music.spotify.SpotifyArtistSearchResponse.ArtistItem(
                 null, rankedArtist.primaryArtist(), List.of(), 0,
@@ -129,6 +206,15 @@ public class MusicService {
         return new MusicResponse.ArtistDTO(displayRank, emptyArtist, List.of());
     }
 
+    /**
+     * Returns the year's top artists enriched with Spotify artist metadata.
+     *
+     * This is a narrower response than {@link #getMusicByYear(int)} and is useful
+     * for endpoints that only render artists.
+     *
+     * @param year year to fetch artists for
+     * @return a {@link Mono} emitting a Spotify-like artist search response containing the top artists
+     */
     public Mono<SpotifyArtistSearchResponse> getTopArtistsByYear(int year) {
         return rankProvider.getTopArtists(year)
                 .map(this::sortAndLimitArtists)
@@ -144,6 +230,15 @@ public class MusicService {
                 });
     }
 
+    /**
+     * Returns the year's top tracks enriched with Spotify track metadata.
+     *
+     * This is a narrower response than {@link #getMusicByYear(int)} and is useful
+     * for endpoints that only render tracks.
+     *
+     * @param year year to fetch tracks for
+     * @return a {@link Mono} emitting a {@link MusicResponse} containing only track data
+     */
     public Mono<MusicResponse> getTopTracksByYear(int year) {
         return rankProvider.getTopSongs(year)
                 .map(this::deduplicateAndLimitSongs)
