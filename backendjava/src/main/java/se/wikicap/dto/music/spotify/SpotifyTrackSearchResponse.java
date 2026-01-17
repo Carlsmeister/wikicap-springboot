@@ -1,6 +1,7 @@
 package se.wikicap.dto.music.spotify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import se.wikicap.client.music.SpotifyClient;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * This record maps the subset of fields returned by:
  * GET /v1/search?type=track
  *
- * Used by {@link se.wikicap.client.music.MusicClient#searchTrack(String, String)}.
+ * Used by {@link SpotifyClient#searchTrack(String, String)}.
  */
 public record SpotifyTrackSearchResponse(
         @JsonProperty("tracks") Tracks tracks

@@ -4,7 +4,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import se.wikicap.client.music.MusicClient;
+import se.wikicap.client.music.SpotifyClient;
 import se.wikicap.dto.music.MusicResponse;
 import se.wikicap.dto.music.spotify.SpotifyArtistSearchResponse;
 
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Combines:
  * - Rankings (songs + artists) from {@link MusicRankProvider} (e.g. Wikipedia scraping)
- * - Metadata enrichment from {@link MusicClient} (Spotify search + artist top tracks)
+ * - Metadata enrichment from {@link SpotifyClient} (Spotify search + artist top tracks)
  *
  * Public API methods return reactive types ({@link Mono}) and are safe to call from
  * WebFlux/Spring MVC controllers.
@@ -23,17 +23,17 @@ import java.util.List;
 @Service
 public class MusicService {
 
-    private final MusicClient musicClient;
+    private final SpotifyClient spotifyClient;
     private final MusicRankProvider rankProvider;
 
     /**
      * Creates a new {@link MusicService}.
      *
-     * @param musicClient   client for fetching music metadata (Spotify)
+     * @param spotifyClient   client for fetching music metadata (Spotify)
      * @param rankProvider  provider for fetching ranked songs/artists for a given year
      */
-    public MusicService(MusicClient musicClient, MusicRankProvider rankProvider) {
-        this.musicClient = musicClient;
+    public MusicService(SpotifyClient spotifyClient, MusicRankProvider rankProvider) {
+        this.spotifyClient = spotifyClient;
         this.rankProvider = rankProvider;
     }
 
@@ -43,7 +43,7 @@ public class MusicService {
      * Flow:
      * 1) Fetch top songs and top artists for {@code year} from {@link #rankProvider}
      * 2) Deduplicate/limit songs and sort/limit artists
-     * 3) Enrich each song/artist with Spotify metadata via {@link #musicClient}
+     * 3) Enrich each song/artist with Spotify metadata via {@link #spotifyClient}
      *
      * Caching:
      * The result is cached by year. A second request for the same year should return from cache
@@ -127,7 +127,7 @@ public class MusicService {
      * @return enriched track DTO
      */
     private Mono<MusicResponse.TrackDTO> enrichSong(MusicRankProvider.RankedSong rankedSong, int displayRank) {
-        return musicClient.searchTrack(rankedSong.title(), rankedSong.primaryArtist())
+        return spotifyClient.searchTrack(rankedSong.title(), rankedSong.primaryArtist())
                 .map(response -> {
                     if (response.tracks().items().isEmpty()) {
                         return createEmptySong(rankedSong, displayRank);
@@ -168,13 +168,13 @@ public class MusicService {
      * @return enriched artist DTO
      */
     private Mono<MusicResponse.ArtistDTO> enrichArtist(MusicRankProvider.RankedArtist rankedArtist, int displayRank) {
-        return musicClient.searchArtist(rankedArtist.primaryArtist())
+        return spotifyClient.searchArtist(rankedArtist.primaryArtist())
                 .flatMap(response -> {
                     if (response.artists().items().isEmpty()) {
                         return Mono.just(createEmptyArtist(rankedArtist, displayRank));
                     }
                     var item = response.artists().items().getFirst();
-                    return musicClient.getArtistTopTracks(item.id())
+                    return spotifyClient.getArtistTopTracks(item.id())
                             .map(topTracksResponse -> {
                                 List<se.wikicap.dto.music.spotify.SpotifyTrackSearchResponse.TrackItem> topSongs = topTracksResponse.tracks().stream()
                                         .limit(10)

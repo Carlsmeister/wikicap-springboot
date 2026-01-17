@@ -1,6 +1,7 @@
 package se.wikicap.dto.music.spotify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import se.wikicap.client.music.SpotifyClient;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Maps the subset of fields returned by:
  * GET /v1/artists/{id}/top-tracks
  *
- * Used by {@link se.wikicap.client.music.MusicClient#getArtistTopTracks(String)}.
+ * Used by {@link SpotifyClient#getArtistTopTracks(String)}.
  *
  * @param tracks list of top tracks (Spotify track objects)
  */

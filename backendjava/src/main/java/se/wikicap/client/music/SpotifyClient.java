@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * All methods return {@link Mono} and are intended to be used from service layers.
  */
 @Component
-public class MusicClient {
+public class SpotifyClient {
 
     private static final String SPOTIFY_SEARCH_BASE_URL = "https://api.spotify.com/v1";
     private static final String SPOTIFY_TOKEN_URL = "https://accounts.spotify.com";
@@ -59,13 +59,13 @@ public class MusicClient {
     }
 
     /**
-     * Creates a new {@link MusicClient}.
+     * Creates a new {@link SpotifyClient}.
      *
      * Uses separate {@link WebClient} instances for:
      * - Spotify Web API requests (search/top-tracks)
      * - Spotify Accounts requests (token)
      */
-    public MusicClient() {
+    public SpotifyClient() {
         this.spotifyApiClient = WebClient.builder()
                 .baseUrl(SPOTIFY_SEARCH_BASE_URL)
                 .build();
