@@ -60,6 +60,7 @@ public class MusicService {
     public Mono<MusicResponse> getMusicByYear(int year) {
         Mono<List<MusicResponse.TrackDTO>> songsMono = rankProvider.getTopSongs(year)
                 .map(this::deduplicateAndLimitSongs)
+                .defaultIfEmpty(List.of())
                 .flatMapMany(Flux::fromIterable)
                 .index() // Maintain order (0, 1, 2...)
                 .flatMapSequential(tuple -> enrichSong(tuple.getT2(), tuple.getT1().intValue() + 1))
@@ -67,6 +68,7 @@ public class MusicService {
 
         Mono<List<MusicResponse.ArtistDTO>> artistsMono = rankProvider.getTopArtists(year)
                 .map(this::sortAndLimitArtists)
+                .defaultIfEmpty(List.of())
                 .flatMapMany(Flux::fromIterable)
                 .index()
                 .flatMapSequential(tuple -> enrichArtist(tuple.getT2(), tuple.getT1().intValue() + 1))

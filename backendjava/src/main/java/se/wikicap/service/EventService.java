@@ -15,6 +15,6 @@ public class EventService {
      */
     public Mono<EventResponse> getEventsByYear(int year) {
         //TODO: Implement fetching events by year
-        return Mono.empty();  // Return empty Mono instead of null
+        return Mono.just(new EventResponse());  // Return default empty response
     }
 }

@@ -7,6 +7,8 @@ import se.wikicap.client.nobel.NobelClient;
 import se.wikicap.client.nobel.WikipediaNobelMetaClient;
 import se.wikicap.dto.nobel.NobelResponse;
 
+import java.util.List;
+
 @Service
 public class NobelService {
 
@@ -25,7 +27,8 @@ public class NobelService {
      */
     public Mono<NobelResponse> getNobelPrizesByYear(int year) {
         return nobelClient.fetchNobelPrizesByYear(year)
-                .flatMap(this::enrichResponseWithWikipediaUrls);
+                .flatMap(this::enrichResponseWithWikipediaUrls)
+                .defaultIfEmpty(new NobelResponse(List.of()));
     }
 
     /**

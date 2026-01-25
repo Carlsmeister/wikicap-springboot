@@ -30,10 +30,19 @@ public class EntertainmentService {
      * @return Mono<EntertainmentResponse> containing all entertainment data
      */
     public Mono<EntertainmentResponse> getEntertainmentByYear(int year) {
-        Mono<TMBDMovieResponse> movies = entertainmentClient.fetchTopMoviesByYear(year);
+        Mono<TMBDMovieResponse> movies = entertainmentClient.fetchTopMoviesByYear(year)
+                .map(response -> {
+                    var limitedMovies = response.getResults().stream().limit(8).toList();
+                    response.setResults(limitedMovies);
+                    return response;
+                }).defaultIfEmpty(new TMBDMovieResponse());
+
         Mono<TMBDSeriesResponse> series = entertainmentClient.fetchTopSeriesByYear(year)
-                .map(response -> rankAndFilterSeries(response, year));
-        Mono<AcademyAwardResponse> awards = entertainmentClient.fetchAwards(year);
+                .map(response -> rankAndFilterSeries(response, year))
+                .defaultIfEmpty(new TMBDSeriesResponse());
+
+        Mono<AcademyAwardResponse> awards = entertainmentClient.fetchAwards(year)
+                .defaultIfEmpty(new AcademyAwardResponse());
 
         return Mono.zip(movies, series, awards)
                 .map(tuple -> {
@@ -149,4 +158,3 @@ public class EntertainmentService {
         return entertainmentClient.fetchAwards(year);
     }
 }
-
