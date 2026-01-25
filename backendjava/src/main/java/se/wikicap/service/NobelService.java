@@ -4,15 +4,18 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import se.wikicap.client.nobel.NobelClient;
+import se.wikicap.client.nobel.WikipediaNobelMetaClient;
 import se.wikicap.dto.nobel.NobelResponse;
 
 @Service
 public class NobelService {
 
     private final NobelClient nobelClient;
+    private final WikipediaNobelMetaClient wikipediaClient;
 
-    public NobelService(NobelClient nobelClient) {
+    public NobelService(NobelClient nobelClient, WikipediaNobelMetaClient wikipediaClient) {
         this.nobelClient = nobelClient;
+        this.wikipediaClient = wikipediaClient;
     }
 
     /**
@@ -62,7 +65,7 @@ public class NobelService {
     }
 
     /**
-     * Enrich a single laureate with their Wikipedia URL.
+     * Enrich a single laureate with Wikipedia data: URL, image, country name, and flag.
      * @param laureate The original Laureate
      * @return A Mono emitting the enriched Laureate
      */
@@ -71,7 +74,11 @@ public class NobelService {
             return Mono.justOrEmpty(laureate);
         }
 
-        if (laureate.wikiURL() != null && !laureate.wikiURL().isBlank()) {
+        // If already fully enriched, return as is
+        if (laureate.wikiURL() != null && !laureate.wikiURL().isBlank() &&
+            laureate.imageURL() != null && !laureate.imageURL().isBlank() &&
+            laureate.countryName() != null && !laureate.countryName().isBlank() &&
+            laureate.countryFlag() != null && !laureate.countryFlag().isBlank()) {
             return Mono.just(laureate);
         }
 
@@ -81,17 +88,28 @@ public class NobelService {
                         return Mono.just(laureate);
                     }
 
-                    return Mono.just(new NobelResponse.Laureate(
-                            laureate.id(),
-                            laureate.knownName(),
-                            laureate.motivation(),
-                            wikiUrl,
-                            laureate.imageURL(),
-                            laureate.countryName(),
-                            laureate.countryFlag()
-                    ));
+                    // Fetch additional metadata from Wikipedia
+                    return wikipediaClient.fetchWikipediaMetadata(wikiUrl)
+                            .map(metadata -> new NobelResponse.Laureate(
+                                    laureate.id(),
+                                    laureate.knownName(),
+                                    laureate.motivation(),
+                                    wikiUrl,
+                                    metadata.imageURL() != null && !metadata.imageURL().isBlank() ? metadata.imageURL() : laureate.imageURL(),
+                                    metadata.countryName() != null && !metadata.countryName().isBlank() ? metadata.countryName() : laureate.countryName(),
+                                    metadata.countryFlag() != null && !metadata.countryFlag().isBlank() ? metadata.countryFlag() : laureate.countryFlag()
+                            ))
+                            .defaultIfEmpty(new NobelResponse.Laureate(
+                                    laureate.id(),
+                                    laureate.knownName(),
+                                    laureate.motivation(),
+                                    wikiUrl,
+                                    laureate.imageURL(),
+                                    laureate.countryName(),
+                                    laureate.countryFlag()
+                            ));
                 })
-                .doOnError(e -> System.out.println("Error fetching wikiURL for laureate " + laureate.id() + ": " + e.getMessage()))
+                .doOnError(e -> System.out.println("Error enriching laureate " + laureate.id() + " with Wikipedia data: " + e.getMessage()))
                 .onErrorReturn(laureate);
     }
 
