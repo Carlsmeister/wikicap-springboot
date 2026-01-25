@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 import se.wikicap.dto.*;
 import se.wikicap.dto.entertainment.EntertainmentResponse;
 import se.wikicap.dto.music.MusicResponse;
+import se.wikicap.dto.nobel.NobelResponse;
 import se.wikicap.service.*;
 
 /**
@@ -43,7 +44,7 @@ public class YearController {
         Mono<MusicResponse> musicMono = musicService.getMusicByYear(year);
         Mono<EntertainmentResponse> entertainmentMono = entertainmentService.getEntertainmentByYear(year);
         Mono<EventResponse> eventsMono = eventService.getEventsByYear(year);
-        Mono<NobelResponse> nobelMono = nobelService.getNobelByYear(year);
+        Mono<NobelResponse> nobelMono = nobelService.getNobelPrizesByYear(year);
 
         return Mono.zip(musicMono, entertainmentMono, eventsMono, nobelMono)
                 .map(tuple -> new YearResponse(

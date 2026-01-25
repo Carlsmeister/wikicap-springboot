@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import se.wikicap.dto.entertainment.EntertainmentResponse;
 import se.wikicap.dto.music.MusicResponse;
+import se.wikicap.dto.nobel.NobelResponse;
 
 @Schema(description = "Data Transfer Object for Yearly Summary Response")
 public class YearResponse {
