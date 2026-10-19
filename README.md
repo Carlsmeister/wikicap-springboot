@@ -14,9 +14,9 @@ The results are presented in an artsy, interactive timeline.
 - [Get Started](#get-started)
   - [Requirements](#requirements)
   - [Installation](#installation)
-  - [Run Locally](#run-locally)
-- [Enviroment Variables](#enviroment-variables)
-- [Troubleshooting](#troubleshooting)
+  - [Run Locally](#5-run-locally)
+- [Environment Variables](#6-environment-variables)
+- [Troubleshooting](#7-troubleshooting)
 
 ---
 
@@ -46,7 +46,7 @@ Depending on the year, WikiCap fetches and renders:
 ### Backend
 
 - **Java 25**
-- **Spring Boot 4** (WebFlux)
+- **Spring Boot 4** (Spring MVC; WebClient from WebFlux for outbound calls)
 - **WebClient** (HTTP client)
 - **Jsoup** (HTML parsing of Wikipedia pages)
 - **Caffeine** (caching)
@@ -59,7 +59,8 @@ Depending on the year, WikiCap fetches and renders:
 
 ### External APIs
 
-- Wikipedia API – for notable events & general info, and the Billboard year-end lists behind the music rankings
+- Wikipedia API – for notable events & general info
+- Wikipedia (Billboard year-end list articles) – for the music rankings
 - TMDB API – for popular movies by year
 - Theawards API - for Academy awards
 - Spotify API - for enriching the music rankings
@@ -116,20 +117,18 @@ cd wikicap-springboot
 
 ## 2. **Create your .env file**
 
-Create `backendjava/.env` and add your API keys [See Enviroment Variables](#enviroment-variables).
+Create `backendjava/.env` and add your API keys [See Environment Variables](#6-environment-variables).
 
 ## 3. **Install frontend dependencies**
 
 ```bash
-cd frontend
-npm install
+(cd frontend && npm install)
 ```
 
 ## 4. **Compile Tailwind**
 
 ```bash
-cd frontend
-npm run build
+(cd frontend && npm run build)
 ```
 
 ---
@@ -160,7 +159,7 @@ mvn -q -f backendjava/pom.xml test && (cd frontend && npm test)
 
 ---
 
-## 6. **Enviroment Variables**
+## 6. **Environment Variables**
 
 # Create `backendjava/.env`
 
@@ -179,15 +178,11 @@ Notes:
 
 -Wikipedia endpoints usually don’t require an API key.
 
--Keep .env out of git (add it to .gitignore).
+-`backendjava/.env` is already git-ignored. Never commit it.
 
 ---
 ## 7. **Troubleshooting**
 
-**Open your frontend (depending on your setup):**
-
-**If you use a static HTML file: open frontend/index.html**
-
-**Or if you use a dev server: follow the URL printed in the terminal**
+**Serve the frontend with `npx serve frontend` and open the URL it prints.** Opening `frontend/index.html` straight from disk does not work: browsers block the module scripts on `file://`.
 
 ---
