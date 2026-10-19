@@ -80,6 +80,19 @@ test("toTopSeries maps name and first air date", () => {
   assert.equal(first.release_date, show.first_air_date);
 });
 
+// Java's defaultIfEmpty(new TMBDMovieResponse()) / new TMBDSeriesResponse() leaves results null.
+test("toTopMovies returns an empty list when TMDB returned no results", () => {
+  const input = structuredClone(entertainment);
+  input.movies.results = null;
+  assert.deepEqual(toTopMovies(input), []);
+});
+
+test("toTopSeries returns an empty list when TMDB returned no results", () => {
+  const input = structuredClone(entertainment);
+  input.series.results = null;
+  assert.deepEqual(toTopSeries(input), []);
+});
+
 test("toTopSongs flattens Spotify track data", () => {
   const track = music.topTracks[0].trackData;
   assert.deepEqual(toTopSongs(music)[0], {

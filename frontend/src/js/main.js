@@ -192,15 +192,18 @@ form.addEventListener("submit", async (e) => {
 
     if (entertainment.status === "fulfilled") {
       try {
+        // Map all three before touching the DOM, then render each only when its own data exists.
         const highlights = toHighlights(entertainment.value);
+        const movies = toTopMovies(entertainment.value);
+        const series = toTopSeries(entertainment.value);
 
-        if (highlights) {
+        if (highlights || movies.length || series.length) {
 
           entertainmentSection.classList.remove("hidden");
 
-          highlightsSection.innerHTML = renderHighlights(highlights, year);
-          movieSection.innerHTML = renderMovies(listSorter(toTopMovies(entertainment.value), "rating"));
-          seriesSection.innerHTML = renderSeries(listSorter(toTopSeries(entertainment.value), "rating"), year);
+          if (highlights) highlightsSection.innerHTML = renderHighlights(highlights, year);
+          if (movies.length) movieSection.innerHTML = renderMovies(listSorter(movies, "rating"));
+          if (series.length) seriesSection.innerHTML = renderSeries(listSorter(series, "rating"), year);
 
           setTimeout(() => {
             const movieCards = movieSection.querySelectorAll('.movie-card.reveal');

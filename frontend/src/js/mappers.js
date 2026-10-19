@@ -35,12 +35,13 @@ const toScreenItem = (title, release_date, item) => ({
   release_date,
 });
 
+// Java's empty TMDB fallback (EntertainmentService defaultIfEmpty) has results: null.
 export function toTopMovies(entertainment) {
-  return entertainment.movies.results.map((m) => toScreenItem(m.title, m.release_date, m));
+  return (entertainment.movies?.results ?? []).map((m) => toScreenItem(m.title, m.release_date, m));
 }
 
 export function toTopSeries(entertainment) {
-  return entertainment.series.results.map((s) => toScreenItem(s.name, s.first_air_date, s));
+  return (entertainment.series?.results ?? []).map((s) => toScreenItem(s.name, s.first_air_date, s));
 }
 
 export function toTopSongs(music) {
