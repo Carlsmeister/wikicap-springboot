@@ -24,7 +24,7 @@ test("fetchSection throws on a non-OK status", async () => {
   await assert.rejects(fetchSection(1994, "events"), { message: "API error: 502" });
 });
 
-test("getMusic shares one request per year", async () => {
+test("getMusic shares one request between concurrent calls for a year", async () => {
   let calls = 0;
   globalThis.fetch = async () => {
     calls++;

@@ -9,7 +9,7 @@ const spotifyCardTpl = document.querySelector("#spotifyCardTpl");
 /**
  * Fetches the top Spotify songs for a given year from the API.
  * @async - To prevent blocking behavior
- * @param {number} year - The year for which to fetch top songs.
+ * @param {number|string} year - The year for which to fetch top songs.
  * @returns {Promise<Array>} A promise that resolves to an array of top songs, or null if the request fails.
  */
 async function fetchSpotifySongs(year) {
@@ -34,7 +34,7 @@ function clearSpotify() {
  * Renders card for Spotify songs
  * @function renderSpotifySongs
  * @param {Array} songs - An array of song objects
- * @param {number} year - The year associated with the songs
+ * @param {number|string} year - The year associated with the songs
  */
 function renderSpotifySongs(songs, year) {
     clearSpotify();

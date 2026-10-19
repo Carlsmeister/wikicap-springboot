@@ -105,7 +105,7 @@ function setupArtistAutoReveal({
  * @param {number} year - The selected year, shown in the section label.
  * @param {Object} music - The /music response runTopArtist already fetched.
  */
-async function renderTopArtist(artistData, year, music) {
+function renderTopArtist(artistData, year, music) {
   clearTopArtist();
 
   if (!artistData || !ArtistTpl || !ArtistGrid || !ArtistSection) return;
@@ -245,7 +245,7 @@ export async function runTopArtist(year) {
   const music = await getMusic(year);
   const artists = toTopArtists(music);
   if (artists.length === 0) return; // nothing matched on Spotify: keep the section hidden
-  await renderTopArtist({ artists_with_images: artists }, year, music);
+  renderTopArtist({ artists_with_images: artists }, year, music);
 }
 
 
