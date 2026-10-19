@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -25,10 +27,11 @@ import static org.mockito.Mockito.when;
  * from {@code https://en.wikipedia.org/w/api.php} with the URLs EventClient builds:
  * {@code action=parse&page=1994&prop=tocdata&format=json&formatversion=2} and
  * {@code action=parse&page=1994&prop=wikitext&section=<index>&format=json&formatversion=2}.
- * Sections recorded: 2 (Events/January), 3 (Events/February), 6 (Events/May),
+ * Sections recorded: 2 (Events/January), 3 (Events/February), 6 (Events/May), 7 (Events/June),
  * 15 (Births/January), 16 (Births/February). Any other section is served as empty wikitext.
  * Events/May is there because January and February hold no HTML entities; May has
  * {@code [[May 10]] &ndash; ...}, which gives the entity test something to decode.
+ * Events/June is there for its date range {@code [[June 6]]–[[June 8|8]] – ...}.
  */
 class EventServiceTest {
 
@@ -39,12 +42,7 @@ class EventServiceTest {
 
     @BeforeEach
     void callServiceWithRecordedResponses() {
-        EventClient client = mock(EventClient.class);
-        when(client.fetchYearToc(1994)).thenReturn(Mono.just(recordedToc()));
-        when(client.fetchSectionWikitext(eq(1994), anyString()))
-                .thenAnswer(call -> Mono.just(recordedSection(call.getArgument(1))));
-
-        response = new EventService(client).getEventsByYear(1994).block();
+        response = new EventService(recordedClient(recordedToc())).getEventsByYear(1994).block();
     }
 
     @Test
@@ -86,6 +84,76 @@ class EventServiceTest {
                 "Nelson Mandela is inaugurated as South Africa's first black president."));
         response.eventsByMonth().values().stream().flatMap(List::stream).forEach(item ->
                 assertThat(item.description()).doesNotContain("&ndash;", "&amp;", "&nbsp;", "&#"));
+    }
+
+    @Test
+    void keepsStartDateAndDropsRangeEndFromDescription() {
+        // Events/June: "* [[June 6]]–[[June 8|8]] – [[Ceasefire]] negotiations ..."
+        EventItem range = response.eventsByMonth().get("June").stream()
+                .filter(item -> item.description().contains("Ceasefire")).findFirst().orElseThrow();
+
+        assertThat(range.date()).isEqualTo("Jun 6");
+        assertThat(range.description()).doesNotMatch("^[\\d\\-–].*")
+                .startsWith("Ceasefire negotiations for the Yugoslav War");
+    }
+
+    @Test
+    void fallsBackToFirstMonthOccurrenceWhenTocHasNoLevels() {
+        List<EventClient.TocItem> levelless = recordedToc().stream()
+                .map(item -> new EventClient.TocItem(item.line(), item.index(), null)).toList();
+        EventClient client = recordedClient(levelless);
+
+        new EventService(client).getEventsByYear(1994).block();
+
+        verify(client).fetchSectionWikitext(1994, "2");
+        verify(client, never()).fetchSectionWikitext(1994, "15");
+    }
+
+    @Test
+    void givesSubBulletsTheDateOfTheirDatedParent() {
+        List<EventItem> january = januaryFrom("""
+                * [[January 5]] – Something happens on the fifth of January.
+                ** A detail of what happens on the fifth.
+                """);
+
+        assertThat(january).containsExactly(
+                new EventItem("Jan 5", "Something happens on the fifth of January."),
+                new EventItem("Jan 5", "A detail of what happens on the fifth."));
+    }
+
+    @Test
+    void treatsDateOnlyLinesWithRefsOrColonsAsParents() {
+        List<EventItem> january = januaryFrom("""
+                * [[January 12]]<ref>{{cite web |title=Source}}</ref>
+                ** The first child event of the twelfth.
+                * [[January 13]]:
+                ** The child event of the thirteenth.
+                * [[January 2]]
+                ** The child event of the second.
+                """);
+
+        assertThat(january).containsExactly(
+                new EventItem("Jan 12", "The first child event of the twelfth."),
+                new EventItem("Jan 13", "The child event of the thirteenth."),
+                new EventItem("Jan 2", "The child event of the second."));
+    }
+
+    /** A client serving the given TOC and the recorded sections. */
+    private static EventClient recordedClient(List<EventClient.TocItem> toc) {
+        EventClient client = mock(EventClient.class);
+        when(client.fetchYearToc(1994)).thenReturn(Mono.just(toc));
+        when(client.fetchSectionWikitext(eq(1994), anyString()))
+                .thenAnswer(call -> Mono.just(recordedSection(call.getArgument(1))));
+        return client;
+    }
+
+    /** January events for a page whose only month is Events/January with the given wikitext. */
+    private static List<EventItem> januaryFrom(String wikitext) {
+        EventClient client = mock(EventClient.class);
+        when(client.fetchYearToc(1994)).thenReturn(Mono.just(List.of(
+                new EventClient.TocItem("Events", "1", 1), new EventClient.TocItem("January", "2", 2))));
+        when(client.fetchSectionWikitext(1994, "2")).thenReturn(Mono.just(wikitext));
+        return new EventService(client).getEventsByYear(1994).block().eventsByMonth().get("January");
     }
 
     /** Maps the recorded tocdata to TocItems the way EventClient.toTocItem does (EventClientTest covers that). */

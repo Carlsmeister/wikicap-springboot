@@ -139,7 +139,7 @@ public class EventService {
 
     /**
      * Extract individual events from raw wikitext for a specific month.
-     * A date-only line like "* [[February 12]]" is not an event: it dates the "**" lines under it.
+     * A top-level line dates the "**" lines under it; a date-only one like "* [[February 12]]" is not an event.
      * @param wikitext The raw wikitext of the month section
      * @return List of cleaned EventItem objects, dated "Mon D" or ""
      */
@@ -156,28 +156,20 @@ public class EventService {
                 break;
             }
 
-            String dateOnly = WikiEventCleaner.dateOnlyLine(line);
-            if (dateOnly != null) {
-                parentDate = dateOnly;
-                continue;
-            }
-
-            String stripped = line.strip();
-            boolean nested = stripped.startsWith("**");
-            if (stripped.startsWith("*") && !nested) {
-                parentDate = "";
-            }
-
+            boolean nested = line.strip().startsWith("**");
             WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(line, false, MAX_LINE_LEN);
-            if (cleaned == null || cleaned.description() == null || cleaned.description().isBlank()) {
+            if (cleaned == null) {
+                continue;
+            }
+            if (!nested) {
+                // a top-level line, date-only or dated, dates the "**" lines under it
+                parentDate = cleaned.date();
+            }
+            if (cleaned.description().isBlank()) {
                 continue;
             }
 
-            String date = cleaned.date();
-            if (date.isBlank() && nested) {
-                date = parentDate;
-            }
-
+            String date = nested && cleaned.date().isBlank() ? parentDate : cleaned.date();
             events.add(new EventResponse.EventItem(date, cleaned.description()));
         }
 

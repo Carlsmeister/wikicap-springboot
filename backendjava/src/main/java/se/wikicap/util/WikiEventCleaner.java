@@ -24,13 +24,16 @@ public final class WikiEventCleaner {
     private static final String MONTHS_PATTERN =
             "January|February|March|April|May|June|July|August|September|October|November|December";
 
+    // optional range end before the separator: "[[June 6]]–[[June 8|8]] –" or "[[April 7]] – [[July 15]] –"
     private static final Pattern DATE_PREFIX = Pattern.compile(
-            "^(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?\\s*[–—-]\\s*",
+            "^(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?"
+                    + "(?:\\s*[–—-]\\s*(?:\\[\\[)?(?:(?:" + MONTHS_PATTERN + ")\\s+)?\\d{1,2}(?:\\|\\d{1,2})?(?:]])?)?"
+                    + "\\s*[–—-]\\s*",
             Pattern.CASE_INSENSITIVE
     );
 
     private static final Pattern DATE_ONLY = Pattern.compile(
-            "^\\*\\s*(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?$",
+            "^(" + MONTHS_PATTERN + ")\\s+(\\d{1,2}):?$",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -40,23 +43,12 @@ public final class WikiEventCleaner {
     public record CleanResult(String date, String description) {}
 
     /**
-     * Date of a top-level line that holds only a date, like "* [[February 12]]", as "Feb 12".
-     * Returns null for any other line.
-     */
-    public static String dateOnlyLine(String line) {
-        if (line == null) {
-            return null;
-        }
-        Matcher matcher = DATE_ONLY.matcher(line.strip());
-        return matcher.matches() ? shortDate(matcher.group(1), matcher.group(2)) : null;
-    }
-
-    /**
      * Clean a single bullet-point line from Wikipedia wikitext.
      *
      * - Removes refs/templates/html/files
      * - Flattens wiki links to display text
      * - Extracts a date prefix like "January 12 -" if present
+     * - A line holding only a date, like "* [[February 12]]", returns that date and an empty description
      */
     public static CleanResult cleanEventLine(String line, boolean keepDatePrefix, int maxLen) {
         if (line == null || line.isBlank()) {
@@ -95,6 +87,11 @@ public final class WikiEventCleaner {
         stripped = stripped.replace("–", "-").replace("—", "-");
         stripped = stripped.replaceAll("\\s+", " ").trim();
         stripped = stripped.replaceAll("^[-\\s]+|[-\\s]+$", "");
+
+        Matcher dateOnly = DATE_ONLY.matcher(stripped);
+        if (date.isBlank() && dateOnly.matches()) {
+            return new CleanResult(shortDate(dateOnly.group(1), dateOnly.group(2)), "");
+        }
 
         if (stripped.length() < 8) {
             return null;
