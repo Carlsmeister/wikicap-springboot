@@ -7,6 +7,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WikiEventCleanerTest {
 
     @Test
+    void keepsTextBetweenEscapedLessThanAndLaterGreaterThan() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* [[May 5]] – Prices rise &lt;5% and then fall >10 points afterwards", false, 200);
+
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult(
+                "May 5", "Prices rise <5% and then fall >10 points afterwards"));
+    }
+
+    @Test
     void keepsStartDateOfCrossMonthRange() {
         // No 1994 Events line spans two months; this one has the shape such lines take
         WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(

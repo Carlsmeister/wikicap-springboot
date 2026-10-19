@@ -61,8 +61,14 @@ public final class WikiEventCleaner {
             return null;
         }
 
+        // strip markup before decoding, or "&lt;5% ... >10" reads as a tag and loses its text
+        String stripped = REF_TAG.matcher(line).replaceAll("");
+        stripped = REF_SELF.matcher(stripped).replaceAll("");
+        stripped = COMMENTS.matcher(stripped).replaceAll("");
+        stripped = HTML_TAG.matcher(stripped).replaceAll("");
+
         // decode before the date match: "[[May 10]] &ndash; ..." must read as a dash
-        String stripped = Parser.unescapeEntities(line, false).replace('\u00A0', ' ').strip();
+        stripped = Parser.unescapeEntities(stripped, false).replace('\u00A0', ' ').strip();
         if (!stripped.startsWith("*")) {
             return null;
         }
@@ -77,11 +83,6 @@ public final class WikiEventCleaner {
                 stripped = dateMatch.replaceFirst("").trim();
             }
         }
-
-        stripped = REF_TAG.matcher(stripped).replaceAll("");
-        stripped = REF_SELF.matcher(stripped).replaceAll("");
-        stripped = COMMENTS.matcher(stripped).replaceAll("");
-        stripped = HTML_TAG.matcher(stripped).replaceAll("");
 
         stripped = FILES.matcher(stripped).replaceAll("");
         stripped = TEMPLATES.matcher(stripped).replaceAll("");
