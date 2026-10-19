@@ -1,0 +1,178 @@
+{
+  "year": 1994,
+  "eventsByMonth": {
+    "January": [
+      {
+        "date": "Jan 1",
+        "description": "Emilie Hegh Arntzen, Norwegian handball player"
+      },
+      {
+        "date": "Jan 3",
+        "description": "Isaquias Queiroz, Brazilian sprint canoeist"
+      },
+      {
+        "date": "Jan 4",
+        "description": "Viktor Axelsen, Danish badminton player"
+      },
+      {
+        "date": "",
+        "description": "Emilie Hegh Arntzen, Norwegian handball player"
+      }
+    ],
+    "February": [
+      {
+        "date": "February",
+        "description": "February 1"
+      },
+      {
+        "date": "February",
+        "description": "Julia Garner, American actress"
+      },
+      {
+        "date": "February",
+        "description": "Luke Saville, Australian tennis player"
+      }
+    ],
+    "March": [
+      {
+        "date": "March",
+        "description": "March 1 &ndash; Justin Bieber, Canadian singer"
+      },
+      {
+        "date": "March",
+        "description": "March 10"
+      },
+      {
+        "date": "March",
+        "description": "Bad Bunny, Puerto Rican singer"
+      }
+    ],
+    "April": [
+      {
+        "date": "April",
+        "description": "Feng Bin, Chinese discus thrower"
+      },
+      {
+        "date": "April",
+        "description": "Srbuk, Armenian singer"
+      },
+      {
+        "date": "Apr 9",
+        "description": "Rosamaria Montibeller, Brazilian volleyball player"
+      }
+    ],
+    "May": [
+      {
+        "date": "May",
+        "description": "May 1 &ndash; Khamzat Chimaev, Russian born-Swedish mixed martial artist and professional wrestler"
+      },
+      {
+        "date": "May 2",
+        "description": "Alexander Choupenitch, Czech fencer"
+      },
+      {
+        "date": "May 4",
+        "description": "Zhu Yaming, Chinese triple jumper"
+      }
+    ],
+    "June": [
+      {
+        "date": "Jun 8",
+        "description": "Song Yoo-jung, South Korean actress and model (d. 2021)"
+      },
+      {
+        "date": "Jun 10",
+        "description": "Cheung Ka Long, Hong Kong foil fencer"
+      },
+      {
+        "date": "June",
+        "description": "Ivana Baquero, Spanish actress"
+      }
+    ],
+    "July": [
+      {
+        "date": "Jul 2",
+        "description": "Baba Rahman, Ghanaian footballer"
+      },
+      {
+        "date": "Jul 4",
+        "description": "Era Istrefi, Kosovar-Albanian singer and songwriter."
+      },
+      {
+        "date": "July",
+        "description": "Robin Gosens, German footballer"
+      }
+    ],
+    "August": [
+      {
+        "date": "Aug 1",
+        "description": "Sayaka Hirota, Japanese badminton player"
+      },
+      {
+        "date": "Aug 2",
+        "description": "Tang Yuanting, Chinese badminton player"
+      },
+      {
+        "date": "Aug 8",
+        "description": "Lauv, American singer-songwriter"
+      }
+    ],
+    "September": [
+      {
+        "date": "September",
+        "description": "September 1"
+      },
+      {
+        "date": "September",
+        "description": "Kento Momota, Japanese badminton player"
+      },
+      {
+        "date": "September",
+        "description": "Bianca Ryan, American singer-songwriter"
+      }
+    ],
+    "October": [
+      {
+        "date": "October",
+        "description": "October 1"
+      },
+      {
+        "date": "October",
+        "description": "Trézéguet, Egyptian footballer"
+      },
+      {
+        "date": "October",
+        "description": "Arthur Van Doren, Belgian field hockey player"
+      }
+    ],
+    "November": [
+      {
+        "date": "Nov 8",
+        "description": "Wang Yilyu, Chinese badminton player"
+      },
+      {
+        "date": "November",
+        "description": "November 10"
+      },
+      {
+        "date": "November",
+        "description": "Takuma Asano, Japanese footballer"
+      }
+    ],
+    "December": [
+      {
+        "date": "Dec 3",
+        "description": "Jake T. Austin, American actor"
+      },
+      {
+        "date": "Dec 6",
+        "description": "Giannis Antetokounmpo, Greek basketball player"
+      },
+      {
+        "date": "Dec 7",
+        "description": "Yuzuru Hanyu, Japanese figure skater"
+      }
+    ]
+  },
+  "source": "Wikipedia (MediaWiki API)"
+}

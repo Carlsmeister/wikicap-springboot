@@ -1,0 +1,109 @@
+{
+  "movies": {
+    "page": 1,
+    "results": [
+      {
+        "id": 278,
+        "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison, where he puts his accounting skills to work for an amoral warden. During his long stretch in prison, Dufresne comes to be admired by the other inmates -- including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+        "poster_path": "/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg",
+        "release_date": "1994-09-23",
+        "title": "The Shawshank Redemption",
+        "vote_average": 8.732,
+        "vote_count": 31612
+      },
+      {
+        "id": 680,
+        "overview": "A burger-loving hit man, his philosophical partner, a drug-addled gangster's moll and a washed-up boxer converge in this sprawling, comedic crime caper. Their adventures unfurl in three stories that ingeniously trip back and forth in time.",
+        "poster_path": "/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
+        "release_date": "1994-09-10",
+        "title": "Pulp Fiction",
+        "vote_average": 8.48,
+        "vote_count": 31109
+      },
+      {
+        "id": 13,
+        "overview": "A man with a low IQ has accomplished great things in his life and been present during significant historic events—in each case, far exceeding what anyone imagined he could do. But despite all he has achieved, his one true love eludes him.",
+        "poster_path": "/saHP97rTPS5eLmrLQEcANmKrsFl.jpg",
+        "release_date": "1994-06-23",
+        "title": "Forrest Gump",
+        "vote_average": 8.462,
+        "vote_count": 30688
+      }
+    ],
+    "source": "TMDB",
+    "total_pages": 2,
+    "total_results": 24,
+    "year": 1994
+  },
+  "series": {
+    "page": 1,
+    "results": [
+      {
+        "first_air_date": "1989-12-17",
+        "id": 456,
+        "name": "The Simpsons",
+        "overview": "Set in Springfield, the average American town, the show focuses on the antics and everyday adventures of the Simpson family; Homer, Marge, Bart, Lisa and Maggie, as well as a virtual cast of thousands. Since the beginning, the series has been a pop culture icon, attracting hundreds of celebrities to guest star. The show has also made name for itself in its fearless satirical take on politics, media and American life in general.",
+        "popularity": 423.41,
+        "poster_path": "/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg",
+        "vote_average": 8.0,
+        "vote_count": 11081
+      },
+      {
+        "first_air_date": "1994-09-22",
+        "id": 1668,
+        "name": "Friends",
+        "overview": "Six young people from New York City, on their own and struggling to survive in the real world, find the companionship, comfort and support they get from each other to be the perfect antidote to the pressures of life.",
+        "popularity": 156.5665,
+        "poster_path": "/2koX1xLkpTQM4IZebYvKysFW1Nh.jpg",
+        "vote_average": 8.4,
+        "vote_count": 9481
+      },
+      {
+        "first_air_date": "1993-09-10",
+        "id": 4087,
+        "name": "The X-Files",
+        "overview": "The exploits of FBI Special Agents Fox Mulder and Dana Scully who investigate X-Files: marginalized, unsolved cases involving paranormal phenomena. Mulder believes in the existence of aliens and the paranormal while Scully, a skeptic, is assigned to make scientific analyses of Mulder's discoveries that debunk Mulder's work and thus return him to mainstream cases.",
+        "popularity": 149.3235,
+        "poster_path": "/rcBx0p8h51LHceyhquYMxbspJQu.jpg",
+        "vote_average": 8.4,
+        "vote_count": 3751
+      }
+    ],
+    "source": "TMDB",
+    "total_pages": 2,
+    "total_results": 24,
+    "year": 1994
+  },
+  "academyAwards": {
+    "oscars": {
+      "bestActor": {
+        "id": 5467,
+        "image": "/oFvZoKI6lvU03n4YoNGAll9rkas.jpg",
+        "more": "Forrest Gump {\"Forrest Gump\"}",
+        "movie": "Forrest Gump",
+        "name": "Tom Hanks",
+        "note": null,
+        "winner": true
+      },
+      "bestActress": {
+        "id": 5029,
+        "image": "/aWcO6trggSWsglUOdTVzjG4LSh3.jpg",
+        "more": "Blue Sky {\"Carly Marshall\"}",
+        "movie": "Blue Sky",
+        "name": "Jessica Lange",
+        "note": null,
+        "winner": true
+      },
+      "bestPicture": {
+        "id": 5930,
+        "more": "Wendy Finerman, Steve Tisch and Steve Starkey, Producers",
+        "note": null,
+        "poster": "/saHP97rTPS5eLmrLQEcANmKrsFl.jpg",
+        "title": "Forrest Gump",
+        "winner": true
+      }
+    },
+    "source": "The Unofficial Awards API",
+    "year": 1994
+  }
+}

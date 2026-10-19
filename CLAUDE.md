@@ -11,7 +11,7 @@ All commands run from the repo root.
 
 - Full suite: `mvn -q -f backendjava/pom.xml test && (cd frontend && npm test)`
 - Smoke: `mvn -q -f backendjava/pom.xml -Dtest=WikicapApplicationTests test`
-- One test: Java `mvn -q -f backendjava/pom.xml -Dtest={test} test`, `{test}` as `Class#method`; JS `node --test --test-name-pattern="{test}" frontend/test/`, `{test}` as the `test()` title.
+- One test: Java `mvn -q -f backendjava/pom.xml -Dtest={test} test`, `{test}` as `Class#method`; JS `node --test --test-name-pattern="{test}" "frontend/test/**/*.test.js"`, `{test}` as the `test()` title.
 - Coverage on changed lines: Absent — no JaCoCo or c8 configured.
 - Coupling change: Absent.
 - Architecture rules: Absent.

@@ -1,0 +1,99 @@
+{
+  "nobelPrizes": [
+    {
+      "category": {
+        "en": "Literature"
+      },
+      "categoryFullName": {
+        "en": "The Nobel Prize in Literature"
+      },
+      "laureates": [
+        {
+          "id": "671",
+          "knownName": {
+            "en": "Kenzaburo Oe"
+          },
+          "motivation": {
+            "en": "who with poetic force creates an imagined world, where life and myth condense to form a disconcerting picture of the human predicament today"
+          },
+          "wikiURL": "https://en.wikipedia.org/wiki/Kenzaburō_Ōe",
+          "imageURL": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Kenzaburo-Oe-1-revised.jpg/250px-Kenzaburo-Oe-1-revised.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail",
+          "countryName": "Japan",
+          "countryFlag": "https://thumb.wikimedia.org/wikipedia/en/thumb/9/9e/Flag_of_Japan.svg/250px-Flag_of_Japan.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "category": {
+        "en": "Physiology or Medicine"
+      },
+      "categoryFullName": {
+        "en": "The Nobel Prize in Physiology or Medicine"
+      },
+      "laureates": [
+        {
+          "id": "450",
+          "knownName": {
+            "en": "Alfred G. Gilman"
+          },
+          "motivation": {
+            "en": "for their discovery of G-proteins and the role of these proteins in signal transduction in cells"
+          },
+          "wikiURL": "https://en.wikipedia.org/wiki/Alfred_G._Gilman",
+          "imageURL": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Alfred_Goodman_Gilman_%28cropped%29.jpg/250px-Alfred_Goodman_Gilman_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail",
+          "countryName": "United States",
+          "countryFlag": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg/250px-Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail"
+        },
+        {
+          "id": "451",
+          "knownName": {
+            "en": "Martin Rodbell"
+          },
+          "motivation": {
+            "en": "for their discovery of G-proteins and the role of these proteins in signal transduction in cells"
+          },
+          "wikiURL": "https://en.wikipedia.org/wiki/Martin_Rodbell",
+          "imageURL": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Rodbell%2C_Martin_%281925-1998%29.jpg/250px-Rodbell%2C_Martin_%281925-1998%29.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail",
+          "countryName": "United States",
+          "countryFlag": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg/250px-Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "category": {
+        "en": "Physics"
+      },
+      "categoryFullName": {
+        "en": "The Nobel Prize in Physics"
+      },
+      "laureates": [
+        {
+          "id": "146",
+          "knownName": {
+            "en": "Clifford G. Shull"
+          },
+          "motivation": {
+            "en": "for the development of the neutron diffraction technique"
+          },
+          "wikiURL": "https://en.wikipedia.org/wiki/Clifford_Shull",
+          "imageURL": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Clifford_Shull_%28cropped%29.jpg/250px-Clifford_Shull_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail",
+          "countryName": "United States",
+          "countryFlag": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg/250px-Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail"
+        },
+        {
+          "id": "145",
+          "knownName": {
+            "en": "Bertram N. Brockhouse"
+          },
+          "motivation": {
+            "en": "for the development of neutron spectroscopy"
+          },
+          "wikiURL": "https://en.wikipedia.org/wiki/Bertram_Brockhouse",
+          "imageURL": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Bertram_Brockhouse.jpg/250px-Bertram_Brockhouse.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail",
+          "countryName": "Canada",
+          "countryFlag": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/250px-Flag_of_Canada_%28Pantone%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail"
+        }
+      ]
+    }
+  ]
+}

@@ -4,9 +4,11 @@
   "scripts": {
     "dev": "npx @tailwindcss/cli -i ./src/css/input.css -o ./public/output.css --watch",
     "build": "npx @tailwindcss/cli -i ./src/css/input.css -o ./public/output.css --minify",
-    "dev:css": "tailwindcss -i frontend/src/css/input.css -o frontend/dist/output.css --watch"
+    "dev:css": "tailwindcss -i frontend/src/css/input.css -o frontend/dist/output.css --watch",
+    "test": "node --test \"test/**/*.test.js\""
   },
   "devDependencies": {
     "tailwindcss": "4.1.17"
-  }
+  },
+  "type": "module"
 }
