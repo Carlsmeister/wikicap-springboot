@@ -247,9 +247,9 @@ async function renderTopArtist(artistData, year) {
  */
 export async function runTopArtist(year) {
   clearTopArtist(); // a failed /music must not leave the previous year's artists on screen
-  const music = await getMusic(year);
-  const artistData = { artists_with_images: toTopArtists(music) };
-  await renderTopArtist(artistData, year);
+  const artists = toTopArtists(await getMusic(year));
+  if (artists.length === 0) return; // nothing matched on Spotify: keep the section hidden
+  await renderTopArtist({ artists_with_images: artists }, year);
 }
 
 

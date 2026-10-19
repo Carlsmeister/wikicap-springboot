@@ -2,7 +2,7 @@ import { renderHighlights, renderMovies, renderSeries } from "./components/Media
 import { runTopArtist } from "./components/TopArtist.js";
 import { renderWikiSection } from "./components/WikiSection.js";
 import { renderNobel, clearNobel } from "./components/NobelSection.js";
-import { fetchSection } from "./api.js";
+import { fetchSection, isValidYear } from "./api.js";
 import { toEventsByMonth, toNobelPrizes, toHighlights, toTopMovies, toTopSeries } from "./mappers.js";
 
 const form = document.querySelector("#yearForm"); // Form element for year input
@@ -115,6 +115,8 @@ function clearResults() {
   highlightsSection.innerHTML = "";
   movieSection.innerHTML = "";
   seriesSection.innerHTML = "";
+  entertainmentSection.classList.add("hidden");
+  heroText.textContent = "";
   recapHeader.classList.add("hidden");
   yearBadge.textContent = "";
 }
@@ -123,6 +125,10 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const raw = input.value.trim();
+  if (!isValidYear(raw)) {
+    setStatus("Please enter a valid year.", "error");
+    return;
+  }
   const year = Number(raw);
 
   clearNobel({ nobelGrid, nobelSection, statsEl});
@@ -145,56 +151,73 @@ form.addEventListener("submit", async (e) => {
     ]);
 
     if (events.status === "rejected" && nobel.status === "rejected" && entertainment.status === "rejected") {
-      throw events.reason;
+      console.error(events.reason);
+      setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8080?", "error");
+      return;
     }
 
+    // Each section maps and renders on its own, so one unexpected shape does not blank the others.
     if (nobel.status === "fulfilled") {
-      renderNobel(
-        toNobelPrizes(nobel.value),
-        { nobelSection, nobelGrid, nobelTpl, statsEl},
-        observer
-      );
+      try {
+        renderNobel(
+          toNobelPrizes(nobel.value),
+          { nobelSection, nobelGrid, nobelTpl, statsEl},
+          observer
+        );
+      } catch (err) {
+        console.error("Nobel failed:", err);
+      }
     }
 
-    const eventsByMonth = events.status === "fulfilled" ? toEventsByMonth(events.value) : {};
-    const hasEvents = Object.keys(eventsByMonth).length > 0;
+    let hasEvents = false;
+    if (events.status === "fulfilled") {
+      try {
+        const eventsByMonth = toEventsByMonth(events.value);
 
-    if (hasEvents) {
-      heroText.textContent = `The year was ${year}`;
+        if (Object.keys(eventsByMonth).length > 0) {
+          heroText.textContent = `The year was ${year}`;
 
-      const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
-      resultsEl.appendChild(wikiFragment);
+          const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
+          resultsEl.appendChild(wikiFragment);
 
-      resultsEl
-        .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
-        .forEach(el => observer.observe(el));
+          resultsEl
+            .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
+            .forEach(el => observer.observe(el));
+          hasEvents = true;
+        }
+      } catch (err) {
+        console.error("Events failed:", err);
+      }
     }
 
-    const highlights = entertainment.status === "fulfilled" ? toHighlights(entertainment.value) : null;
+    if (entertainment.status === "fulfilled") {
+      try {
+        const highlights = toHighlights(entertainment.value);
 
-    if (highlights) {
+        if (highlights) {
 
-      entertainmentSection.classList.remove("hidden");
+          entertainmentSection.classList.remove("hidden");
 
-      highlightsSection.innerHTML = renderHighlights(highlights, year);
-      movieSection.innerHTML = renderMovies(listSorter(toTopMovies(entertainment.value), "rating"));
-      seriesSection.innerHTML = renderSeries(listSorter(toTopSeries(entertainment.value), "rating"), year);
+          highlightsSection.innerHTML = renderHighlights(highlights, year);
+          movieSection.innerHTML = renderMovies(listSorter(toTopMovies(entertainment.value), "rating"));
+          seriesSection.innerHTML = renderSeries(listSorter(toTopSeries(entertainment.value), "rating"), year);
 
-      setTimeout(() => {
-        const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
-        const seriesCards = seriesSection.querySelectorAll('.series-card.reveal');
+          setTimeout(() => {
+            const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
+            const seriesCards = seriesSection.querySelectorAll('.series-card.reveal');
 
-        movieCards.forEach(card => observer.observe(card));
-        seriesCards.forEach(card => observer.observe(card));
-      }, 0);
+            movieCards.forEach(card => observer.observe(card));
+            seriesCards.forEach(card => observer.observe(card));
+          }, 0);
 
+        }
+      } catch (err) {
+        console.error("Entertainment failed:", err);
+      }
     }
 
     if (hasEvents) setStatus("");
     else setStatus(`Found no events for ${year}.`, "error");
-  } catch (err) {
-    console.error(err);
-    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8080?", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");

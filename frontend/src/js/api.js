@@ -1,5 +1,10 @@
 export const API_BASE = "http://127.0.0.1:8080";
 
+export function isValidYear(raw) {
+  const year = Number(raw);
+  return /^\d+$/.test(raw) && year >= 1 && year <= new Date().getFullYear();
+}
+
 export async function fetchSection(year, section) {
   const response = await fetch(`${API_BASE}/api/v1/years/${year}/${section}`);
   if (!response.ok) throw new Error(`API error: ${response.status}`);

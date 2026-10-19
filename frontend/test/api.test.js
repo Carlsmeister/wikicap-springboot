@@ -1,6 +1,6 @@
 import { test, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { fetchSection, getMusic } from "../src/js/api.js";
+import { fetchSection, getMusic, isValidYear } from "../src/js/api.js";
 
 const realFetch = globalThis.fetch;
 afterEach(() => {
@@ -46,4 +46,10 @@ test("getMusic retries after a failed request", async () => {
   await assert.rejects(getMusic(2002), { message: "network down" });
   assert.deepEqual(await getMusic(2002), { year: 2002 });
   assert.equal(calls, 2);
+});
+
+test("isValidYear accepts whole years from 1 to this year only", () => {
+  const thisYear = new Date().getFullYear();
+  for (const ok of ["1", "1994", String(thisYear)]) assert.equal(isValidYear(ok), true, ok);
+  for (const bad of ["", "0", "abc", "19.5", "-5", "1e3", String(thisYear + 1)]) assert.equal(isValidYear(bad), false, bad);
 });

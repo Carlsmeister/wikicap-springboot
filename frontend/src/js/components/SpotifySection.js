@@ -1,4 +1,4 @@
-import { getMusic } from "../api.js";
+import { getMusic, isValidYear } from "../api.js";
 import { toTopSongs } from "../mappers.js";
 
 const spotifySection = document.querySelector("#spotifySection");
@@ -10,7 +10,7 @@ const spotifyCardTpl = document.querySelector("#spotifyCardTpl");
  * Fetches the top Spotify songs for a given year from the API.
  * @async - To prevent blocking behavior
  * @param {number} year - The year for which to fetch top songs.
- * @returns {Promise<Array>} A promise that resolves to an array of top songs, or an empty array if the request fails.
+ * @returns {Promise<Array>} A promise that resolves to an array of top songs, or null if the request fails.
  */
 async function fetchSpotifySongs(year) {
     try {
@@ -70,7 +70,7 @@ function renderSpotifySongs(songs, year) {
     document.getElementById("yearForm").addEventListener("submit", async (e) => { //Listens for the submit button
         e.preventDefault();
         const year = document.getElementById("yearInput").value.trim();
-        if (!year) return;
+        if (!isValidYear(year)) return; // main.js shows the error message
         
         const songs = await fetchSpotifySongs(year);
         renderSpotifySongs(songs, year);
