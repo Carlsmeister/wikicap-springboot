@@ -31,4 +31,28 @@ class WikiEventCleanerTest {
         // the cleaner turns every en dash into a hyphen; what matters is that "50" survives
         assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Jun 6", "50-60 people are killed in a crash"));
     }
+
+    @Test
+    void keepsLeadingNumberInLinkedDescriptionAfterDate() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* [[January 1]] – [[24-hour clock]] adopted", false, 200);
+
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Jan 1", "24-hour clock adopted"));
+    }
+
+    @Test
+    void keepsLeadingNumberRangeInLinkedDescriptionAfterDate() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* [[June 6]] – [[1–2 win]] for the home side", false, 200);
+
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Jun 6", "1-2 win for the home side"));
+    }
+
+    @Test
+    void keepsStartDateOfUnlinkedCrossMonthRange() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* April 7 – July 15 – The [[Rwandan genocide]] takes place.", false, 200);
+
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Apr 7", "The Rwandan genocide takes place."));
+    }
 }

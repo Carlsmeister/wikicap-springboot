@@ -24,11 +24,16 @@ public final class WikiEventCleaner {
     private static final String MONTHS_PATTERN =
             "January|February|March|April|May|June|July|August|September|October|November|December";
 
+    // a range end is a closed link "[[June 8|8]]" / "[[July 15]]" or a bare "July 15";
+    // anything looser eats a description's leading "12-year-old" or "[[24-hour clock]]"
+    private static final String RANGE_END =
+            "(?:\\[\\[(?:(?:" + MONTHS_PATTERN + ")\\s+)?\\d{1,2}(?:\\|\\d{1,2})?]]"
+                    + "|(?:" + MONTHS_PATTERN + ")\\s+\\d{1,2})";
+
     // optional range end before the separator: "[[June 6]]–[[June 8|8]] –" or "[[April 7]] – [[July 15]] –"
-    // the range end must open with "[[" or a month, or "– 12-year-old ..." would lose its "12-"
     private static final Pattern DATE_PREFIX = Pattern.compile(
             "^(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?"
-                    + "(?:\\s*[–—-]\\s*(?:\\[\\[(?:(?:" + MONTHS_PATTERN + ")\\s+)?|(?:" + MONTHS_PATTERN + ")\\s+)\\d{1,2}(?:\\|\\d{1,2})?(?:]])?)?"
+                    + "(?:\\s*[–—-]\\s*" + RANGE_END + ")?"
                     + "\\s*[–—-]\\s*",
             Pattern.CASE_INSENSITIVE
     );
