@@ -43,6 +43,9 @@ public final class WikiEventCleaner {
             Pattern.CASE_INSENSITIVE
     );
 
+    // a bare month heading like "* December" is a parent with no date, not an event
+    private static final Pattern MONTH_ONLY = Pattern.compile("^(?:" + MONTHS_PATTERN + "):?$", Pattern.CASE_INSENSITIVE);
+
     private WikiEventCleaner() {
     }
 
@@ -55,6 +58,7 @@ public final class WikiEventCleaner {
      * - Flattens wiki links to display text
      * - Extracts a date prefix like "January 12 -" if present
      * - A line holding only a date, like "* [[February 12]]", returns that date and an empty description
+     * - A line holding only a month name, like "* December", returns null
      */
     public static CleanResult cleanEventLine(String line, boolean keepDatePrefix, int maxLen) {
         if (line == null || line.isBlank()) {
@@ -100,7 +104,7 @@ public final class WikiEventCleaner {
             return new CleanResult(shortDate(dateOnly.group(1), dateOnly.group(2)), "");
         }
 
-        if (stripped.length() < 8) {
+        if (stripped.length() < 8 || MONTH_ONLY.matcher(stripped).matches()) {
             return null;
         }
 

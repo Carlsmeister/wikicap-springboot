@@ -64,4 +64,9 @@ class WikiEventCleanerTest {
 
         assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Apr 7", "The Rwandan genocide takes place."));
     }
+
+    @Test
+    void dropsLineHoldingOnlyAMonthName() {
+        assertThat(WikiEventCleaner.cleanEventLine("* [[December]]", false, 200)).isNull();
+    }
 }

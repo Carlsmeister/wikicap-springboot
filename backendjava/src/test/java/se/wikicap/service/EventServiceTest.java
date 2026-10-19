@@ -151,6 +151,23 @@ class EventServiceTest {
                 new EventItem("Jan 2", "The child event of the second."));
     }
 
+    @Test
+    void treatsMonthNameOnlyLinesAsUndatedParents() {
+        // 1920's December section has this shape: "* December" over "**" sub-bullets
+        List<EventItem> january = januaryFrom("""
+                * [[January 5]] – Something happens on the fifth of January.
+                * December
+                ** A child event under a bare month name.
+                * [[September]]
+                ** A child event under a linked month name.
+                """);
+
+        assertThat(january).containsExactly(
+                new EventItem("Jan 5", "Something happens on the fifth of January."),
+                new EventItem("", "A child event under a bare month name."),
+                new EventItem("", "A child event under a linked month name."));
+    }
+
     /** A client serving the given TOC and the recorded sections. */
     private static EventClient recordedClient(List<EventClient.TocItem> toc) {
         EventClient client = mock(EventClient.class);
