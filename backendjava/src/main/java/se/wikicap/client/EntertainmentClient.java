@@ -23,7 +23,7 @@ public class EntertainmentClient {
     private static final String TMDB_BASE_URL = "https://api.themoviedb.org/3";
     private static final String ACADEMY_AWARDS_BASE_URL = "https://theawards.vercel.app/api";
 
-    @Value("${TMDB_API_KEY}")
+    @Value("${TMDB_API_KEY:}")
     private String TMDB_API_KEY;
     private final WebClient tmdbClient;
     private final WebClient awardsClient;

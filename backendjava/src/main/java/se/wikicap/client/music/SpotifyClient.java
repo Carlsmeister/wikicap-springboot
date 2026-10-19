@@ -34,10 +34,10 @@ public class SpotifyClient {
     private static final String SPOTIFY_SEARCH_BASE_URL = "https://api.spotify.com/v1";
     private static final String SPOTIFY_TOKEN_URL = "https://accounts.spotify.com";
 
-    @Value("${SPOTIFY_CLIENT_ID}")
+    @Value("${SPOTIFY_CLIENT_ID:}")
     private String spotifyClientId;
 
-    @Value("${SPOTIFY_CLIENT_SECRET}")
+    @Value("${SPOTIFY_CLIENT_SECRET:}")
     private String spotifyClientSecret;
 
     private final WebClient spotifyApiClient;
