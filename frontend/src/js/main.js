@@ -220,7 +220,10 @@ form.addEventListener("submit", async (e) => {
     }
 
     if (hasEvents) setStatus("");
-    else setStatus(`Found no events for ${year}.`, "error");
+    else if (events.status === "rejected") {
+      console.error("Events failed:", events.reason);
+      setStatus(`Could not fetch events for ${year}.`, "error");
+    } else setStatus(`Found no events for ${year}.`, "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
