@@ -2,8 +2,7 @@
 
 WikiCap is a year-recap web app: enter a year and it shows that year's events, Nobel prizes,
 films and music, gathered from Wikipedia, TMDB, Spotify and others. **The app is
-`backendjava/` (Spring Boot) plus `frontend/` (vanilla JS).** `backendpython/` is the FastAPI
-backend the Java one replaces.
+`backendjava/` (Spring Boot) plus `frontend/` (vanilla JS).**
 
 ## Testing
 

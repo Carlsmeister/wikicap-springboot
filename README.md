@@ -25,6 +25,8 @@ The results are presented in an artsy, interactive timeline.
 WikiCap is a projekt in making a REST API for a mashup site.
 It works as an small "year recap machine" fetching multiple sources of data in to one response
 
+This fork ports the team's Python backend to Spring Boot. The original lives at [WikiCap/year-overview](https://github.com/WikiCap/year-overview).
+
 ---
 
 ## Functions
@@ -33,7 +35,7 @@ Depending on the year, WikiCap fetches and renders:
 
 - **Notable events & year context** (Wikipedia)
 - **Nobel prize winners** (Wikipedia)
-- **Top music and artistists** (artists / tracks via Last.fm and Spotify)
+- **Top music and artistists** (Billboard year-end lists from Wikipedia, enriched with Spotify)
 - **Popular movies and series** (via TMDB)
 - **Oscars awards** (Via TheAward API)
 
@@ -43,36 +45,24 @@ Depending on the year, WikiCap fetches and renders:
 
 ### Backend
 
-- **Python** – FastAPI (API layer / data aggregation)
-- **Node.js** - For tailwind
-- **httpx** (HTTP client)
-- **BeautifulSoup4** (HTML parsing/scraping where needed)
-- **python-dotenv** (environment variables)
-- **Jinja2** (templating if used for HTML responses)
-
-### Backend dependencies
-
-- fastapi==0.115.0
-- uvicorn[standard]==0.30.0
-- python-dotenv==1.0.1
-- jinja2==3.1.4
-- httpx==0.27.0
-- pydantic==2.10.6
-- beautifulsoup4==4.12.3
+- **Java 25**
+- **Spring Boot 4** (WebFlux)
+- **WebClient** (HTTP client)
+- **Jsoup** (HTML parsing of Wikipedia pages)
+- **Caffeine** (caching)
 
 ### Frontend
 
 - HTML
-- CSS – Tailwind CSS
+- CSS – Tailwind CSS (built with Node.js)
 - JavaScript – Vanilla JS
 
 ### External APIs
 
-- Wikipedia API – for notable events & general info
-- Last.fm API – for top tracks / artists by year
+- Wikipedia API – for notable events & general info, and the Billboard year-end lists behind the music rankings
 - TMDB API – for popular movies by year
 - Theawards API - for Academy awards
-- Spotify API - for top tracks / artists by year
+- Spotify API - for enriching the music rankings
 
 ---
 
@@ -80,40 +70,20 @@ Depending on the year, WikiCap fetches and renders:
 
 ```text
 .
-├── .venv/
-├── .envScriptsactivate
-├── backend/
-│   ├── __pycache__/
-│   ├── app/
-│   │   ├── __pycache__/
-│   │   ├── api/
-│   │   ├── clients/
-│   │   ├── core/
-│   │   ├── services/
-│   │   ├── tests/
-│   │   ├── utils/
-│   │   ├── __init__.py
-│   │   └── main.py
-│   ├── README.md
-│   ├── __init__.py
-│   ├── .env
-│   ├── .env.example
-│   └── requirements.txt
-├── frontend/
-│   ├── dist/
-│   ├── node_modules/
+├── .github/workflows/ci.yml
+├── backendjava/
 │   ├── src/
-│   │   ├── css/
-│   │   ├── img/
-│   │   ├── img 2/
-│   │   ├── JS/
-│   │   ├── logo/
-│   │   └── logo 2/
+│   │   ├── main/
+│   │   └── test/
+│   ├── .env.example
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   ├── test/
 │   ├── index.html
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── README.md
-└── .gitignore
+│   └── package.json
+├── CLAUDE.md
+└── README.md
 ```
 
 ---
@@ -122,22 +92,16 @@ Depending on the year, WikiCap fetches and renders:
 
 ### Requirements
 
-#### Python Version: Ensure you have [Python](https://www.python.org/downloads/) 3.10 or higher installed. Check your version by running:
+- [Java](https://adoptium.net/) 25
+- [Maven](https://maven.apache.org/)
+- [Node.js](https://nodejs.org/) and npm
 
-   ```bash
-   python3 --version
-   ```
-   or
-   ```bash
-   python --version
-   ```
-
-#### **Node and Npm**
-
-  ```bash
-  node --version
-  npm --version
-  ```
+```bash
+java --version
+mvn --version
+node --version
+npm --version
+```
 
 ---
 
@@ -145,88 +109,70 @@ Depending on the year, WikiCap fetches and renders:
 
 ## 1. **Clone repository**
 
-git clone <your-repo-url>
-cd <your-repo-folder>
-
-## 2. **Create Backend and activate Venv**
-
-### MacOS / Linux
-
 ```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
+git clone https://github.com/Carlsmeister/wikicap-springboot.git
+cd wikicap-springboot
 ```
 
-### **Windows**
+## 2. **Create your .env file**
 
-```bash
-cd backend
-python -m venv .venv
-.\.venv\Scripts\activate.ps1
-```
+Create `backendjava/.env` and add your API keys [See Enviroment Variables](#enviroment-variables).
 
-## 3. **Install backend dependencies**
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 4. **Create your .env file in the backend folder**
-
-Create `backend/.env` and add your API keys.
-Create backend/.env and add your API keys [See Enviorment Variables](#enviroment-variables)
-
-
----
-
-## 5. **Install frontend dependencies**
+## 3. **Install frontend dependencies**
 
 ```bash
 cd frontend
 npm install
 ```
 
-## 6. **Compile Tailwind**
+## 4. **Compile Tailwind**
 
 ```bash
-npx tailwindcss \
-  -i frontend/src/css/input.css \
-  -o frontend/public/output.css \
-  --watch
-```
----
-
-## 7. **Run locally**
-
-**Start the FastAPI server**
-
-```bash
-cd backend
-uvicorn app.main:app --reload
+cd frontend
+npm run build
 ```
 
 ---
 
-## 8. **Enviroment Variables**
+## 5. **Run locally**
 
-# Create ´backend/.env``
+Run everything from the repo root: the app loads `./backendjava/.env` relative to the working directory.
 
-#### Last.fm
-LASTFM_API_KEY=YOUR_LASTFM_KEY
+**Start the Spring Boot backend (port 8080)**
+
+```bash
+mvn -f backendjava/pom.xml spring-boot:run
+```
+
+**Serve the frontend**
+
+```bash
+npx serve frontend
+```
+
+The frontend calls the backend at `http://127.0.0.1:8080`.
+
+**Run the tests**
+
+```bash
+mvn -q -f backendjava/pom.xml test && (cd frontend && npm test)
+```
+
+---
+
+## 6. **Enviroment Variables**
+
+# Create `backendjava/.env`
 
 #### TMDB
-TMDB_API_KEY=YOUR_TMDB_KEY
+TMDB_API_KEY=YOUR_TMDB_API_READ_ACCESS_TOKEN
 
-#### BILLBOARD 100
-BILLBOARD_100_API_KEY=YOUR_BILLBOARD_100_API_KEY
+TMDB_API_KEY is the long v4 "API Read Access Token" from your TMDB account settings, not the short v3 API key. It is sent as a `Bearer` token.
 
 #### SPOTIFY ID
 SPOTIFY_CLIENT_ID=YOUR_SPOTIFY_CLIENT_ID
 
-#### SPOTIFY CLIENT SECTRET
+#### SPOTIFY CLIENT SECRET
 SPOTIFY_CLIENT_SECRET=YOUR_SPOTIFY_CLIENT_SECRET
 
 Notes:
@@ -236,7 +182,7 @@ Notes:
 -Keep .env out of git (add it to .gitignore).
 
 ---
-## 9. **Troubleshooting**
+## 7. **Troubleshooting**
 
 **Open your frontend (depending on your setup):**
 
