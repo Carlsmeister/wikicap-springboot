@@ -122,6 +122,19 @@ class EventServiceTest {
     }
 
     @Test
+    void givesSubBulletsNoDateWhenTheirParentCleansToNothing() {
+        List<EventItem> january = januaryFrom("""
+                * [[January 5]] – Something happens on the fifth of January.
+                * [[NATO]]
+                ** A child event under an undated parent.
+                """);
+
+        assertThat(january).containsExactly(
+                new EventItem("Jan 5", "Something happens on the fifth of January."),
+                new EventItem("", "A child event under an undated parent."));
+    }
+
+    @Test
     void treatsDateOnlyLinesWithRefsOrColonsAsParents() {
         List<EventItem> january = januaryFrom("""
                 * [[January 12]]<ref>{{cite web |title=Source}}</ref>

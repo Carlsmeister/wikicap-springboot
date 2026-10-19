@@ -156,16 +156,14 @@ public class EventService {
                 break;
             }
 
-            boolean nested = line.strip().startsWith("**");
+            String stripped = line.strip();
+            boolean nested = stripped.startsWith("**");
             WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(line, false, MAX_LINE_LEN);
-            if (cleaned == null) {
-                continue;
+            if (!nested && stripped.startsWith("*")) {
+                // a top-level line dates the "**" lines under it; one that cleans to nothing leaves them undated
+                parentDate = cleaned == null ? "" : cleaned.date();
             }
-            if (!nested) {
-                // a top-level line, date-only or dated, dates the "**" lines under it
-                parentDate = cleaned.date();
-            }
-            if (cleaned.description().isBlank()) {
+            if (cleaned == null || cleaned.description().isBlank()) {
                 continue;
             }
 
