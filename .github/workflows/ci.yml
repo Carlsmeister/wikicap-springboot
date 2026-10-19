@@ -18,6 +18,23 @@ permissions:
   pull-requests: write
 
 jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node 25
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test
+
   build-backend:
     runs-on: ubuntu-latest
     timeout-minutes: 10  # Prevent hanging builds
