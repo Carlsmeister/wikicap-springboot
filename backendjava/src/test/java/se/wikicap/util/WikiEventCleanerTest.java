@@ -14,4 +14,21 @@ class WikiEventCleanerTest {
 
         assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Apr 7", "The Rwandan genocide takes place."));
     }
+
+    @Test
+    void keepsLeadingNumberAndHyphenInDescriptionAfterDate() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* [[January 1]] – 12-year-old boy wins the prize", false, 200);
+
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Jan 1", "12-year-old boy wins the prize"));
+    }
+
+    @Test
+    void keepsLeadingNumberRangeInDescriptionAfterDate() {
+        WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(
+                "* [[June 6]] – 50–60 people are killed in a crash", false, 200);
+
+        // the cleaner turns every en dash into a hyphen; what matters is that "50" survives
+        assertThat(cleaned).isEqualTo(new WikiEventCleaner.CleanResult("Jun 6", "50-60 people are killed in a crash"));
+    }
 }
