@@ -45,14 +45,14 @@ export function toTopSeries(entertainment) {
 
 export function toTopSongs(music) {
   return music.topTracks
-    .filter((t) => t.trackData)
+    // Java's no-match fallback has external_urls: null (MusicService.createEmptySong).
+    .filter((t) => t.trackData?.external_urls?.spotify)
     .map(({ trackData: t }) => ({
       title: t.name,
       artist: t.artists[0].name,
       album: t.album.name,
       release_date: t.album.release_date,
-      // Java's no-match fallback sends external_urls: null (MusicService.createEmptySong).
-      spotify_url: t.external_urls?.spotify,
+      spotify_url: t.external_urls.spotify,
       image: t.album.images[0]?.url ?? "",
     }));
 }

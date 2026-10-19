@@ -87,9 +87,23 @@ test("toTopSongs flattens Spotify track data", () => {
 });
 
 test("toTopSongs skips ranks with no Spotify match", () => {
-  const matched = music.topTracks.filter((t) => t.trackData !== null).length;
-  assert.ok(matched < music.topTracks.length);
-  assert.equal(toTopSongs(music).length, matched);
+  const input = structuredClone(music);
+  // Java's no-match fallback, as built by MusicService.createEmptySong (backendjava, lines 154-161).
+  input.topTracks.push({
+    rank: 99,
+    participants: "Unmatched Artist",
+    trackData: {
+      id: null,
+      name: "Unmatched Song",
+      popularity: 0,
+      external_urls: null,
+      album: { name: "Unknown", release_date: "Unknown", images: [] },
+      artists: [{ id: null, name: "Unmatched Artist" }],
+    },
+  });
+  const matched = input.topTracks.filter((t) => t.trackData?.external_urls?.spotify).length;
+  assert.equal(matched, input.topTracks.length - 2); // the fallback plus the fixture's null trackData
+  assert.equal(toTopSongs(input).length, matched);
 });
 
 test("toTopArtists takes the first image or an empty string", () => {
