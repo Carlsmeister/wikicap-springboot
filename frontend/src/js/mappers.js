@@ -13,7 +13,7 @@ export function toNobelPrizes(nobel) {
   return Object.fromEntries(
     nobel.nobelPrizes.map((prize) => [
       prize.category.en,
-      prize.laureates.map((l) => ({
+      (prize.laureates ?? []).map((l) => ({
         name: l.knownName?.en,
         motivation: l.motivation?.en,
         image: l.imageURL ?? "",

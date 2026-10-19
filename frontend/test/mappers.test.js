@@ -48,6 +48,12 @@ test("toNobelPrizes keeps a laureate with no known name", () => {
   assert.equal(prizes[input.nobelPrizes[0].category.en][0].name, undefined);
 });
 
+test("toNobelPrizes keeps a prize with no laureates as an empty category", () => {
+  const input = structuredClone(nobel);
+  delete input.nobelPrizes[0].laureates;
+  assert.deepEqual(toNobelPrizes(input)[input.nobelPrizes[0].category.en], []);
+});
+
 test("toHighlights returns the oscars when all three categories exist", () => {
   assert.deepEqual(toHighlights(entertainment), { oscars: entertainment.academyAwards.oscars });
 });
@@ -88,7 +94,7 @@ test("toTopSongs flattens Spotify track data", () => {
 
 test("toTopSongs skips ranks with no Spotify match", () => {
   const input = structuredClone(music);
-  // Java's no-match fallback, as built by MusicService.createEmptySong (backendjava, lines 154-161).
+  // Java's no-match fallback, as built by MusicService.createEmptySong.
   input.topTracks.push({
     rank: 99,
     participants: "Unmatched Artist",
@@ -103,7 +109,9 @@ test("toTopSongs skips ranks with no Spotify match", () => {
   });
   const matched = input.topTracks.filter((t) => t.trackData?.external_urls?.spotify).length;
   assert.equal(matched, input.topTracks.length - 2); // the fallback plus the fixture's null trackData
-  assert.equal(toTopSongs(input).length, matched);
+  const songs = toTopSongs(input);
+  assert.equal(songs.length, matched);
+  assert.ok(!songs.some((s) => s.title === "Unmatched Song"));
 });
 
 test("toTopArtists takes the first image or an empty string", () => {
