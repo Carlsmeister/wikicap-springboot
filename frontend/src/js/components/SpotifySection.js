@@ -1,4 +1,5 @@
-const API_BASE = "http://127.0.0.1:8000";
+import { getMusic } from "../api.js";
+import { toTopSongs } from "../mappers.js";
 
 const spotifySection = document.querySelector("#spotifySection");
 const spotifyGrid = document.querySelector("#spotifyGrid");
@@ -12,10 +13,12 @@ const spotifyCardTpl = document.querySelector("#spotifyCardTpl");
  * @returns {Promise<Array>} A promise that resolves to an array of top songs, or an empty array if the request fails.
  */
 async function fetchSpotifySongs(year) {
-    const res = await fetch(`${API_BASE}/api/v1/year/${year}/songs`);
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.top_songs ?? [];
+    try {
+        // Number(year): main.js keys getMusic by number, so a string here would send a second /music request.
+        return toTopSongs(await getMusic(Number(year)));
+    } catch {
+        return null;
+    }
   }
 
 /**

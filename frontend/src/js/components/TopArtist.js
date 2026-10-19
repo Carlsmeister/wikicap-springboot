@@ -1,4 +1,5 @@
-const API_BASE = "http://127.0.0.1:8000";
+import { getMusic } from "../api.js";
+import { toTopArtists, toTopTracksByArtist } from "../mappers.js";
 
 /** Section containing the top artists view.
  * @type {HTMLElement}
@@ -89,21 +90,6 @@ function setupArtistAutoReveal({
   if (statsEl) statsEl.textContent = "";
 }
 
-/** Fetches the top artist for a given year from the API.
- *
- * Sends a request to the backend and returns the parsed JSON data.
- * If the request fails (for example due to a network error or a 404),
- * the function returns an empty object instead of throwing an error.
- *
- * @param {number} year - The year to fetch artist data for.
- * @returns {Promise<Object>} The artist data, or an empty object if the request fails. 
- * */
-  async function fetchArtistOfTheYear(year) {
-    const res = await fetch(`${API_BASE}/api/v1/year/${year}/billboard/artist`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data ?? {};
-  }
 /**
  * Renders the "Top Artist" section for a given year.
  *
@@ -130,7 +116,7 @@ async function renderTopArtist(artistData, year) {
 
   let topTracksByArtist = new Map();
   try {
-    const topSongsData = await fetchBillboardTopSong(year, 5);
+    const topSongsData = { artists: toTopTracksByArtist(await getMusic(year)) };
     topTracksByArtist = new Map(
       (topSongsData.artists ?? []).map(a => [a.artist, a.top_tracks ?? []])
     );
@@ -216,24 +202,6 @@ async function renderTopArtist(artistData, year) {
   // });
 }
 
-  /** Fetches the top songs for a given year from the Billboard API.
-   *
-   * Sends a request to the backend and returns the parsed JSON response.
-   * If the request fails, the function throws an error instead of returning fallback data.
-   * 
-   * @param {number} year - The year to fetch songs for.
-   * @param {number} [limit=5] - Maximum number of songs to return.
-   * @returns {Promise<Object>} Parsed JSON response from the API.
-  */  
-  async function fetchBillboardTopSong(year) {
-    const res = await fetch(
-      `${API_BASE}/api/v1/year/${year}/billboard/artist/top-songs`);
-    if (!res.ok) {
-      throw new Error("Failed to fetch top songs");
-    }
-      return await res.json();
-  }
-
   /**
    * Renders a list of songs inside a given container.
    * The function clears any previous content,
@@ -278,7 +246,8 @@ async function renderTopArtist(artistData, year) {
  * @returns {Promise<void>}
  */
 export async function runTopArtist(year) {
-  const artistData = await fetchArtistOfTheYear(year);
+  const music = await getMusic(year);
+  const artistData = { artists_with_images: toTopArtists(music) };
   await renderTopArtist(artistData, year);
 }
 

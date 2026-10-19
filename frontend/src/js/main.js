@@ -2,9 +2,8 @@ import { renderHighlights, renderMovies, renderSeries } from "./components/Media
 import { runTopArtist } from "./components/TopArtist.js";
 import { renderWikiSection } from "./components/WikiSection.js";
 import { renderNobel, clearNobel } from "./components/NobelSection.js";
-
-/** Base URL for the backend API */
-const API_BASE = "http://127.0.0.1:8000";
+import { fetchSection } from "./api.js";
+import { toEventsByMonth, toNobelPrizes, toHighlights, toTopMovies, toTopSeries } from "./mappers.js";
 
 const form = document.querySelector("#yearForm"); // Form element for year input
 const input = document.querySelector("#yearInput"); // Input field for year input
@@ -120,30 +119,6 @@ function clearResults() {
   yearBadge.textContent = "";
 }
 
-/**
- * Fetches all data for a given year from the API.
- *
- * Builds the request URL, sends the fetch call, and returns the parsed
- * JSON response. If the server responds with a non‑OK status, the function
- * throws an error so the caller can handle it.
- *
- * @param {number|string} year - The year to request data for.
- * @returns {Promise<Object>} The parsed year data from the API.
- * @throws {Error} If the API responds with a non‑OK status.
- */
-async function fetchYear(year) {
-  const url = `${API_BASE}/api/v1/year/${encodeURIComponent(year)}`;
-
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
-  }
-
-  return await response.json();
-}
-
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -163,41 +138,47 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    const data = await fetchYear(year);
+    const [events, nobel, entertainment] = await Promise.allSettled([
+      fetchSection(year, "events"),
+      fetchSection(year, "nobel"),
+      fetchSection(year, "entertainment"),
+    ]);
 
-    if (data?.nobel_prizes) {
+    if (events.status === "rejected" && nobel.status === "rejected" && entertainment.status === "rejected") {
+      throw events.reason;
+    }
+
+    if (nobel.status === "fulfilled") {
       renderNobel(
-        data.nobel_prizes,
+        toNobelPrizes(nobel.value),
         { nobelSection, nobelGrid, nobelTpl, statsEl},
         observer
       );
     }
 
-    const eventsByMonth = data?.events_by_month ?? {};
-    const entries = Object.entries(eventsByMonth);
+    const eventsByMonth = events.status === "fulfilled" ? toEventsByMonth(events.value) : {};
     const hasEvents = Object.keys(eventsByMonth).length > 0;
 
-    if (!hasEvents) {
-      setStatus(`Found no events for ${year}.`, "error");
-      return;
+    if (hasEvents) {
+      heroText.textContent = `The year was ${year}`;
+
+      const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
+      resultsEl.appendChild(wikiFragment);
+
+      resultsEl
+        .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
+        .forEach(el => observer.observe(el));
     }
 
-    heroText.textContent = `The year was ${year}`;
+    const highlights = entertainment.status === "fulfilled" ? toHighlights(entertainment.value) : null;
 
-    const wikiFragment = renderWikiSection(eventsByMonth, year, wikiTpl);
-    resultsEl.appendChild(wikiFragment);
-
-    resultsEl
-      .querySelectorAll(".component-card.reveal, .component-card.reveal-left, .component-card.reveal-right")
-      .forEach(el => observer.observe(el));
-
-    if (data.movie_highlights && data.movies?.top_movies && data.series?.top_series) {
+    if (highlights) {
 
       entertainmentSection.classList.remove("hidden");
 
-      highlightsSection.innerHTML = renderHighlights(data.movie_highlights, year);
-      movieSection.innerHTML = renderMovies(listSorter(data.movies.top_movies, "rating"));
-      seriesSection.innerHTML = renderSeries(listSorter(data.series.top_series, "rating"), year);
+      highlightsSection.innerHTML = renderHighlights(highlights, year);
+      movieSection.innerHTML = renderMovies(listSorter(toTopMovies(entertainment.value), "rating"));
+      seriesSection.innerHTML = renderSeries(listSorter(toTopSeries(entertainment.value), "rating"), year);
 
       setTimeout(() => {
         const movieCards = movieSection.querySelectorAll('.movie-card.reveal');
@@ -209,10 +190,11 @@ form.addEventListener("submit", async (e) => {
 
     }
 
-    setStatus("");
+    if (hasEvents) setStatus("");
+    else setStatus(`Found no events for ${year}.`, "error");
   } catch (err) {
     console.error(err);
-    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8000?", "error");
+    setStatus("Could not fetch data. Is the backend running on 127.0.0.1:8080?", "error");
   } finally {
     submitBtn.disabled = false;
     submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
