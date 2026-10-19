@@ -246,6 +246,7 @@ async function renderTopArtist(artistData, year) {
  * @returns {Promise<void>}
  */
 export async function runTopArtist(year) {
+  clearTopArtist(); // a failed /music must not leave the previous year's artists on screen
   const music = await getMusic(year);
   const artistData = { artists_with_images: toTopArtists(music) };
   await renderTopArtist(artistData, year);

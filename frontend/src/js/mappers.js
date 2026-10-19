@@ -57,14 +57,17 @@ export function toTopSongs(music) {
     }));
 }
 
+// Java's no-match fallback has id: null (MusicService.createEmptyArtist).
+const matchedArtists = (music) => music.topArtists.filter((a) => a.artistData?.id);
+
 export function toTopArtists(music) {
-  return music.topArtists
-    .filter((a) => a.artistData)
-    .map(({ artistData: a }) => ({ name: a.name, image: a.images[0]?.url ?? "" }));
+  return matchedArtists(music).map(({ artistData: a }) => ({ name: a.name, image: a.images[0]?.url ?? "" }));
 }
 
 export function toTopTracksByArtist(music) {
-  return music.topArtists
-    .filter((a) => a.artistData)
-    .map((a) => ({ artist: a.artistData.name, top_tracks: a.topTracks.map((t) => ({ title: t.name })) }));
+  // Python showed five tracks per artist.
+  return matchedArtists(music).map((a) => ({
+    artist: a.artistData.name,
+    top_tracks: a.topTracks.slice(0, 5).map((t) => ({ title: t.name })),
+  }));
 }

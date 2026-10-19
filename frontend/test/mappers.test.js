@@ -129,3 +129,41 @@ test("toTopTracksByArtist pairs each artist with its track titles", () => {
     top_tracks: source.topTracks.map((t) => ({ title: t.name })),
   });
 });
+
+// Java's no-match fallback, as built by MusicService.createEmptyArtist.
+const unmatchedArtist = () => ({
+  rank: 99,
+  artistData: {
+    id: null,
+    name: "Unmatched Artist",
+    genres: [],
+    popularity: 0,
+    followers: { total: 0 },
+    external_urls: null,
+    images: [],
+  },
+  topTracks: [],
+});
+
+test("toTopArtists skips artists with no Spotify match", () => {
+  const input = structuredClone(music);
+  input.topArtists.push(unmatchedArtist());
+  const artists = toTopArtists(input);
+  assert.equal(artists.length, music.topArtists.length);
+  assert.ok(!artists.some((a) => a.name === "Unmatched Artist"));
+});
+
+test("toTopTracksByArtist skips artists with no Spotify match", () => {
+  const input = structuredClone(music);
+  input.topArtists.push(unmatchedArtist());
+  const byArtist = toTopTracksByArtist(input);
+  assert.equal(byArtist.length, music.topArtists.length);
+  assert.ok(!byArtist.some((a) => a.artist === "Unmatched Artist"));
+});
+
+test("toTopTracksByArtist keeps at most five tracks per artist", () => {
+  const input = structuredClone(music);
+  const source = input.topArtists[0];
+  source.topTracks = Array.from({ length: 7 }, (_, i) => ({ name: `Track ${i + 1}` }));
+  assert.deepEqual(toTopTracksByArtist(input)[0].top_tracks, [1, 2, 3, 4, 5].map((n) => ({ title: `Track ${n}` })));
+});
