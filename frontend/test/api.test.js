@@ -48,6 +48,28 @@ test("getMusic retries after a failed request", async () => {
   assert.equal(calls, 2);
 });
 
+test("getMusic requests a year again once the earlier request has settled", async () => {
+  let calls = 0;
+  globalThis.fetch = async () => {
+    calls++;
+    return okResponse({ year: 2003 });
+  };
+  await getMusic(2003);
+  await getMusic(2003);
+  assert.equal(calls, 2);
+});
+
+test("getMusic shares one request between a string and a numeric year", async () => {
+  let calls = 0;
+  globalThis.fetch = async () => {
+    calls++;
+    return okResponse({ year: 2004 });
+  };
+  const [a, b] = await Promise.all([getMusic("2004"), getMusic(2004)]);
+  assert.equal(calls, 1);
+  assert.equal(a, b);
+});
+
 test("isValidYear accepts whole years from 1 to this year only", () => {
   const thisYear = new Date().getFullYear();
   for (const ok of ["1", "1994", String(thisYear)]) assert.equal(isValidYear(ok), true, ok);

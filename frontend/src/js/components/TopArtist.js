@@ -93,7 +93,7 @@ function setupArtistAutoReveal({
 /**
  * Renders the "Top Artist" section for a given year.
  *
- * Clears any previous artist view, fetches top tracks for each artist,
+ * Clears any previous artist view, reads top tracks for each artist from `music`,
  * builds up to six artist cards from the template, and inserts them
  * into the artist grid. Each card gets a placeholder image until the
  * real image loads. If an image fails to load, the placeholder remains.
@@ -102,9 +102,10 @@ function setupArtistAutoReveal({
  * and the page scrolls smoothly to the artist section.
  *
  * @param {Object} artistData - Data containing artists and optional images.
- * @param {number} year - The selected year to fetch top songs for.
- */  
-async function renderTopArtist(artistData, year) {
+ * @param {number} year - The selected year, shown in the section label.
+ * @param {Object} music - The /music response runTopArtist already fetched.
+ */
+async function renderTopArtist(artistData, year, music) {
   clearTopArtist();
 
   if (!artistData || !ArtistTpl || !ArtistGrid || !ArtistSection) return;
@@ -114,15 +115,9 @@ async function renderTopArtist(artistData, year) {
   const yearLabel = ArtistSection.querySelector(".artist-year-label");
   if (yearLabel) yearLabel.textContent = year;
 
-  let topTracksByArtist = new Map();
-  try {
-    const topSongsData = { artists: toTopTracksByArtist(await getMusic(year)) };
-    topTracksByArtist = new Map(
-      (topSongsData.artists ?? []).map(a => [a.artist, a.top_tracks ?? []])
-    );
-  } catch (err) {
-    console.error("Top songs fetch failed:", err);
-  }
+  const topTracksByArtist = new Map(
+    toTopTracksByArtist(music).map(a => [a.artist, a.top_tracks])
+  );
 
   const artistsList = artistData.artists_with_images ?? artistData.artists ?? [];
   const maxArtistsCards = 6;
@@ -247,9 +242,10 @@ async function renderTopArtist(artistData, year) {
  */
 export async function runTopArtist(year) {
   clearTopArtist(); // a failed /music must not leave the previous year's artists on screen
-  const artists = toTopArtists(await getMusic(year));
+  const music = await getMusic(year);
+  const artists = toTopArtists(music);
   if (artists.length === 0) return; // nothing matched on Spotify: keep the section hidden
-  await renderTopArtist({ artists_with_images: artists }, year);
+  await renderTopArtist({ artists_with_images: artists }, year, music);
 }
 
 

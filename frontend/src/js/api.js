@@ -11,14 +11,17 @@ export async function fetchSection(year, section) {
   return response.json();
 }
 
-// Music scrapes Wikipedia and is slow; two components read it, so share one request per year.
-const musicByYear = new Map();
+// Music is slow and both submit listeners read it, so concurrent callers share one request.
+// Only in-flight: Java caches /music per year, and a kept degraded 200 would stick until reload.
+const musicInFlight = new Map();
 
 export function getMusic(year) {
-  if (!musicByYear.has(year)) {
-    const request = fetchSection(year, "music");
-    request.catch(() => musicByYear.delete(year));
-    musicByYear.set(year, request);
+  const key = Number(year);
+  if (!musicInFlight.has(key)) {
+    const request = fetchSection(key, "music");
+    const forget = () => musicInFlight.delete(key);
+    request.then(forget, forget);
+    musicInFlight.set(key, request);
   }
-  return musicByYear.get(year);
+  return musicInFlight.get(key);
 }

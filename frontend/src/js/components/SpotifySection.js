@@ -14,8 +14,7 @@ const spotifyCardTpl = document.querySelector("#spotifyCardTpl");
  */
 async function fetchSpotifySongs(year) {
     try {
-        // Number(year): main.js keys getMusic by number, so a string here would send a second /music request.
-        return toTopSongs(await getMusic(Number(year)));
+        return toTopSongs(await getMusic(year));
     } catch {
         return null;
     }
