@@ -1,5 +1,7 @@
 package se.wikicap.util;
 
+import org.jsoup.parser.Parser;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,10 +29,27 @@ public final class WikiEventCleaner {
             Pattern.CASE_INSENSITIVE
     );
 
+    private static final Pattern DATE_ONLY = Pattern.compile(
+            "^\\*\\s*(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?$",
+            Pattern.CASE_INSENSITIVE
+    );
+
     private WikiEventCleaner() {
     }
 
     public record CleanResult(String date, String description) {}
+
+    /**
+     * Date of a top-level line that holds only a date, like "* [[February 12]]", as "Feb 12".
+     * Returns null for any other line.
+     */
+    public static String dateOnlyLine(String line) {
+        if (line == null) {
+            return null;
+        }
+        Matcher matcher = DATE_ONLY.matcher(line.strip());
+        return matcher.matches() ? shortDate(matcher.group(1), matcher.group(2)) : null;
+    }
 
     /**
      * Clean a single bullet-point line from Wikipedia wikitext.
@@ -44,7 +63,8 @@ public final class WikiEventCleaner {
             return null;
         }
 
-        String stripped = line.strip();
+        // decode before the date match: "[[May 10]] &ndash; ..." must read as a dash
+        String stripped = Parser.unescapeEntities(line, false).replace('\u00A0', ' ').strip();
         if (!stripped.startsWith("*")) {
             return null;
         }
@@ -54,9 +74,7 @@ public final class WikiEventCleaner {
         String date = "";
         Matcher dateMatch = DATE_PREFIX.matcher(stripped);
         if (dateMatch.find()) {
-            String month = capitalize(dateMatch.group(1));
-            String day = dateMatch.group(2);
-            date = month.substring(0, 3) + " " + day;
+            date = shortDate(dateMatch.group(1), dateMatch.group(2));
             if (!keepDatePrefix) {
                 stripped = dateMatch.replaceFirst("").trim();
             }
@@ -118,6 +136,10 @@ public final class WikiEventCleaner {
 
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    private static String shortDate(String month, String day) {
+        return capitalize(month).substring(0, 3) + " " + day;
     }
 
     private static String capitalize(String value) {

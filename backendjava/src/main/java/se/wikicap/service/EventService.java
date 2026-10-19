@@ -94,7 +94,8 @@ public class EventService {
                 if (item == null) continue;
                 String line = safe(item.line());
                 if (MONTH_SET.contains(line)) {
-                    months.put(line, safe(item.index()));
+                    // first wins: Events months come before Births months in the TOC
+                    months.putIfAbsent(line, safe(item.index()));
                 }
             }
         }
@@ -115,7 +116,7 @@ public class EventService {
 
         return Flux.fromIterable(months.entrySet())
                 .flatMap(entry -> eventClient.fetchSectionWikitext(year, entry.getValue())
-                        .map(wikitext -> Map.entry(entry.getKey(), extractMonthEvents(wikitext, entry.getKey()))),
+                        .map(wikitext -> Map.entry(entry.getKey(), extractMonthEvents(wikitext))),
                         CONCURRENCY)
                 .filter(entry -> entry.getValue() != null && !entry.getValue().isEmpty())
                 .collectList()
@@ -138,20 +139,33 @@ public class EventService {
 
     /**
      * Extract individual events from raw wikitext for a specific month.
+     * A date-only line like "* [[February 12]]" is not an event: it dates the "**" lines under it.
      * @param wikitext The raw wikitext of the month section
-     * @param month The month name (for traceability when date is missing)
-     * @return List of cleaned EventItem objects
+     * @return List of cleaned EventItem objects, dated "Mon D" or ""
      */
-    private List<EventResponse.EventItem> extractMonthEvents(String wikitext, String month) {
+    private List<EventResponse.EventItem> extractMonthEvents(String wikitext) {
         List<EventResponse.EventItem> events = new ArrayList<>();
 
         if (wikitext == null || wikitext.isBlank()) {
             return events;
         }
 
+        String parentDate = "";
         for (String line : wikitext.split("\n")) {
             if (events.size() >= DEFAULT_LIMIT) {
                 break;
+            }
+
+            String dateOnly = WikiEventCleaner.dateOnlyLine(line);
+            if (dateOnly != null) {
+                parentDate = dateOnly;
+                continue;
+            }
+
+            String stripped = line.strip();
+            boolean nested = stripped.startsWith("**");
+            if (stripped.startsWith("*") && !nested) {
+                parentDate = "";
             }
 
             WikiEventCleaner.CleanResult cleaned = WikiEventCleaner.cleanEventLine(line, false, MAX_LINE_LEN);
@@ -160,11 +174,11 @@ public class EventService {
             }
 
             String date = cleaned.date();
-            if ((date == null || date.isBlank()) && month != null && !month.isBlank()) {
-                date = month;
+            if (date.isBlank() && nested) {
+                date = parentDate;
             }
 
-            events.add(new EventResponse.EventItem(date == null ? "" : date, cleaned.description()));
+            events.add(new EventResponse.EventItem(date, cleaned.description()));
         }
 
         return events;

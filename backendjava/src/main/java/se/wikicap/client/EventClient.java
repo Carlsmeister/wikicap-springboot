@@ -113,7 +113,7 @@ public class EventClient {
         return items;
     }
 
-    private TocItem toTocItem(Map<String, Object> item) {
+    TocItem toTocItem(Map<String, Object> item) {
         if (item == null) {
             return new TocItem("", "", null);
         }
@@ -121,7 +121,8 @@ public class EventClient {
         String line = item.get("line") instanceof String lineValue ? lineValue : "";
         String index = item.get("index") instanceof String indexValue ? indexValue : "";
         Integer level = null;
-        Object levelObj = item.get("level");
+        // prop=tocdata names it tocLevel; "level" belongs to the older prop=sections response
+        Object levelObj = item.get("tocLevel");
         if (levelObj instanceof Number number) {
             level = number.intValue();
         } else if (levelObj instanceof String levelStr) {
