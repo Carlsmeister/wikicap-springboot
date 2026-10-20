@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configures web-related settings for the SmartCalender application.
+ * Configures web-related settings for the WikiCap application.
  * This class implements WebMvcConfigurer to customize Spring MVC behavior,
  * specifically focusing on enabling Cross-Origin Resource Sharing (CORS) to allow
  * the frontend application to communicate with the backend API securely.
@@ -13,9 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    public WebConfig() {
-        System.out.println("[DEBUG_LOG] WebConfig has been initialized!");
-    }
     /**
      * Configures CORS mappings to enable cross-origin requests for the API.
      * This method allows the frontend to access
@@ -28,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/v1/year/**")
+        registry.addMapping("/api/v1/**")
                 .allowedOrigins("*", "http://localhost:8080")
                 .allowedMethods("GET")
                 .allowedHeaders("*");

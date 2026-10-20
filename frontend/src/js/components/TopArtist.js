@@ -1,4 +1,5 @@
-const API_BASE = "http://127.0.0.1:8000";
+import { getMusic } from "../api.js";
+import { toTopArtists, toTopTracksByArtist } from "../mappers.js";
 
 /** Section containing the top artists view.
  * @type {HTMLElement}
@@ -89,25 +90,10 @@ function setupArtistAutoReveal({
   if (statsEl) statsEl.textContent = "";
 }
 
-/** Fetches the top artist for a given year from the API.
- *
- * Sends a request to the backend and returns the parsed JSON data.
- * If the request fails (for example due to a network error or a 404),
- * the function returns an empty object instead of throwing an error.
- *
- * @param {number} year - The year to fetch artist data for.
- * @returns {Promise<Object>} The artist data, or an empty object if the request fails. 
- * */
-  async function fetchArtistOfTheYear(year) {
-    const res = await fetch(`${API_BASE}/api/v1/year/${year}/billboard/artist`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    return data ?? {};
-  }
 /**
  * Renders the "Top Artist" section for a given year.
  *
- * Clears any previous artist view, fetches top tracks for each artist,
+ * Clears any previous artist view, reads top tracks for each artist from `music`,
  * builds up to six artist cards from the template, and inserts them
  * into the artist grid. Each card gets a placeholder image until the
  * real image loads. If an image fails to load, the placeholder remains.
@@ -116,9 +102,10 @@ function setupArtistAutoReveal({
  * and the page scrolls smoothly to the artist section.
  *
  * @param {Object} artistData - Data containing artists and optional images.
- * @param {number} year - The selected year to fetch top songs for.
- */  
-async function renderTopArtist(artistData, year) {
+ * @param {number} year - The selected year, shown in the section label.
+ * @param {Object} music - The /music response runTopArtist already fetched.
+ */
+function renderTopArtist(artistData, year, music) {
   clearTopArtist();
 
   if (!artistData || !ArtistTpl || !ArtistGrid || !ArtistSection) return;
@@ -128,15 +115,9 @@ async function renderTopArtist(artistData, year) {
   const yearLabel = ArtistSection.querySelector(".artist-year-label");
   if (yearLabel) yearLabel.textContent = year;
 
-  let topTracksByArtist = new Map();
-  try {
-    const topSongsData = await fetchBillboardTopSong(year, 5);
-    topTracksByArtist = new Map(
-      (topSongsData.artists ?? []).map(a => [a.artist, a.top_tracks ?? []])
-    );
-  } catch (err) {
-    console.error("Top songs fetch failed:", err);
-  }
+  const topTracksByArtist = new Map(
+    toTopTracksByArtist(music).map(a => [a.artist, a.top_tracks])
+  );
 
   const artistsList = artistData.artists_with_images ?? artistData.artists ?? [];
   const maxArtistsCards = 6;
@@ -216,24 +197,6 @@ async function renderTopArtist(artistData, year) {
   // });
 }
 
-  /** Fetches the top songs for a given year from the Billboard API.
-   *
-   * Sends a request to the backend and returns the parsed JSON response.
-   * If the request fails, the function throws an error instead of returning fallback data.
-   * 
-   * @param {number} year - The year to fetch songs for.
-   * @param {number} [limit=5] - Maximum number of songs to return.
-   * @returns {Promise<Object>} Parsed JSON response from the API.
-  */  
-  async function fetchBillboardTopSong(year) {
-    const res = await fetch(
-      `${API_BASE}/api/v1/year/${year}/billboard/artist/top-songs`);
-    if (!res.ok) {
-      throw new Error("Failed to fetch top songs");
-    }
-      return await res.json();
-  }
-
   /**
    * Renders a list of songs inside a given container.
    * The function clears any previous content,
@@ -278,8 +241,11 @@ async function renderTopArtist(artistData, year) {
  * @returns {Promise<void>}
  */
 export async function runTopArtist(year) {
-  const artistData = await fetchArtistOfTheYear(year);
-  await renderTopArtist(artistData, year);
+  clearTopArtist(); // a failed /music must not leave the previous year's artists on screen
+  const music = await getMusic(year);
+  const artists = toTopArtists(music);
+  if (artists.length === 0) return; // nothing matched on Spotify: keep the section hidden
+  renderTopArtist({ artists_with_images: artists }, year, music);
 }
 
 

@@ -1,5 +1,7 @@
 package se.wikicap.util;
 
+import org.jsoup.parser.Parser;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,10 +24,27 @@ public final class WikiEventCleaner {
     private static final String MONTHS_PATTERN =
             "January|February|March|April|May|June|July|August|September|October|November|December";
 
+    // a range end is a closed link "[[June 8|8]]" / "[[July 15]]" or a bare "July 15";
+    // anything looser eats a description's leading "12-year-old" or "[[24-hour clock]]"
+    private static final String RANGE_END =
+            "(?:\\[\\[(?:(?:" + MONTHS_PATTERN + ")\\s+)?\\d{1,2}(?:\\|\\d{1,2})?]]"
+                    + "|(?:" + MONTHS_PATTERN + ")\\s+\\d{1,2})";
+
+    // optional range end before the separator: "[[June 6]]–[[June 8|8]] –" or "[[April 7]] – [[July 15]] –"
     private static final Pattern DATE_PREFIX = Pattern.compile(
-            "^(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?\\s*[–—-]\\s*",
+            "^(?:\\[\\[)?(" + MONTHS_PATTERN + ")\\s+(\\d{1,2})(?:]])?"
+                    + "(?:\\s*[–—-]\\s*" + RANGE_END + ")?"
+                    + "\\s*[–—-]\\s*",
             Pattern.CASE_INSENSITIVE
     );
+
+    private static final Pattern DATE_ONLY = Pattern.compile(
+            "^(" + MONTHS_PATTERN + ")\\s+(\\d{1,2}):?$",
+            Pattern.CASE_INSENSITIVE
+    );
+
+    // a bare month heading like "* December" is a parent with no date, not an event
+    private static final Pattern MONTH_ONLY = Pattern.compile("^(?:" + MONTHS_PATTERN + "):?$", Pattern.CASE_INSENSITIVE);
 
     private WikiEventCleaner() {
     }
@@ -38,13 +57,22 @@ public final class WikiEventCleaner {
      * - Removes refs/templates/html/files
      * - Flattens wiki links to display text
      * - Extracts a date prefix like "January 12 -" if present
+     * - A line holding only a date, like "* [[February 12]]", returns that date and an empty description
+     * - A line holding only a month name, like "* December", returns null
      */
     public static CleanResult cleanEventLine(String line, boolean keepDatePrefix, int maxLen) {
         if (line == null || line.isBlank()) {
             return null;
         }
 
-        String stripped = line.strip();
+        // strip markup before decoding, or "&lt;5% ... >10" reads as a tag and loses its text
+        String stripped = REF_TAG.matcher(line).replaceAll("");
+        stripped = REF_SELF.matcher(stripped).replaceAll("");
+        stripped = COMMENTS.matcher(stripped).replaceAll("");
+        stripped = HTML_TAG.matcher(stripped).replaceAll("");
+
+        // decode before the date match: "[[May 10]] &ndash; ..." must read as a dash
+        stripped = Parser.unescapeEntities(stripped, false).replace('\u00A0', ' ').strip();
         if (!stripped.startsWith("*")) {
             return null;
         }
@@ -54,18 +82,11 @@ public final class WikiEventCleaner {
         String date = "";
         Matcher dateMatch = DATE_PREFIX.matcher(stripped);
         if (dateMatch.find()) {
-            String month = capitalize(dateMatch.group(1));
-            String day = dateMatch.group(2);
-            date = month.substring(0, 3) + " " + day;
+            date = shortDate(dateMatch.group(1), dateMatch.group(2));
             if (!keepDatePrefix) {
                 stripped = dateMatch.replaceFirst("").trim();
             }
         }
-
-        stripped = REF_TAG.matcher(stripped).replaceAll("");
-        stripped = REF_SELF.matcher(stripped).replaceAll("");
-        stripped = COMMENTS.matcher(stripped).replaceAll("");
-        stripped = HTML_TAG.matcher(stripped).replaceAll("");
 
         stripped = FILES.matcher(stripped).replaceAll("");
         stripped = TEMPLATES.matcher(stripped).replaceAll("");
@@ -78,7 +99,12 @@ public final class WikiEventCleaner {
         stripped = stripped.replaceAll("\\s+", " ").trim();
         stripped = stripped.replaceAll("^[-\\s]+|[-\\s]+$", "");
 
-        if (stripped.length() < 8) {
+        Matcher dateOnly = DATE_ONLY.matcher(stripped);
+        if (date.isBlank() && dateOnly.matches()) {
+            return new CleanResult(shortDate(dateOnly.group(1), dateOnly.group(2)), "");
+        }
+
+        if (stripped.length() < 8 || MONTH_ONLY.matcher(stripped).matches()) {
             return null;
         }
 
@@ -118,6 +144,10 @@ public final class WikiEventCleaner {
 
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    private static String shortDate(String month, String day) {
+        return capitalize(month).substring(0, 3) + " " + day;
     }
 
     private static String capitalize(String value) {

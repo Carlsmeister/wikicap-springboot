@@ -1,0 +1,683 @@
+{
+  "year": 1994,
+  "topTracks": [
+    {
+      "rank": 1,
+      "participants": "Ace of Base",
+      "trackData": {
+        "id": "0hrBpAOgrt8RXigk83LLNE",
+        "name": "The Sign",
+        "popularity": 82,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/0hrBpAOgrt8RXigk83LLNE"
+        },
+        "album": {
+          "name": "The Sign",
+          "release_date": "1993-12-24",
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d0000b273fda5556cb6981c3113df6175",
+              "height": 640,
+              "width": 640
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00001e02fda5556cb6981c3113df6175",
+              "height": 300,
+              "width": 300
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00004851fda5556cb6981c3113df6175",
+              "height": 64,
+              "width": 64
+            }
+          ]
+        },
+        "artists": [
+          {
+            "id": "5ksRONqssB7BR161NTtJAm",
+            "name": "Ace of Base"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 2,
+      "participants": "All-4-One",
+      "trackData": {
+        "id": "4WUnM4KNZ0kjp0CUeoyOnS",
+        "name": "I Swear",
+        "popularity": 76,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/4WUnM4KNZ0kjp0CUeoyOnS"
+        },
+        "album": {
+          "name": "All-4-One",
+          "release_date": "1994",
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d0000b273a48cc02c718f9ab73709fbfb",
+              "height": 640,
+              "width": 640
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00001e02a48cc02c718f9ab73709fbfb",
+              "height": 300,
+              "width": 300
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00004851a48cc02c718f9ab73709fbfb",
+              "height": 64,
+              "width": 64
+            }
+          ]
+        },
+        "artists": [
+          {
+            "id": "1B8ySGDAiXTCvnJNH4HSCG",
+            "name": "All-4-One"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 3,
+      "participants": "Boyz II Men",
+      "trackData": {
+        "id": "7dfl9X38RhIvB3oSmmneq3",
+        "name": "I'll Make Love To You",
+        "popularity": 70,
+        "external_urls": {
+          "spotify": "https://open.spotify.com/track/7dfl9X38RhIvB3oSmmneq3"
+        },
+        "album": {
+          "name": "II",
+          "release_date": "1994-08-30",
+          "images": [
+            {
+              "url": "https://i.scdn.co/image/ab67616d0000b273a94a1672a1fc0373b3e9aa7b",
+              "height": 640,
+              "width": 640
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00001e02a94a1672a1fc0373b3e9aa7b",
+              "height": 300,
+              "width": 300
+            },
+            {
+              "url": "https://i.scdn.co/image/ab67616d00004851a94a1672a1fc0373b3e9aa7b",
+              "height": 64,
+              "width": 64
+            }
+          ]
+        },
+        "artists": [
+          {
+            "id": "6O74knDqdv3XaWtkII7Xjp",
+            "name": "Boyz II Men"
+          }
+        ]
+      }
+    },
+    {
+      "rank": 1,
+      "participants": "Ace of Base",
+      "trackData": null
+    }
+  ],
+  "topArtists": [
+    {
+      "rank": 1,
+      "artistData": {
+        "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+        "name": "Mariah Carey",
+        "genres": [
+          "christmas"
+        ],
+        "popularity": 82,
+        "followers": {
+          "total": 13392826
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/4iHNK0tOyZPYnBU7nGAgpQ"
+        },
+        "images": [
+          {
+            "url": "https://i.scdn.co/image/ab6761610000e5eb21453384a10b1f8e18877f63",
+            "height": 640,
+            "width": 640
+          },
+          {
+            "url": "https://i.scdn.co/image/ab6761610000517421453384a10b1f8e18877f63",
+            "height": 320,
+            "width": 320
+          },
+          {
+            "url": "https://i.scdn.co/image/ab6761610000f17821453384a10b1f8e18877f63",
+            "height": 160,
+            "width": 160
+          }
+        ]
+      },
+      "topTracks": [
+        {
+          "id": "5EGPf0nqO7vEIwsOX6Er98",
+          "name": "Obsessed",
+          "popularity": 79,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/5EGPf0nqO7vEIwsOX6Er98"
+          },
+          "album": {
+            "name": "Memoirs of an imperfect Angel (International Version)",
+            "release_date": "2009-09-29",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2736ff3f8fd7540eb7447dae564",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e026ff3f8fd7540eb7447dae564",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048516ff3f8fd7540eb7447dae564",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        },
+        {
+          "id": "4EI8VuxUuIHKfafU72emqz",
+          "name": "We Belong Together",
+          "popularity": 78,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/4EI8VuxUuIHKfafU72emqz"
+          },
+          "album": {
+            "name": "The Emancipation of Mimi",
+            "release_date": "2005",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273006adc0cc250c8f9c5494aec",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02006adc0cc250c8f9c5494aec",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851006adc0cc250c8f9c5494aec",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        },
+        {
+          "id": "6xkryXuiZU360Lngd4sx13",
+          "name": "Fantasy",
+          "popularity": 82,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/6xkryXuiZU360Lngd4sx13"
+          },
+          "album": {
+            "name": "Daydream",
+            "release_date": "1995-10-03",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273749e9bfa78277f30ad2c9a9c",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02749e9bfa78277f30ad2c9a9c",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851749e9bfa78277f30ad2c9a9c",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "artistData": {
+        "id": "5ksRONqssB7BR161NTtJAm",
+        "name": "Ace of Base",
+        "genres": [
+          "eurodance",
+          "europop"
+        ],
+        "popularity": 72,
+        "followers": {
+          "total": 1367067
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/5ksRONqssB7BR161NTtJAm"
+        },
+        "images": [
+          {
+            "url": "https://i.scdn.co/image/df9a1dd7f15d98cdbef3ee8c44adae7dec4142d6",
+            "height": 1000,
+            "width": 1000
+          },
+          {
+            "url": "https://i.scdn.co/image/df9832bacbaeb43077530fa37a8178cea85cb956",
+            "height": 640,
+            "width": 640
+          },
+          {
+            "url": "https://i.scdn.co/image/1ac301a42a23cb9e941fe8d08cccf8ddd5744fec",
+            "height": 200,
+            "width": 200
+          }
+        ]
+      },
+      "topTracks": [
+        {
+          "id": "6kWJvPfC4DgUpRsXKNa9z9",
+          "name": "All That She Wants",
+          "popularity": 83,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/6kWJvPfC4DgUpRsXKNa9z9"
+          },
+          "album": {
+            "name": "The Sign",
+            "release_date": "1993-12-24",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273fda5556cb6981c3113df6175",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02fda5556cb6981c3113df6175",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851fda5556cb6981c3113df6175",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "5ksRONqssB7BR161NTtJAm",
+              "name": "Ace of Base"
+            }
+          ]
+        },
+        {
+          "id": "0hrBpAOgrt8RXigk83LLNE",
+          "name": "The Sign",
+          "popularity": 82,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/0hrBpAOgrt8RXigk83LLNE"
+          },
+          "album": {
+            "name": "The Sign",
+            "release_date": "1993-12-24",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273fda5556cb6981c3113df6175",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02fda5556cb6981c3113df6175",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851fda5556cb6981c3113df6175",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "5ksRONqssB7BR161NTtJAm",
+              "name": "Ace of Base"
+            }
+          ]
+        },
+        {
+          "id": "7yCF65vpc7sUwPjftI0iFb",
+          "name": "Happy Nation",
+          "popularity": 79,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/7yCF65vpc7sUwPjftI0iFb"
+          },
+          "album": {
+            "name": "Happy Nation",
+            "release_date": "1992-11-16",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273b8e072ca95df6dc435b1484f",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02b8e072ca95df6dc435b1484f",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851b8e072ca95df6dc435b1484f",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "5ksRONqssB7BR161NTtJAm",
+              "name": "Ace of Base"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "artistData": {
+        "id": "4qwGe91Bz9K2T8jXTZ815W",
+        "name": "Janet Jackson",
+        "genres": [
+          "new jack swing"
+        ],
+        "popularity": 70,
+        "followers": {
+          "total": 4368204
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/4qwGe91Bz9K2T8jXTZ815W"
+        },
+        "images": [
+          {
+            "url": "https://i.scdn.co/image/ab6761610000e5ebb3807fadacba2e4c29a3cce3",
+            "height": 640,
+            "width": 640
+          },
+          {
+            "url": "https://i.scdn.co/image/ab67616100005174b3807fadacba2e4c29a3cce3",
+            "height": 320,
+            "width": 320
+          },
+          {
+            "url": "https://i.scdn.co/image/ab6761610000f178b3807fadacba2e4c29a3cce3",
+            "height": 160,
+            "width": 160
+          }
+        ]
+      },
+      "topTracks": [
+        {
+          "id": "43zr9kKkeiQrshvYuvNtfM",
+          "name": "Someone To Call My Lover",
+          "popularity": 71,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/43zr9kKkeiQrshvYuvNtfM"
+          },
+          "album": {
+            "name": "All For You",
+            "release_date": "2001-01-01",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b27312da16fd0dec009d45f7dca3",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e0212da16fd0dec009d45f7dca3",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000485112da16fd0dec009d45f7dca3",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4qwGe91Bz9K2T8jXTZ815W",
+              "name": "Janet Jackson"
+            }
+          ]
+        },
+        {
+          "id": "4LD5dhQ3kqpqe14sGPDtBC",
+          "name": "Scream",
+          "popularity": 70,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/4LD5dhQ3kqpqe14sGPDtBC"
+          },
+          "album": {
+            "name": "HIStory - PAST, PRESENT AND FUTURE - BOOK I",
+            "release_date": "1995-06-16",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273b4a878f008a0eda552446701",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02b4a878f008a0eda552446701",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851b4a878f008a0eda552446701",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "3fMbdgg4jU18AjLCKBhRSm",
+              "name": "Michael Jackson"
+            },
+            {
+              "id": "4qwGe91Bz9K2T8jXTZ815W",
+              "name": "Janet Jackson"
+            }
+          ]
+        },
+        {
+          "id": "29rQJydAlO0uMyWvRIZxQg",
+          "name": "That's The Way Love Goes",
+          "popularity": 70,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/29rQJydAlO0uMyWvRIZxQg"
+          },
+          "album": {
+            "name": "Janet",
+            "release_date": "1993-05-18",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273e63518d50aff63f57d2b8ead",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02e63518d50aff63f57d2b8ead",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851e63518d50aff63f57d2b8ead",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4qwGe91Bz9K2T8jXTZ815W",
+              "name": "Janet Jackson"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 1,
+      "artistData": {
+        "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+        "name": "Mariah Carey",
+        "genres": [
+          "christmas"
+        ],
+        "popularity": 82,
+        "followers": {
+          "total": 13392826
+        },
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/4iHNK0tOyZPYnBU7nGAgpQ"
+        },
+        "images": []
+      },
+      "topTracks": [
+        {
+          "id": "5EGPf0nqO7vEIwsOX6Er98",
+          "name": "Obsessed",
+          "popularity": 79,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/5EGPf0nqO7vEIwsOX6Er98"
+          },
+          "album": {
+            "name": "Memoirs of an imperfect Angel (International Version)",
+            "release_date": "2009-09-29",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b2736ff3f8fd7540eb7447dae564",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e026ff3f8fd7540eb7447dae564",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d000048516ff3f8fd7540eb7447dae564",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        },
+        {
+          "id": "4EI8VuxUuIHKfafU72emqz",
+          "name": "We Belong Together",
+          "popularity": 78,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/4EI8VuxUuIHKfafU72emqz"
+          },
+          "album": {
+            "name": "The Emancipation of Mimi",
+            "release_date": "2005",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273006adc0cc250c8f9c5494aec",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02006adc0cc250c8f9c5494aec",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851006adc0cc250c8f9c5494aec",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        },
+        {
+          "id": "6xkryXuiZU360Lngd4sx13",
+          "name": "Fantasy",
+          "popularity": 82,
+          "external_urls": {
+            "spotify": "https://open.spotify.com/track/6xkryXuiZU360Lngd4sx13"
+          },
+          "album": {
+            "name": "Daydream",
+            "release_date": "1995-10-03",
+            "images": [
+              {
+                "url": "https://i.scdn.co/image/ab67616d0000b273749e9bfa78277f30ad2c9a9c",
+                "height": 640,
+                "width": 640
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00001e02749e9bfa78277f30ad2c9a9c",
+                "height": 300,
+                "width": 300
+              },
+              {
+                "url": "https://i.scdn.co/image/ab67616d00004851749e9bfa78277f30ad2c9a9c",
+                "height": 64,
+                "width": 64
+              }
+            ]
+          },
+          "artists": [
+            {
+              "id": "4iHNK0tOyZPYnBU7nGAgpQ",
+              "name": "Mariah Carey"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "source": "Wikipedia + Spotify"
+}
